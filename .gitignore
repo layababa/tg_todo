@@ -1,0 +1,39 @@
+# macOS
+.DS_Store
+
+# Node / Web
+web/node_modules/
+web/dist/
+web/.vite/
+web/.nuxt/
+web/.output/
+web/coverage/
+web/.cypress/
+web/.eslintcache
+web/*.log
+
+# Go / Server
+server/bin/
+server/vendor/
+server/coverage.out
+server/tmp/
+
+# Env & secrets
+.env
+.env.local
+.env.production
+.env.development
+infra/.env
+server/.env
+web/.env
+*.env.local
+*.env.*.local
+
+# Docker
+**/docker-data/
+
+# Misc
+*.swp
+*.swo
+*.tmp
+
