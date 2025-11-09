@@ -1,10 +1,17 @@
 /// <reference types="vite/client" />
 
-interface ImportMetaEnv {
-  readonly VITE_API_BASE_URL: string
-  readonly VITE_TELEGRAM_BOT_NAME?: string
+declare module 'vite/client' {
+  interface ImportMetaEnv {
+    readonly VITE_API_BASE_URL?: string
+    readonly VITE_TELEGRAM_BOT_NAME?: string
+  }
 }
 
-interface ImportMeta {
-  readonly env: ImportMetaEnv
+interface Window {
+  Telegram?: {
+    WebApp?: {
+      initData?: string
+      [key: string]: unknown
+    }
+  }
 }

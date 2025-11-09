@@ -1,45 +1,55 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
 
-const tabs = ['未完成', '已完成'] as const
-const currentTab = ref<typeof tabs[number]>('未完成')
+import StatusTabs from '@/components/todo/StatusTabs.vue'
+import TodoCard from '@/components/todo/TodoCard.vue'
+import { useTodoStore } from '@/stores/todo'
 
-const mockTodos = ref([
-  { id: '1', title: 'Telegram To-Do Mini App 样例任务', owner: 'Product', createdAt: 'Just now', done: false }
-])
+const todoStore = useTodoStore()
+const router = useRouter()
 
-const visibleTodos = computed(() => mockTodos.value.filter(todo => todo.done === (currentTab.value === '已完成')))
+const { activeTab, isLoading, error } = storeToRefs(todoStore)
+const tasks = computed(() => todoStore.activeTasks)
 
-const switchTab = (tab: typeof tabs[number]) => {
-  currentTab.value = tab
+const handleToggle = async (taskId: string, status: 'pending' | 'completed') => {
+  await todoStore.toggleStatus(taskId, status)
 }
+
+const openDetail = (taskId: string) => {
+  router.push({ name: 'todo-detail', params: { id: taskId } })
+}
+
+onMounted(async () => {
+  if (!todoStore.items.length) {
+    await todoStore.fetchAll()
+  }
+})
 </script>
 
 <template>
   <section class="space-y-4">
-    <div class="flex gap-3">
-      <button
-        v-for="tab in tabs"
-        :key="tab"
-        class="btn btn-sm"
-        :class="currentTab === tab ? 'btn-primary' : 'btn-outline'"
-        @click="switchTab(tab)"
-      >
-        {{ tab }}
-      </button>
-    </div>
-
-    <p class="text-sm opacity-70">Telegram To-Do Mini App 列表视图（示例数据）</p>
-
-    <div v-if="visibleTodos.length === 0" class="alert">
-      当前 Tab 没有任务，稍后再来。
-    </div>
-
-    <div v-for="todo in visibleTodos" :key="todo.id" class="card bg-base-200 shadow-sm">
-      <div class="card-body">
-        <h2 class="card-title">{{ todo.title }}</h2>
-        <p class="text-sm">创建人：{{ todo.owner }} · {{ todo.createdAt }}</p>
+    <header class="space-y-2">
+      <div class="flex items-center justify-between gap-3 flex-wrap">
+        <h2 class="text-xl font-semibold">待办任务</h2>
+        <StatusTabs v-model="activeTab" />
       </div>
+      <p class="text-sm opacity-80">数据示例来源：PRD 中的 Pending / Completed 任务流程。</p>
+    </header>
+
+    <div v-if="isLoading" class="skeleton h-24 w-full rounded-xl"></div>
+    <p v-else-if="error" class="alert alert-error">{{ error }}</p>
+    <p v-else-if="tasks.length === 0" class="alert alert-info">当前 Tab 没有任务，稍后再来。</p>
+
+    <div v-else class="space-y-3">
+      <TodoCard
+        v-for="task in tasks"
+        :key="task.id"
+        :task="task"
+        @toggle="handleToggle"
+        @select="openDetail"
+      />
     </div>
   </section>
 </template>

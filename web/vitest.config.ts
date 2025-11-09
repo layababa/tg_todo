@@ -1,7 +1,6 @@
-import { fileURLToPath, URL } from 'node:url'
-
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vitest/config'
 import vue from '@vitejs/plugin-vue'
+import { fileURLToPath } from 'node:url'
 
 export default defineConfig({
   plugins: [vue()],
@@ -10,18 +9,16 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
-  server: {
-    port: 5173
-  },
   test: {
     globals: true,
     environment: 'jsdom',
     coverage: {
+      provider: 'v8',
       reporter: ['text', 'html', 'lcov'],
       all: true,
-      provider: 'v8',
       reportsDirectory: './coverage'
     },
-    setupFiles: './src/tests/setup.ts'
+    setupFiles: ['./src/tests/setup.ts']
   }
 })
+

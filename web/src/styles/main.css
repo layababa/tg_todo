@@ -1,4 +1,5 @@
 @import './theme.css';
+@import '../assets/animations/checkmark.css';
 
 @tailwind base;
 @tailwind components;

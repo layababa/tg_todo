@@ -1,0 +1,11 @@
+.git
+.gocache
+node_modules
+web/node_modules
+web/dist
+web/.cypress
+web/.vite
+web/coverage
+server/bin
+server/.gocache
+infra/.env
