@@ -145,12 +145,18 @@ func scanTask(scanner interface {
 	Scan(dest ...any) error
 }) (*Task, error) {
 	var (
-		id, creatorID                                                       int64
-		title, description, status, sourceURL, creatorName, creatorUsername string
-		createdAt                                                           time.Time
+		id, creatorID                               int64
+		title, description, status, creatorName, creatorUsername string
+		sourceURL                                   sql.NullString
+		createdAt                                   time.Time
 	)
 	if err := scanner.Scan(&id, &title, &description, &status, &createdAt, &sourceURL, &creatorID, &creatorName, &creatorUsername); err != nil {
 		return nil, err
+	}
+
+	sourceMessage := ""
+	if sourceURL.Valid {
+		sourceMessage = sourceURL.String
 	}
 
 	return &Task{
@@ -164,7 +170,7 @@ func scanTask(scanner interface {
 			DisplayName: creatorName,
 			Username:    creatorUsername,
 		},
-		SourceMessage: sourceURL,
+		SourceMessage: sourceMessage,
 		Permissions: Permissions{
 			CanEdit:     true,
 			CanComplete: true,
