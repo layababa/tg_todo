@@ -1,0 +1,11 @@
+{
+  "framework": "vite",
+  "buildCommand": "cd web && npm run build",
+  "outputDirectory": "web/dist",
+  "installCommand": "cd web && npm install",
+  "regions": ["sfo1"],
+  "env": {
+    "VITE_API_BASE_URL": "@api_base_url"
+  }
+}
+
