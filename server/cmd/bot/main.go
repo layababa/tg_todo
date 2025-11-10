@@ -33,7 +33,7 @@ func main() {
 	}
 
 	taskRepo := task.NewRepository(dbConn)
-	taskService := task.NewService(taskRepo)
+	taskService := task.NewService(taskRepo, nil)
 
 	tgBot := bot.New(cfg.TelegramToken, cfg.TelegramAPIBase, taskService)
 	if err := tgBot.Start(ctx); err != nil {

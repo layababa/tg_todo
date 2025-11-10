@@ -7,9 +7,11 @@ import (
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 
+	"github.com/zz/tg_todo/server/internal/auth"
 	"github.com/zz/tg_todo/server/internal/config"
-	"github.com/zz/tg_todo/server/internal/http"
+	httpserver "github.com/zz/tg_todo/server/internal/http"
 	"github.com/zz/tg_todo/server/internal/migrate"
+	"github.com/zz/tg_todo/server/internal/notify"
 	"github.com/zz/tg_todo/server/internal/task"
 	"github.com/zz/tg_todo/server/pkg/db"
 )
@@ -34,8 +36,14 @@ func main() {
 	}
 
 	taskRepo := task.NewRepository(dbConn)
-	taskService := task.NewService(taskRepo)
-	router := httpserver.NewRouter(taskService)
+	notifier := notify.NewTelegramNotifier(cfg.TelegramToken, cfg.TelegramAPIBase)
+	taskService := task.NewService(taskRepo, notifier)
+
+	authValidator, err := auth.NewValidator(cfg.TelegramToken)
+	if err != nil {
+		log.Fatalf("auth validator init failed: %v", err)
+	}
+	router := httpserver.NewRouter(taskService, authValidator, cfg.ServiceAPIToken)
 
 	server := &http.Server{
 		Addr:         ":" + cfg.ServerPort,

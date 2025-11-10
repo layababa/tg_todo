@@ -22,6 +22,9 @@ services:
       DB_MAX_OPEN_CONNS: 10
       DB_MAX_IDLE_CONNS: 5
       DB_CONN_MAX_LIFETIME: 1800
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-demo-token}
+      TELEGRAM_API_URL: https://api.telegram.org
+      SERVICE_API_TOKEN: ${SERVICE_API_TOKEN:-local-service-token}
     ports:
       - "8080:8080"
     depends_on:
@@ -36,6 +39,7 @@ services:
     environment:
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
       TELEGRAM_API_URL: https://api.telegram.org
+      SERVICE_API_TOKEN: ${SERVICE_API_TOKEN:-local-service-token}
       POSTGRES_URL: postgres://tg_todo:change-me@db:5432/tg_todo?sslmode=disable
       DB_MAX_OPEN_CONNS: 10
       DB_MAX_IDLE_CONNS: 5

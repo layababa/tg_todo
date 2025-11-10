@@ -12,7 +12,12 @@ defineEmits<{
 </script>
 
 <template>
-  <article class="card bg-base-200 shadow-sm hover:shadow-md transition cursor-pointer" @click="$emit('select', task.id)">
+  <article
+    class="card bg-base-200 shadow-sm hover:shadow-md transition cursor-pointer"
+    data-cy="task-card"
+    :data-task-id="task.id"
+    @click="$emit('select', task.id)"
+  >
     <div class="card-body flex gap-4 items-start">
       <label class="relative flex items-center" @click.stop>
         <input

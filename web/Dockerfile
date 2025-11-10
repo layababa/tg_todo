@@ -11,7 +11,7 @@ RUN npm install
 COPY web ./
 COPY daisyUI.template.css ../daisyUI.template.css
 
-ARG VITE_API_BASE_URL=http://localhost:8080
+ARG VITE_API_BASE_URL=https://api.xwqpfzmlj.com
 ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
 
 RUN npm run build

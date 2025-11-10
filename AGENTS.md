@@ -37,3 +37,12 @@
 - Store Telegram bot tokens, Vercel env secrets, and Postgres credentials in `.env.local` files ignored from Git; provide `.env.example` with safe placeholders.
 - Always verify `initData` server-side before trusting user identity, and reject unsigned payloads.
 - Regenerate API clients when the Go server contracts change so the Mini App does not hardcode outdated routes.
+
+### API 鉴权与通知规范
+- **X-Telegram-Init-Data**：Mini App 必须在所有请求中携带 `X-Telegram-Init-Data: ${Telegram.WebApp.initData}`；后台使用 Bot Token 推导出的 HMAC Secret 复验签名并解析用户身份。
+- **SERVICE_API_TOKEN**：Bot 或内部服务直接调用 REST API 时，使用 `Authorization: Bearer ${SERVICE_API_TOKEN}` 绕过 initData 校验；该令牌需随机生成、仅存于后端 `.env`。
+- **通知触发动作**：
+  1. Pending → Completed：推送「任务《{title}》已由 {actor} 标记完成。原始消息：{sourceUrl}」给创建人及其他指派人。
+  2. Completed → Pending：推送「任务《{title}》已由 {actor} 重新打开…」。
+  3. Delete：推送「任务《{title}》已被 {actor} 删除。」。
+- 以上动作均排除操作者本人，通知通过 Telegram Bot API `sendMessage` 下发。更新/删除逻辑修改时务必同步本清单。

@@ -1,0 +1,40 @@
+[
+  {
+    "id": "1",
+    "title": "撰写 API 文档",
+    "status": "pending",
+    "createdAt": "2024-04-01T10:00:00.000Z",
+    "createdBy": {
+      "id": "1000",
+      "displayName": "产品经理",
+      "username": "pm_lead"
+    },
+    "assignees": [
+      { "id": "2000", "displayName": "前端负责人", "username": "fe_lead" }
+    ],
+    "permissions": {
+      "canEdit": true,
+      "canComplete": true,
+      "canDelete": true
+    }
+  },
+  {
+    "id": "2",
+    "title": "实现任务列表 UI",
+    "status": "completed",
+    "createdAt": "2024-04-02T08:00:00.000Z",
+    "createdBy": {
+      "id": "1001",
+      "displayName": "设计师",
+      "username": "designer"
+    },
+    "assignees": [
+      { "id": "2001", "displayName": "后端负责人", "username": "be_lead" }
+    ],
+    "permissions": {
+      "canEdit": true,
+      "canComplete": true,
+      "canDelete": true
+    }
+  }
+]

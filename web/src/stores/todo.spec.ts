@@ -5,7 +5,7 @@ import type { Task } from '@/types/todo'
 
 import { useTodoStore } from './todo'
 
-vi.mock('@/services/todo', () => {
+const mocks = vi.hoisted(() => {
   const baseTask: Task = {
     id: '1',
     title: '测试任务',
@@ -16,24 +16,53 @@ vi.mock('@/services/todo', () => {
     permissions: { canEdit: true, canComplete: true, canDelete: true }
   }
 
+  const cloneTask = (): Task => JSON.parse(JSON.stringify(baseTask))
+
   return {
-    fetchTasks: vi.fn().mockResolvedValue([baseTask]),
-    fetchTaskDetail: vi.fn().mockResolvedValue(baseTask),
-    setTaskStatus: vi.fn().mockImplementation(async (id, status) => ({ ...baseTask, id, status })),
-    updateTask: vi.fn().mockImplementation(async (id, payload) => ({ ...baseTask, id, ...payload })),
-    deleteTask: vi.fn().mockResolvedValue(undefined)
+    cloneTask,
+    fetchTasksMock: vi.fn().mockResolvedValue([cloneTask()]),
+    fetchTaskDetailMock: vi.fn().mockResolvedValue(cloneTask()),
+    setTaskStatusMock: vi.fn().mockImplementation(async (id: string, status: Task['status']) => ({
+      ...cloneTask(),
+      id,
+      status
+    })),
+    updateTaskMock: vi.fn().mockImplementation(async (id: string, payload: Partial<Task>) => ({
+      ...cloneTask(),
+      id,
+      ...payload
+    })),
+    deleteTaskMock: vi.fn().mockResolvedValue(undefined)
   }
 })
+
+vi.mock('@/services/todo', () => ({
+  fetchTasks: mocks.fetchTasksMock,
+  fetchTaskDetail: mocks.fetchTaskDetailMock,
+  setTaskStatus: mocks.setTaskStatusMock,
+  updateTask: mocks.updateTaskMock,
+  deleteTask: mocks.deleteTaskMock
+}))
 
 describe('useTodoStore', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
+    vi.clearAllMocks()
+    mocks.fetchTasksMock.mockResolvedValue([mocks.cloneTask()])
+    mocks.fetchTaskDetailMock.mockResolvedValue(mocks.cloneTask())
   })
 
   it('fetches tasks', async () => {
     const store = useTodoStore()
     await store.fetchAll()
     expect(store.items).toHaveLength(1)
+  })
+
+  it('handles fetch error gracefully', async () => {
+    const store = useTodoStore()
+    mocks.fetchTasksMock.mockRejectedValueOnce(new Error('network'))
+    await expect(store.fetchAll()).rejects.toThrow('network')
+    expect(store.error).toBe('network')
   })
 
   it('switches tabs', () => {
@@ -47,5 +76,13 @@ describe('useTodoStore', () => {
     await store.fetchAll()
     await store.toggleStatus('1', 'completed')
     expect(store.completedTasks).toHaveLength(1)
+  })
+
+  it('stores error when toggle fails', async () => {
+    const store = useTodoStore()
+    await store.fetchAll()
+    mocks.setTaskStatusMock.mockRejectedValueOnce(new Error('fail'))
+    await expect(store.toggleStatus('1', 'completed')).rejects.toThrow('fail')
+    expect(store.error).toBe('fail')
   })
 })

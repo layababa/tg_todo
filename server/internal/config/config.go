@@ -13,6 +13,7 @@ type Config struct {
 	PostgresURL       string
 	TelegramToken     string
 	TelegramAPIBase   string
+	ServiceAPIToken   string
 	ReadTimeout       time.Duration
 	WriteTimeout      time.Duration
 	DBMaxOpenConns    int
@@ -27,6 +28,7 @@ func Load() Config {
 		PostgresURL:       getEnv("POSTGRES_URL", "postgres://tg_todo:change-me@localhost:5432/tg_todo?sslmode=disable"),
 		TelegramToken:     getEnv("TELEGRAM_BOT_TOKEN", ""),
 		TelegramAPIBase:   getEnv("TELEGRAM_API_URL", "https://api.telegram.org"),
+		ServiceAPIToken:   getEnv("SERVICE_API_TOKEN", ""),
 		ReadTimeout:       getDuration("SERVER_READ_TIMEOUT", 15*time.Second),
 		WriteTimeout:      getDuration("SERVER_WRITE_TIMEOUT", 15*time.Second),
 		DBMaxOpenConns:    getInt("DB_MAX_OPEN_CONNS", 10),
