@@ -1,0 +1,144 @@
+嘿
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>任务详情 - 系统 V2.0</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="grid-bg"></div>
+    <div class="scan-line"></div>
+
+    <div class="app-container">
+        <header class="header">
+            <header class="header">
+                <div class="detail-header">
+                    <button id="backBtn" class="icon-btn tech-btn" style="border:none; width:auto; padding-right:10px;">
+                        <i class="ri-arrow-left-line"></i> 返回
+                    </button>
+                    <div class="header-actions">
+                        <button class="icon-btn tech-btn" id="openNotionBtn" title="Open in Notion">
+                            <i class="ri-notion-fill"></i>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="task-list" style="padding-bottom: 80px;">
+                <textarea class="detail-title-input" id="taskTitle" rows="1">修复 iOS 登录 Bug</textarea>
+
+                <div class="property-list">
+                    <div class="property-item">
+                        <div class="property-label"><i class="ri-loader-2-line"></i> 状态</div>
+                        <div class="property-value">
+                            <select class="select-input" id="taskStatus">
+                                <option value="To Do">待办</option>
+                                <option value="In Progress">进行中</option>
+                                <option value="Done">已完成</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="property-item">
+                        <div class="property-label"><i class="ri-user-3-line"></i> 指派给</div>
+                        <div class="property-value">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
+                                style="width:20px; height:20px; border-radius:50%;">
+                            <span>Felix</span>
+                        </div>
+                    </div>
+                    <div class="property-item">
+                        <div class="property-label"><i class="ri-calendar-event-line"></i> 截止日期</div>
+                        <div class="property-value">
+                            <span>今天</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Context Snapshot -->
+                <div class="context-snapshot-section">
+                    <div class="section-toggle" id="toggleContext">
+                        <span><i class="ri-chat-history-line"></i> 上下文快照 (10条)</span>
+                        <i class="ri-arrow-down-s-line"></i>
+                    </div>
+                    <div class="context-content" id="contextContent" style="display: none;">
+                        <!-- Mock Chat Log -->
+                        <div class="chat-bubble other">
+                            <div class="chat-name">Alice</div>
+                            <div class="chat-text">iOS 端登录好像又挂了？</div>
+                        </div>
+                        <div class="chat-bubble me">
+                            <div class="chat-text">我看下日志</div>
+                        </div>
+                        <div class="chat-bubble other">
+                            <div class="chat-name">Bob</div>
+                            <div class="chat-text">是 Token 过期的问题吗？</div>
+                        </div>
+                        <div class="chat-bubble me">
+                            <div class="chat-text">看起来是 Refresh Token 没生效，我建个任务跟进下。</div>
+                        </div>
+                        <div class="chat-system">
+                            <span>Bot created task via Reply</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="editor-content tech-border" style="padding: 16px; border-radius: 8px; margin-bottom: 24px;">
+                    <p>用户反馈在 iOS 17.2 上无法完成登录流程，一直卡在 Loading 界面。</p>
+                    <p>初步排查是 Refresh Token 机制的问题。</p>
+                    <ul>
+                        <li>检查网络请求日志</li>
+                        <li>验证 Token 刷新逻辑</li>
+                        <li>修复并发布热更</li>
+                    </ul>
+                </div>
+
+                <div class="comments-section">
+                    <div class="section-title">评论 (3)</div>
+                    <div class="comment-list" id="commentList">
+                        <!-- Comments will be rendered by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Action Bar -->
+            <div class="bottom-action-bar tech-panel">
+                <div class="action-input-wrapper">
+                    <input type="text" placeholder="发送评论..." id="commentInput">
+                    <button class="send-btn"><i class="ri-send-plane-fill"></i></button>
+                </div>
+                <div class="action-buttons">
+                    <button class="action-icon-btn" id="jumpBtn" title="Jump to Chat"><i
+                            class="ri-share-forward-line"></i></button>
+                    <button class="action-icon-btn" id="moreBtn" title="More"><i class="ri-more-2-fill"></i></button>
+                </div>
+            </div>
+
+            <!-- More Actions Modal -->
+            <div class="modal-overlay" id="moreActionsModal" style="display: none;">
+                <div class="modal-content tech-panel">
+                    <div class="modal-header">
+                        <h3>更多操作</h3>
+                        <button class="close-modal-btn" id="closeMoreModal"><i class="ri-close-line"></i></button>
+                    </div>
+                    <div class="action-list">
+                        <div class="action-item" data-action="delete" style="color: #FF0055; border-color: #FF0055;">
+                            <i class="ri-delete-bin-line" style="color: #FF0055;"></i>
+                            <span>删除任务</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <script src="script.js"></script>
+</body>
+
+</html>

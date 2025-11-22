@@ -1,0 +1,66 @@
+services:
+  db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: tg_todo_test
+      POSTGRES_USER: tg_todo_test
+      POSTGRES_PASSWORD: test-password
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: ../../server
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      SERVER_PORT: 8081
+      POSTGRES_URL: postgres://tg_todo_test:test-password@db:5432/tg_todo_test?sslmode=disable
+      DB_MAX_OPEN_CONNS: 10
+      DB_MAX_IDLE_CONNS: 5
+      DB_CONN_MAX_LIFETIME: 1800
+      TELEGRAM_API_URL: https://api.telegram.org
+      SERVICE_API_TOKEN: ${SERVICE_API_TOKEN:-local-test-token}
+    ports:
+      - "8081:8081"
+    depends_on:
+      - db
+
+  bot:
+    build:
+      context: ../../server
+      dockerfile: Dockerfile
+    command: ["/bin/bot"]
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      TELEGRAM_API_URL: https://api.telegram.org
+      SERVICE_API_TOKEN: ${SERVICE_API_TOKEN:-local-test-token}
+      POSTGRES_URL: postgres://tg_todo_test:test-password@db:5432/tg_todo_test?sslmode=disable
+      DB_MAX_OPEN_CONNS: 10
+      DB_MAX_IDLE_CONNS: 5
+      DB_CONN_MAX_LIFETIME: 1800
+    depends_on:
+      - db
+
+  web:
+    build:
+      context: ../..
+      dockerfile: web/Dockerfile
+      args:
+        VITE_API_BASE_URL: https://testapi.xwqpfzmlj.com
+    restart: unless-stopped
+    ports:
+      - "4174:80"
+    depends_on:
+      - api
+
+volumes:
+  postgres-data:
+

@@ -1,9 +1,0 @@
-{
-	"folders": [
-		{
-			"uri": "vscode-remote://ssh-remote+7b22686f73744e616d65223a2274672d746f646f2d736572766572227d/root/tg_todo"
-		}
-	],
-	"remoteAuthority": "ssh-remote+7b22686f73744e616d65223a2274672d746f646f2d736572766572227d",
-	"settings": {}
-}

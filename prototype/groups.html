@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>群组管理 - 系统 V2.0</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="grid-bg"></div>
+    <div class="scan-line"></div>
+
+    <div class="app-container">
+        <header class="header">
+            <div class="detail-header">
+                <a href="settings.html" class="back-btn">
+                    <i class="ri-arrow-left-line"></i> 返回设置
+                </a>
+            </div>
+            <h2 class="greeting-title" style="font-size: 24px; margin-bottom: 8px;">群组管理</h2>
+            <p class="onboarding-subtitle" style="margin-bottom: 24px;">管理您作为管理员的群组连接</p>
+        </header>
+
+        <div class="task-list">
+            <!-- Connected Groups -->
+            <div class="group-header">已连接 (2)</div>
+
+            <div class="task-card" onclick="navigateTo('binding.html?group=Marketing+Team')">
+                <div class="task-header">
+                    <div class="task-title">Marketing Team</div>
+                    <div class="task-status status-inprogress">已连接</div>
+                </div>
+                <div class="task-meta">
+                    <div class="meta-item">
+                        <i class="ri-database-2-line"></i>
+                        <span>Marketing Q4</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="ri-shield-user-line"></i>
+                        <span>Admin</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="task-card" onclick="navigateTo('binding.html?group=Dev+Squad')">
+                <div class="task-header">
+                    <div class="task-title">Dev Squad</div>
+                    <div class="task-status status-inprogress">已连接</div>
+                </div>
+                <div class="task-meta">
+                    <div class="meta-item">
+                        <i class="ri-database-2-line"></i>
+                        <span>Dev Tracker</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="ri-shield-user-line"></i>
+                        <span>Admin</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Uninitialized Groups -->
+            <div class="group-header">未初始化 (1)</div>
+
+            <div class="task-card" style="border-color: var(--status-todo-border);"
+                onclick="navigateTo('binding.html?group=Project+X&mode=init')">
+                <div class="task-header">
+                    <div class="task-title">Project X</div>
+                    <div class="task-status status-todo">未连接</div>
+                </div>
+                <div class="task-meta">
+                    <div class="meta-item" style="color: var(--neon-green);">
+                        <i class="ri-link"></i>
+                        <span>点击配置数据库</span>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                style="margin-top: 40px; padding: 20px; border: 1px dashed var(--border-dim); border-radius: 8px; text-align: center;">
+                <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">找不到群组？</p>
+                <button class="icon-btn tech-btn"
+                    style="width: auto; padding: 0 16px; margin: 0 auto; font-size: 12px;">
+                    <i class="ri-refresh-line" style="margin-right: 6px;"></i> 刷新群组列表
+                </button>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>

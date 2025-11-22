@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>任务列表原型</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <!-- Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Tech Background -->
+    <div class="grid-bg"></div>
+    <div class="scan-line"></div>
+
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-top">
+                <div class="brand-tag">系统.V2.0</div>
+                <div class="header-actions">
+                    <button class="icon-btn tech-btn" id="filterBtn" aria-label="筛选">
+                        <i class="ri-filter-3-line"></i>
+                    </button>
+                    <button class="icon-btn tech-btn" aria-label="设置">
+                        <i class="ri-settings-4-line"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="user-section">
+                <h1 class="greeting-title">你好, <span class="highlight-text">约翰</span></h1>
+                <div class="status-indicator">
+                    <span class="dot"></span> 系统在线
+                </div>
+            </div>
+
+            <!-- Tech Tabs -->
+            <div class="tabs-wrapper">
+                <div class="segmented-control tech-panel">
+                    <button class="segment active" data-tab="assigned">指派给我</button>
+                    <button class="segment" data-tab="created">我创建的</button>
+                    <button class="segment" data-tab="all">全部任务</button>
+                    <div class="active-border"></div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar tech-border" id="filterBar" style="display: none;">
+            <div class="filter-content">
+                <i class="ri-database-2-line"></i>
+                <span class="filter-text">数据源: <span class="mono" id="currentDbName">Marketing Q4</span></span>
+            </div>
+            <button class="clear-filter-btn" id="clearFilterBtn">[清除]</button>
+        </div>
+
+        <!-- Task List -->
+        <main class="task-list" id="taskList">
+            <!-- Content injected by JS -->
+        </main>
+
+        <!-- FAB -->
+        <button class="fab-btn tech-btn">
+            <i class="ri-add-line"></i>
+        </button>
+    </div>
+
+    <!-- Database Selector Modal -->
+    <div class="modal-overlay" id="dbModal" style="display: none;">
+        <div class="modal-content tech-panel">
+            <div class="modal-header">
+                <h3>选择数据源</h3>
+                <button class="close-modal-btn"><i class="ri-close-line"></i></button>
+            </div>
+            <div class="db-list">
+                <div class="db-item" data-db="Marketing Q4">
+                    <i class="ri-database-2-fill"></i>
+                    <span>Marketing Q4</span>
+                    <span class="db-tag">工作区 A</span>
+                </div>
+                <div class="db-item" data-db="Dev Squad">
+                    <i class="ri-code-box-line"></i>
+                    <span>Dev Squad</span>
+                    <span class="db-tag">工作区 A</span>
+                </div>
+                <div class="db-item" data-db="Personal Life">
+                    <i class="ri-user-smile-line"></i>
+                    <span>Personal Life</span>
+                    <span class="db-tag">个人</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Task Action Modal -->
+    <div class="modal-overlay" id="actionModal" style="display: none;">
+        <div class="modal-content tech-panel">
+            <div class="modal-header">
+                <h3 id="actionModalTitle">任务操作</h3>
+                <button class="close-modal-btn" id="closeActionModal"><i class="ri-close-line"></i></button>
+            </div>
+            <div class="action-list">
+                <div class="action-item" data-action="reply">
+                    <i class="ri-chat-1-line"></i>
+                    <span>跟评</span>
+                </div>
+                <div class="action-item" data-action="jump">
+                    <i class="ri-share-forward-line"></i>
+                    <span>跳转到对应消息</span>
+                </div>
+                <div class="action-item" data-action="done">
+                    <i class="ri-checkbox-circle-line"></i>
+                    <span>标记已完成</span>
+                </div>
+                <div class="action-item" data-action="detail">
+                    <i class="ri-file-list-2-line"></i>
+                    <span>查看详情</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

@@ -1,48 +1,22 @@
 # Repository Guidelines
 
-## Project Structure & Module Organization
-- Product specs (`prd.md`) and front-end requirements (`前端文档.md`) in the repo root define scope; consult them before touching code.
-- Keep the Telegram Mini App inside `web/` using Vite + Vue 3: `src/components/` for UI, `src/stores/` for Pinia, `src/services/` for Axios API clients, and `src/assets/` for uiverse.io animations or media.
-- Mirror Go back-end work under `server/` with `cmd/bot/` (entry point), `internal/` for domain logic, and `migrations/` for PostgreSQL schema files.
-- Reuse the shared palette in `daisyUI.template.css` by importing it into `tailwind.config.ts`; do not redefine colors inline.
-- Keep Docker, Compose files, and Vercel configs inside `infra/` so deployment wiring stays isolated from app code.
+## 项目结构与模块组织
+仓库根目录提供三份权威文档：`prd.md` 描述产品目标，`frontend_requirements.md` 定义前端交互细则，`当前工作日志.md` 记录实时进度与人工验证。界面原型集中在 `prototype/`：多页面 HTML（`index.html`、`detail.html`、`binding.html`、`settings.html`、`groups.html`、`onboarding.html`）、共用样式 `styles.css` 与交互脚本 `script.js`。新增素材或 JSON mock 请紧贴对应页面存放，确保设计师可以直接打开单个文件即可预览。
 
-## Build, Test, and Development Commands
-- `cd web && npm install` once to pull Vue/Tailwind/DaisyUI dependencies.
-- `cd web && npm run dev` launches the Mini App with Vite and auto-opens the Telegram WebApp bridge.
-- `cd web && npm run build` emits the production bundle uploaded to Vercel; run before every PR.
-- `cd web && npm run lint` applies ESLint + Stylelint presets; fix issues before committing.
-- `cd server && go test ./...` runs all Go unit tests; combine with `docker compose up db` when database access is needed.
-- `cd infra && docker compose up --build` brings up Postgres + the Go bot locally to validate bot ↔ Mini App flows.
+## 构建、测试与开发命令
+- `cd prototype && python3 -m http.server 4173`：最轻量的本地静态服务，刷新即可看到改动。
+- `open prototype/index.html`：无服务预览，适合快速像素校验。
+- `NODE_ENV=development npx serve prototype`：需要 HTTPS 或路由实验时使用，可复用同一命令做演示。  
+如引入打包器或构建脚本，请在此补充入口文件和 npm script。
 
-## Coding Style & Naming Conventions
-- Vue files use `<script setup>` with Composition API, two-space indentation, PascalCase component names (`TodoList.vue`), and kebab-case routes (`/todo-detail`).
-- Tailwind utility classes stay declarative; for reusable styles, compose them via `@apply` rather than ad-hoc CSS.
-- Go code must pass `gofmt` and (optionally) `golangci-lint run`; package names stay short and lowercased (`task`, `auth`).
-- Configuration structs, env vars, and DTOs favor descriptive camelCase fields mirroring Telegram payload names.
+## 代码风格与命名约定
+HTML/CSS/JS 一律两空格缩进。JavaScript 使用 camelCase（如 `renderSkeletons`、`taskListEl`），共享配置用 SCREAMING_SNAKE_CASE（`MOCK_TASKS`），CSS 类名保持 kebab-case（`ptr-container`）。主题色、字体等 token 已在 `styles.css` 顶部定义，扩展新风格时先补充变量，避免散落魔法值。提交前运行 `npx prettier --write "prototype/**/*.{html,css,js}"` 统一格式。
 
-## Testing Guidelines
-- Front-end unit tests live beside components as `*.spec.ts` (Vitest); integration flows sit under `web/tests/e2e` (Cypress) with names like `todo.complete.cy.ts`.
-- Snapshot animated components only after stabilizing uiverse.io class names; prefer behavior assertions otherwise.
-- Require minimum 80% coverage on `web/src` and enforce with `npm run test -- --coverage`.
-- Back-end logic uses table-driven Go tests; mock Telegram HTTP calls with `httptest.Server` and seed Postgres via migration fixtures.
+## 测试规范
+当前尚无自动化测试，功能调整后需人工冒烟：逐页点击，验证下拉刷新、骨架屏、HUD 展开/折叠，在移动 Safari 与桌面 Chrome 各走一次。如发现边缘问题，请在 `当前工作日志.md` 新增条目。未来若编写脚本化测试，请放入 `prototype/tests/`（示例：`pull-to-refresh.e2e.spec.ts`），并通过 `npm test` 暴露给 CI，逐步建立覆盖率指标。
 
-## Commit & Pull Request Guidelines
-- Use `type(scope): summary` commit messages (`feat(todo): support batch assign`); group related front/back changes in one commit when they ship together.
-- Reference issue or PR IDs in the body (`Refs #12`) and describe any schema or env changes explicitly.
-- Pull requests must list test commands executed, link to relevant PRD sections, and include screenshots/GIFs when UI changes touch DaisyUI themes or animations.
-- Block PRs without updated docs whenever APIs, theme tokens, or infra scripts change.
+## 提交与 Pull Request 指南
+参考现有提交（如 `前端基础页面调整完毕,前端文档填写完毕`）：使用祈使句，≤72 字，必要时可中英双语但保持单行说明范围与影响。PR 描述需包含问题背景、UI 变更截图或录屏、可复现或预览命令以及关联需求/问题编号。同时在 `当前工作日志.md` 勾选 ✅/🔄/⏳，保证信息同步。
 
-## Security & Configuration Tips
-- Store Telegram bot tokens, Vercel env secrets, and Postgres credentials in `.env.local` files ignored from Git; provide `.env.example` with safe placeholders.
-- Always verify `initData` server-side before trusting user identity, and reject unsigned payloads.
-- Regenerate API clients when the Go server contracts change so the Mini App does not hardcode outdated routes.
-
-### API 鉴权与通知规范
-- **X-Telegram-Init-Data**：Mini App 必须在所有请求中携带 `X-Telegram-Init-Data: ${Telegram.WebApp.initData}`；后台使用 Bot Token 推导出的 HMAC Secret 复验签名并解析用户身份。
-- **SERVICE_API_TOKEN**：Bot 或内部服务直接调用 REST API 时，使用 `Authorization: Bearer ${SERVICE_API_TOKEN}` 绕过 initData 校验；该令牌需随机生成、仅存于后端 `.env`。
-- **通知触发动作**：
-  1. Pending → Completed：推送「任务《{title}》已由 {actor} 标记完成。原始消息：{sourceUrl}」给创建人及其他指派人。
-  2. Completed → Pending：推送「任务《{title}》已由 {actor} 重新打开…」。
-  3. Delete：推送「任务《{title}》已被 {actor} 删除。」。
-- 以上动作均排除操作者本人，通知通过 Telegram Bot API `sendMessage` 下发。更新/删除逻辑修改时务必同步本清单。
+## 协作提示
+开始或结束任何任务时更新 `当前工作日志.md`，继续沿用 ✅/🔄/⏳ 模块，便于后续 Agent 追踪。提交 UI 变更前对照 `prd.md` 与 `frontend_requirements.md` 的章节编号，在 PR 中标注引用，确保产品、设计和开发三方可快速定位决策背景。

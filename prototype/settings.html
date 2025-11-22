@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>设置 - 系统 V2.0</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="grid-bg"></div>
+    <div class="scan-line"></div>
+
+    <div class="app-container">
+        <header class="header">
+            <div class="detail-header">
+                <a href="index.html" class="back-btn">
+                    <i class="ri-arrow-left-line"></i> 返回首页
+                </a>
+                <div class="header-actions">
+                    <button class="icon-btn tech-btn" aria-label="注销">
+                        <i class="ri-logout-box-r-line"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="user-section" style="text-align: center; margin-bottom: 40px;">
+                <div class="hero-graphic" style="width: 80px; height: 80px; margin: 0 auto 20px;">
+                    <img src="https://ui-avatars.com/api/?name=John+Doe&background=random&color=fff"
+                        style="width:100%; height:100%; border-radius:50%;">
+                </div>
+                <h2 class="greeting-title" style="font-size: 24px;">John Doe</h2>
+                <div class="status-indicator" style="justify-content: center;">
+                    <span class="dot"></span> 已连接 Notion
+                </div>
+            </div>
+        </header>
+
+        <div class="task-list">
+            <div class="settings-section">
+                <div class="section-title">个人配置</div>
+
+                <div class="settings-item">
+                    <div class="property-label">
+                        <i class="ri-inbox-archive-line"></i> 默认收集箱
+                    </div>
+                    <div class="property-value">
+                        <span class="db-tag">Personal Life</span>
+                        <i class="ri-arrow-right-s-line" style="color:var(--text-secondary);"></i>
+                    </div>
+                </div>
+
+                <div class="settings-item">
+                    <div class="property-label">
+                        <i class="ri-global-line"></i> 时区设置
+                    </div>
+                    <div class="property-value">
+                        <span style="font-family:var(--font-mono); font-size:12px;">UTC+8</span>
+                        <i class="ri-arrow-right-s-line" style="color:var(--text-secondary);"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="section-title">连接管理</div>
+
+                <a href="groups.html" style="text-decoration:none; color:inherit;">
+                    <div class="settings-item">
+                        <div class="property-label">
+                            <i class="ri-group-line"></i> 管理群组绑定
+                        </div>
+                        <div class="property-value">
+                            <span class="group-count" style="background:var(--border-dim);">3</span>
+                            <i class="ri-arrow-right-s-line" style="color:var(--text-secondary);"></i>
+                        </div>
+                    </div>
+                </a>
+
+                <div class="settings-item">
+                    <div class="property-label">
+                        <i class="ri-refresh-line"></i> 刷新字段缓存
+                    </div>
+                    <div class="property-value">
+                        <i class="ri-arrow-right-s-line" style="color:var(--text-secondary);"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 40px; opacity: 0.5;">
+                <p class="mono" style="font-size: 10px;">VERSION 2.0.1_BETA</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>群组绑定 - 系统 V2.0</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="grid-bg"></div>
+    <div class="scan-line"></div>
+
+    <div class="app-container">
+        <header class="header">
+            <div class="detail-header">
+                <a href="settings.html" class="back-btn">
+                    <i class="ri-arrow-left-line"></i> 返回设置
+                </a>
+            </div>
+            <h2 class="greeting-title" style="font-size: 24px; margin-bottom: 8px;">绑定数据库</h2>
+            <p class="onboarding-subtitle" style="margin-bottom: 24px;">为群组 "Marketing Team" 选择数据源</p>
+
+            <div class="filter-bar tech-border" style="margin: 0 0 20px; display: flex;">
+                <i class="ri-search-line" style="color:var(--text-secondary); margin-right: 8px;"></i>
+                <input type="text" placeholder="搜索数据库..."
+                    style="background:transparent; border:none; color:var(--text-primary); width:100%; font-family:var(--font-sc); font-size:12px; outline:none;">
+            </div>
+
+            <!-- Manual Input Section -->
+            <div style="margin-bottom: 24px; padding: 16px; border: 1px dashed var(--border-dim); border-radius: 8px;">
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px;">或者手动输入 ID</div>
+                <div style="display: flex; gap: 8px;">
+                    <input type="text" id="manualDbId" placeholder="例如: 32位 Database ID"
+                        style="flex: 1; background: var(--bg-panel); border: 1px solid var(--border-dim); color: var(--text-primary); padding: 8px; font-family: var(--font-mono); font-size: 12px; border-radius: 4px;">
+                    <button class="icon-btn tech-btn" style="width: auto; padding: 0 12px;" onclick="checkManualDb()">
+                        <i class="ri-arrow-right-line"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="task-list" id="dbList">
+            <!-- Mock DB Items -->
+            <div class="db-item" onclick="selectDb(this)">
+                <i class="ri-database-2-fill"></i>
+                <span>Marketing Q4</span>
+                <span class="db-tag">工作区 A</span>
+            </div>
+            <div class="db-item" onclick="selectDb(this)">
+                <i class="ri-code-box-line"></i>
+                <span>Dev Squad</span>
+                <span class="db-tag">工作区 A</span>
+            </div>
+            <div class="db-item" onclick="selectDb(this)">
+                <i class="ri-user-smile-line"></i>
+                <span>Personal Life</span>
+                <span class="db-tag">个人</span>
+            </div>
+            <div class="db-item" onclick="selectDb(this)">
+                <i class="ri-table-line"></i>
+                <span>Product Roadmap</span>
+                <span class="db-tag">工作区 B</span>
+            </div>
+        </div>
+
+        <!-- Schema Check Modal (Hidden) -->
+        <div class="modal-overlay" id="schemaModal" style="display: none;">
+            <div class="modal-content tech-panel">
+                <div class="modal-header">
+                    <h3>字段检查</h3>
+                    <button class="close-modal-btn" onclick="closeSchemaModal()"><i class="ri-close-line"></i></button>
+                </div>
+                <div style="text-align: center; padding: 20px 0;">
+                    <div id="schemaLoading">
+                        <i class="ri-loader-4-line"
+                            style="font-size: 32px; color: var(--neon-green); animation: spin 1s linear infinite; display: inline-block;"></i>
+                        <p style="margin-top: 16px; font-size: 12px; color: var(--text-secondary);">正在分析数据库结构...</p>
+                    </div>
+                    <div id="schemaResult" style="display: none;">
+                        <i class="ri-checkbox-circle-line" style="font-size: 48px; color: var(--neon-green);"></i>
+                        <p style="margin-top: 16px; font-weight: 700;">结构完美匹配</p>
+                        <p style="margin-top: 8px; font-size: 12px; color: var(--text-secondary);">所有必要字段 (Status,
+                            Assignee, Date) 均已存在。</p>
+                        <button class="primary-btn" style="margin-top: 24px;"
+                            onclick="window.location.href='settings.html'">确认绑定</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function selectDb(el) {
+            document.getElementById('schemaModal').style.display = 'flex';
+
+            // Simulate Loading
+            setTimeout(() => {
+                document.getElementById('schemaLoading').style.display = 'none';
+                document.getElementById('schemaResult').style.display = 'block';
+            }, 1500);
+        }
+
+        function closeSchemaModal() {
+            document.getElementById('schemaModal').style.display = 'none';
+            // Reset
+            document.getElementById('schemaLoading').style.display = 'block';
+            document.getElementById('schemaResult').style.display = 'none';
+        }
+    </script>
+</body>
+
+</html>
