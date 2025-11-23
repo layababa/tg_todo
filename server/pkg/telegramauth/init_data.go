@@ -4,6 +4,7 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/url"
@@ -78,9 +79,11 @@ func ParseInitData(raw string) (*InitData, error) {
 
 	// Parse user JSON if present
 	if userStr := values.Get("user"); userStr != "" {
-		// For simplicity, we'll parse this manually or use json.Unmarshal
-		// For now, let's keep it simple and just store the string
-		// In a real implementation, you'd parse the JSON
+		var user TelegramUser
+		if err := json.Unmarshal([]byte(userStr), &user); err != nil {
+			return nil, fmt.Errorf("failed to parse user JSON: %w", err)
+		}
+		initData.User = &user
 	}
 
 	return initData, nil
