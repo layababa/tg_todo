@@ -16,7 +16,8 @@
 | tg_id | bigint | Telegram 用户 ID（不可变） |
 | tg_username | text | Telegram Username（可变） |
 | name | text | 展示名 |
-| avatar | text | 头像 URL |
+| photo_url | text | Telegram 头像 URL |
+| avatar | text | (Deprecated) 兼容旧设计，建议使用 photo_url |
 | timezone | text | 用户时区（如 `UTC+8`） |
 | notion_connected | boolean | 是否已绑定 Notion |
 

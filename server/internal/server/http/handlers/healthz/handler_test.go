@@ -11,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/require"
 
-	"github.com/zz/tg_todo/server/internal/server/http/handlers/healthz"
+	"github.com/layababa/tg_todo/server/internal/server/http/handlers/healthz"
 )
 
 type stubDependency struct {

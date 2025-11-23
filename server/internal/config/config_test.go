@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/zz/tg_todo/server/internal/config"
+	"github.com/layababa/tg_todo/server/internal/config"
 )
 
 func TestLoadConfigFallsBackToEnv(t *testing.T) {

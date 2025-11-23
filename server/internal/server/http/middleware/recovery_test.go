@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
 
-	"github.com/zz/tg_todo/server/internal/server/http/middleware"
+	"github.com/layababa/tg_todo/server/internal/server/http/middleware"
 )
 
 func TestRecoveryMiddlewareReturnsJSONError(t *testing.T) {

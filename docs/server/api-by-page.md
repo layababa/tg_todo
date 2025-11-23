@@ -14,7 +14,7 @@
 - 鉴权：前端在请求头附带 `X-Telegram-Init-Data`（Mini App init data）或用户会话 Token。后端验证 Telegram 签名，并映射到 user_id / chat_id。
 - 通用枚举：`status` = `To Do` | `In Progress` | `Done`；时间均为 ISO8601 (UTC)，客户端按本地时区渲染。
 - 通用模型：
-  - **User** `{ id, tg_id, name, avatar, notion_connected, timezone }`
+  - **User** `{ id, tg_id, name, photo_url, notion_connected, timezone }`
   - **Database** `{ id, name, workspace, icon, is_personal }`
   - **Group** `{ id, title, status: Connected|Unbound|Inactive, db: Database|null, role: Admin|Member }`
   - **Task** `{ id, title, status, group_id, group_title, db_id, topic, due_at, assignee: User, creator: User, notion_url, chat_jump_url, context_snapshot[] }`
@@ -33,7 +33,7 @@
       "user": {
         "id": "u_1001",
         "name": "John Doe",
-        "avatar": "https://ui-avatars.com/api/?name=John+Doe",
+        "photo_url": "https://t.me/i/userpic/320/xxx.jpg",
         "notion_connected": false,
         "timezone": "UTC+8"
       },
@@ -149,7 +149,7 @@
       "items": [
         {
           "id": 1,
-          "author": { "id": "u_alice", "name": "Alice", "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Alice" },
+          "author": { "id": "u_alice", "name": "Alice", "photo_url": "https://t.me/i/userpic/..." },
           "text": "我看了一下日志，确实是 Token 过期的问题。",
           "created_at": "2023-11-18T03:00:00Z",
           "replies": [
@@ -194,7 +194,7 @@
     {
       "id": "u_me",
       "name": "John Doe",
-      "avatar": "https://ui-avatars.com/api/?name=John+Doe",
+      "photo_url": "https://t.me/i/userpic/320/xxx.jpg",
       "notion_connected": true,
       "timezone": "UTC+8",
       "group_count": 3,

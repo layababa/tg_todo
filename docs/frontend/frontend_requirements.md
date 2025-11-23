@@ -144,7 +144,7 @@
     - 标题: "评论 (3)"
     - 列表 (`#commentList`): 支持**嵌套回复**
     - 评论卡片 (`.comment-item` + `.nested-comments`)
-    - 操作: "回复" / "点赞"
+    - 操作: "回复" / "点赞" (点赞功能 V1 仅为 UI 展示，暂不与后端交互)
 
 **底部 HUD (`.bottom-hud`)**:
 - **智能折叠/展开**:
@@ -189,7 +189,7 @@
 **场景**：个人配置与连接管理。
 
 **用户信息 (`.user-section`)**：
-- 头像 (圆形, 外链 `ui-avatars` 生成)
+- 头像 (圆形, 优先展示 Telegram 头像, `ui-avatars` 为兜底)
 - 用户名 ("John Doe")
 - 状态: "已连接 Notion" (`.status-indicator`)
 - 顶部返回首页按钮 (跳转 `index.html`) + 右上角注销图标按钮
@@ -286,8 +286,8 @@
 2. **任务**: `GET/POST/PATCH/DELETE /tasks`
 3. **评论**: `POST /tasks/:id/comments`, `POST /comments/:id/reply`
 4. **群组**: `GET /groups`, `POST /groups/:id/bind`
-5. **Database**: `GET /databases`, `POST /databases/:id/validate`
-6. **设置**: `GET/PATCH /user/settings`
+5. **Database**: `GET /databases`, `GET /databases/:id/validate`
+6. **设置**: `GET/PATCH /me/settings`
 
 ---
 

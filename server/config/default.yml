@@ -1,0 +1,11 @@
+app_env: development
+http:
+  addr: :8080
+postgres:
+  dsn: postgres://user:pass@localhost:5432/app?sslmode=disable
+redis:
+  addr: localhost:6379
+  namespace: tg_todo
+build:
+  version: 0.0.1
+  git_commit: HEAD

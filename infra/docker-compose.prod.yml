@@ -1,0 +1,72 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: tg_todo_prod_db
+    restart: unless-stopped
+    env_file:
+      - .env.prod
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-prod-data:/var/lib/postgresql/data
+
+  api:
+    image: tg_todo_api:prod
+    build:
+      context: ../server
+      dockerfile: Dockerfile
+    container_name: tg_todo_prod_api
+    restart: unless-stopped
+    env_file:
+      - .env.prod
+    environment:
+      SERVER_PORT: 8080
+      POSTGRES_URL: ${POSTGRES_URL:-postgres://tg_todo:change-me@db:5432/tg_todo?sslmode=disable}
+      DB_MAX_OPEN_CONNS: ${DB_MAX_OPEN_CONNS:-20}
+      DB_MAX_IDLE_CONNS: ${DB_MAX_IDLE_CONNS:-10}
+      DB_CONN_MAX_LIFETIME: ${DB_CONN_MAX_LIFETIME:-1800}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_API_URL: ${TELEGRAM_API_URL:-https://api.telegram.org}
+      SERVICE_API_TOKEN: ${SERVICE_API_TOKEN:-prod-service-token}
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
+  bot:
+    image: tg_todo_bot:prod
+    build:
+      context: ../server
+      dockerfile: Dockerfile
+    container_name: tg_todo_prod_bot
+    command: ["/bin/bot"]
+    restart: unless-stopped
+    env_file:
+      - .env.prod
+    environment:
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_API_URL: ${TELEGRAM_API_URL:-https://api.telegram.org}
+      POSTGRES_URL: ${POSTGRES_URL:-postgres://tg_todo:change-me@db:5432/tg_todo?sslmode=disable}
+      SERVICE_API_TOKEN: ${SERVICE_API_TOKEN:-prod-service-token}
+      DB_MAX_OPEN_CONNS: ${DB_MAX_OPEN_CONNS:-20}
+      DB_MAX_IDLE_CONNS: ${DB_MAX_IDLE_CONNS:-10}
+      DB_CONN_MAX_LIFETIME: ${DB_CONN_MAX_LIFETIME:-1800}
+    depends_on:
+      - db
+
+  web:
+    image: tg_todo_web:prod
+    build:
+      context: ..
+      dockerfile: web/Dockerfile
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-https://api.xwqpfzmlj.com}
+    container_name: tg_todo_prod_web
+    restart: unless-stopped
+    ports:
+      - "4173:80"
+    depends_on:
+      - api
+
+volumes:
+  postgres-prod-data:

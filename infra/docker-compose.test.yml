@@ -1,0 +1,72 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: tg_todo_test_db
+    restart: unless-stopped
+    env_file:
+      - .env.test
+    ports:
+      - "55432:5432"
+    volumes:
+      - postgres-test-data:/var/lib/postgresql/data
+
+  api:
+    image: tg_todo_api:test
+    build:
+      context: ../server
+      dockerfile: Dockerfile
+    container_name: tg_todo_test_api
+    restart: unless-stopped
+    env_file:
+      - .env.test
+    environment:
+      SERVER_PORT: 8080
+      POSTGRES_URL: ${POSTGRES_URL:-postgres://tg_todo:change-me@db:5432/tg_todo?sslmode=disable}
+      DB_MAX_OPEN_CONNS: ${DB_MAX_OPEN_CONNS:-10}
+      DB_MAX_IDLE_CONNS: ${DB_MAX_IDLE_CONNS:-5}
+      DB_CONN_MAX_LIFETIME: ${DB_CONN_MAX_LIFETIME:-1800}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_API_URL: ${TELEGRAM_API_URL:-https://api.telegram.org}
+      SERVICE_API_TOKEN: ${SERVICE_API_TOKEN:-test-service-token}
+    ports:
+      - "8081:8080"
+    depends_on:
+      - db
+
+  bot:
+    image: tg_todo_bot:test
+    build:
+      context: ../server
+      dockerfile: Dockerfile
+    container_name: tg_todo_test_bot
+    command: ["/bin/bot"]
+    restart: unless-stopped
+    env_file:
+      - .env.test
+    environment:
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_API_URL: ${TELEGRAM_API_URL:-https://api.telegram.org}
+      POSTGRES_URL: ${POSTGRES_URL:-postgres://tg_todo:change-me@db:5432/tg_todo?sslmode=disable}
+      SERVICE_API_TOKEN: ${SERVICE_API_TOKEN:-test-service-token}
+      DB_MAX_OPEN_CONNS: ${DB_MAX_OPEN_CONNS:-10}
+      DB_MAX_IDLE_CONNS: ${DB_MAX_IDLE_CONNS:-5}
+      DB_CONN_MAX_LIFETIME: ${DB_CONN_MAX_LIFETIME:-1800}
+    depends_on:
+      - db
+
+  web:
+    image: tg_todo_web:test
+    build:
+      context: ..
+      dockerfile: web/Dockerfile
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-https://api-test.xwqpfzmlj.com}
+    container_name: tg_todo_test_web
+    restart: unless-stopped
+    ports:
+      - "4174:80"
+    depends_on:
+      - api
+
+volumes:
+  postgres-test-data:

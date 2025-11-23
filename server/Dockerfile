@@ -1,18 +1,40 @@
-# syntax=docker/dockerfile:1.6
+# Builder stage
+FROM golang:1.23-alpine AS builder
 
-FROM golang:1.21-alpine AS builder
 WORKDIR /app
-COPY go.mod ./
-# 预下载依赖（若无第三方依赖会快速完成）
+
+# Install build dependencies
+RUN apk add --no-cache git
+
+# Copy go mod and sum files
+COPY go.mod go.sum ./
+
+# Download dependencies
 RUN go mod download
-COPY . .
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /bin/api ./cmd/api
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /bin/bot ./cmd/bot
 
-FROM gcr.io/distroless/base-debian12 AS runner
+# Copy source code
+COPY . .
+
+# Build the application
+# CGO_ENABLED=0 for static binary
+RUN CGO_ENABLED=0 GOOS=linux go build -o api ./cmd/api
+
+# Runtime stage
+FROM alpine:3.19
+
 WORKDIR /app
-ENV SERVER_PORT=8080
-COPY --from=builder /bin/api /bin/api
-COPY --from=builder /bin/bot /bin/bot
+
+# Install runtime dependencies (ca-certificates for HTTPS)
+RUN apk add --no-cache ca-certificates tzdata
+
+# Copy binary from builder
+COPY --from=builder /app/api .
+# Copy config (optional, if you want to bake it in, but usually mounted)
+COPY --from=builder /app/config ./config
+# Copy migrations (if needed at runtime, though they are embedded)
+
+# Expose port
 EXPOSE 8080
-CMD ["/bin/api"]
+
+# Run the application
+CMD ["./api"]

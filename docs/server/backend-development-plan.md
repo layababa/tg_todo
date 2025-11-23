@@ -175,7 +175,7 @@
 - 验收：
   - `GET /auth/status` 返回用户、notion_connected。
   - 非法签名 401，并写审计。
-  - 首次访问自动建 `users`（tg_id/tg_username/name/timezone 默认值）。
+  - 首次访问自动建 `users`（tg_id/tg_username/name/photo_url/timezone 默认值）。
 
 ### 3) Telegram 更新接入与去重
 - 内容：Bot Webhook/长轮询接入；存储原始 update 以便回溯；去重/重放保护；基础命令路由（/start, /help）。
@@ -213,7 +213,7 @@
   - 过期自动刷新；notion_connected 状态在 /auth/status 正确。
 
 ### 7) Notion 库资源管理（列表/校验/初始化）
-- 内容：拉取授权库、搜索；必需字段校验与自动初始化（PRD G4）；个性化/工作区标记。
+- 内容：拉取授权库、搜索（V1 策略：后端拉取全量列表缓存 + 前端/本地过滤）；必需字段校验与自动初始化（PRD G4）；个性化/工作区标记。
 - TDD 要点：库搜索分页；缺字段检测；初始化创建缺失字段；限流/无权限错误分支。
 - Redis 用法：可缓存库列表/校验结果，TTL（如 5-15 分钟）；命中失败可降级 DB/Notion。
 - 验收：
@@ -249,7 +249,7 @@
 
 ### 11) 评论与嵌套回复
 - 覆盖 PRD N3、原型 detail HUD 评论。
-- 内容：树形评论、来源标记（Telegram/Notion）、@ 提及透传，Notion 评论同步。
+- 内容：树形评论、来源标记（Telegram/Notion）、@ 提及透传，Notion 评论同步。（注：评论点赞功能 V1 Out of Scope）。
 - TDD 要点：嵌套结构渲染数据；parent_id 校验；Notion 写入失败入补偿队列；来源标记。
 - 验收：
   - `GET /tasks/{id}/comments` 嵌套结构与原型一致；分页 cursor 可选。
