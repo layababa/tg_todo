@@ -23,6 +23,17 @@ type Config struct {
 		Version   string `mapstructure:"version"`
 		GitCommit string `mapstructure:"git_commit"`
 	} `mapstructure:"build"`
+	Telegram struct {
+		BotToken string `mapstructure:"bot_token"`
+	} `mapstructure:"telegram"`
+	Notion struct {
+		ClientID     string `mapstructure:"client_id"`
+		ClientSecret string `mapstructure:"client_secret"`
+		RedirectURI  string `mapstructure:"redirect_uri"`
+	} `mapstructure:"notion"`
+	Encryption struct {
+		Key string `mapstructure:"key"`
+	} `mapstructure:"encryption"`
 }
 
 func Load(path string) (*Config, error) {
@@ -44,6 +55,11 @@ func Load(path string) (*Config, error) {
 	_ = v.BindEnv("redis.namespace", "REDIS_NAMESPACE")
 	_ = v.BindEnv("build.version", "APP_VERSION")
 	_ = v.BindEnv("build.git_commit", "GIT_COMMIT")
+	_ = v.BindEnv("telegram.bot_token", "TELEGRAM_BOT_TOKEN")
+	_ = v.BindEnv("notion.client_id", "NOTION_CLIENT_ID")
+	_ = v.BindEnv("notion.client_secret", "NOTION_CLIENT_SECRET")
+	_ = v.BindEnv("notion.redirect_uri", "NOTION_REDIRECT_URI")
+	_ = v.BindEnv("encryption.key", "ENCRYPTION_KEY")
 
 	// Config file
 	if path != "" {
