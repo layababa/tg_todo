@@ -17,7 +17,7 @@
   - **User** `{ id, tg_id, name, photo_url, notion_connected, timezone }`
   - **Database** `{ id, name, workspace, icon, is_personal }`
   - **Group** `{ id, title, status: Connected|Unbound|Inactive, db: Database|null, role: Admin|Member }`
-  - **Task** `{ id, title, status, group_id, group_title, db_id, topic, due_at, assignee: User, creator: User, notion_url, chat_jump_url, context_snapshot[] }`
+  - **Task** `{ id, title, status, sync_status, group_id, group_title, db_id, topic, due_at, assignee: User, creator: User, notion_url, chat_jump_url, context_snapshot[] }`
   - **Comment** `{ id, author: User, text, created_at, replies: Comment[] }`
 
 ---
@@ -38,6 +38,7 @@
         "timezone": "UTC+8"
       },
       "notion_connected": false,
+      "pending_sync_count": 5,
       "redirect_hint": null
     }
     ```
@@ -70,7 +71,9 @@
           "due_at": "2023-11-20T10:00:00Z",
           "creator": { "id": "u_alice", "name": "alice" },
           "assignee": { "id": "u_me", "name": "me" },
-          "chat_jump_url": "https://t.me/c/123/456"
+          "assignee": { "id": "u_me", "name": "me" },
+          "chat_jump_url": "https://t.me/c/123/456",
+          "sync_status": "Pending"
         },
         {
           "id": 3,
@@ -209,6 +212,10 @@
   - 出参：`{ "status": "ok", "fields": ["Status", "Assignee", "Date"] }`
 - `POST /auth/logout`（可选，供注销按钮）
   - 出参：`{ "success": true }`
+- `POST /tasks/sync`
+  - 作用：手动触发批量同步（将 Pending 任务写入 Notion）
+  - 入参：`{ "target_db_id": "db_personal" }`（可选，若不传则尝试使用任务原 group 绑定或默认库）
+  - 出参：`{ "synced_count": 3, "failed_count": 0 }`
 
 ---
 

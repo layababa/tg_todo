@@ -13,11 +13,17 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 
 	"github.com/layababa/tg_todo/server/internal/config"
+	"github.com/layababa/tg_todo/server/internal/repository"
+	authhandler "github.com/layababa/tg_todo/server/internal/server/http/handlers/auth"
 	"github.com/layababa/tg_todo/server/internal/server/http/handlers/healthz"
 	"github.com/layababa/tg_todo/server/internal/server/http/middleware"
+	"github.com/layababa/tg_todo/server/migrations"
 	"github.com/layababa/tg_todo/server/pkg/db"
+	"github.com/layababa/tg_todo/server/pkg/notion"
 	pkgredis "github.com/layababa/tg_todo/server/pkg/redis"
 
 	_ "github.com/lib/pq"
@@ -62,6 +68,17 @@ func main() {
 	}
 	defer database.Close()
 
+	if err := migrations.Run(database); err != nil {
+		logger.Fatal("failed to run database migrations", zap.Error(err))
+	}
+
+	gormDB, err := gorm.Open(postgres.New(postgres.Config{
+		Conn: database,
+	}), &gorm.Config{})
+	if err != nil {
+		logger.Fatal("failed to initialize orm", zap.Error(err))
+	}
+
 	// 4. Connect Redis
 	rdb, err := pkgredis.New(ctx, pkgredis.Config{
 		Addr: cfg.Redis.Addr,
@@ -92,6 +109,26 @@ func main() {
 		},
 	})
 	r.GET("/healthz", healthHandler.Handle)
+
+	userRepo := repository.NewUserRepository(gormDB)
+	authHandler, err := authhandler.NewHandler(authhandler.Config{
+		UserRepo: userRepo,
+		NotionConfig: notion.OAuthConfig{
+			ClientID:     cfg.Notion.ClientID,
+			ClientSecret: cfg.Notion.ClientSecret,
+			RedirectURI:  cfg.Notion.RedirectURI,
+		},
+		EncryptionKey: cfg.Encryption.Key,
+	})
+	if err != nil {
+		logger.Fatal("failed to initialize auth handler", zap.Error(err))
+	}
+
+	authGroup := r.Group("/auth")
+	authGroup.Use(middleware.TelegramAuth(cfg.Telegram.BotToken, userRepo))
+	authGroup.GET("/status", authHandler.GetStatus)
+	authGroup.GET("/notion/url", authHandler.GetNotionAuthURL)
+	authGroup.POST("/notion/callback", authHandler.NotionCallback)
 
 	// 7. Run Server
 	srv := &http.Server{

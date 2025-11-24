@@ -77,16 +77,17 @@ Telegram 群组信息。
 | 字段 | 类型 | 说明 |
 | --- | --- | --- |
 | id | uuid | 主键（本地） |
-| notion_page_id | text | Notion Page ID |
+| notion_page_id | text null | Notion Page ID（未同步时为空） |
 | title | text | 标题 |
 | status | enum('To Do','In Progress','Done') | 状态 |
+| sync_status | enum('Synced','Pending','Failed') | Notion 同步状态 |
 | group_id | uuid FK -> groups.id | 来源群（可空，用于个人默认库） |
-| database_id | text FK -> databases.id | 归属数据库 |
+| database_id | text FK -> databases.id null | 归属数据库（未同步时可空） |
 | topic | text | Topic/标签（可空） |
 | due_at | timestamptz | 截止时间（可空） |
 | creator_id | uuid FK -> users.id | 创建人 |
 | chat_jump_url | text | Telegram 消息跳转链接 |
-| notion_url | text | Notion 页面 URL |
+| notion_url | text null | Notion 页面 URL（未同步时为空） |
 | archived | boolean | 是否已归档/软删 |
 
 ### 8) task_assignees
@@ -174,6 +175,7 @@ Telegram 群组信息。
 ## 枚举汇总
 - group.status: `Connected | Unbound | Inactive`
 - tasks.status: `To Do | In Progress | Done`
+- tasks.sync_status: `Synced | Pending | Failed`
 - notifications.type: `Assign | StatusChanged | Comment | Deleted | Digest | Mention`
 - task_context_snapshots.role: `me | other | system`
 - description.source / comments.source: `Telegram | Notion`

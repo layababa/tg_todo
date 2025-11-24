@@ -66,7 +66,7 @@
 
 **交互逻辑**：
 1. 点击主按钮 → 跳转 Notion OAuth 授权 (原型中暂时指向 `index.html`)
-2. 点击游客模式 → 直达 `index.html` (只读)
+2. 点击游客模式 → 直达 `index.html` (离线模式，可创建本地任务)
 
 ---
 
@@ -103,6 +103,7 @@
     - 标题 (`.task-title`)
     - 数据源标签 (`.task-status` 用于显示 Group 名)
     - 元信息 (`.task-meta`): 创建者 (我/他人) + 截止时间 (过期高亮 `date-overdue`)
+    - **同步状态**: 若未同步到 Notion，显示 "Notion 未同步" 图标 (`ri-notion-fill` 带斜杠或灰色)，提示数据仅存储在 Mini App 服务端
     - 已完成卡片使用 `task-done-dim` 减弱视觉
     - **点击**: 弹出操作面板 (`#actionModal`),包含固定四项:
         - 跟评 → 跳转 `detail.html?id=...&focus=comment`
@@ -199,6 +200,11 @@
     - **默认收集箱**: 选择默认 Database (`.db-tag`)
     - **时区设置**: 显示当前时区 (`UTC+8`)
 2. **连接管理**:
+    - **Notion 连接**:
+        - 若未连接: 显示 "连接 Notion" 按钮 (OAuth) 及 "手动输入 Key" 文本按钮 (弹出输入框 `#manualKeyInput`)
+        - 若已连接: 显示 "已连接 (Workspace Name)" 及 "断开连接" 按钮
+    - **数据同步**:
+        - **同步待办**: 若有未同步到 Notion 的任务，显示 "同步 N 个任务到 Notion" 按钮 (高亮显示)
     - **管理群组绑定**: 跳转 `groups.html` (显示已连接群组数量)
     - **刷新字段缓存**: 强制刷新 schema
 

@@ -189,10 +189,11 @@
 ### 4) Telegram 任务创建与上下文抓取
 - 覆盖 PRD 场景：S1/S2（Reply + @Bot 创建/多人指派）、S7（Forward 创建个人收件箱）、G1（群绑定引导）。
 - 内容：解析 reply/forward/@Bot 文本，抽取标题/指派人；抓取触发消息前 10 条文本上下文；生成 `chat_jump_url`；创建任务（未绑定库时给出引导）。
-- TDD 要点：不同触发源（reply/forward/@）解析正确；上下文 10 条截取与过滤；未绑定库时返回引导；多人 @ 产生多 assignee；生成 jump link。
+- TDD 要点：不同触发源（reply/forward/@）解析正确；上下文 10 条截取与过滤；未绑定库时返回引导；多人 @ 产生多 assignee；生成 jump link；**离线模式下创建 Pending 任务**。
 - Redis 用法：可选缓存“待绑定群组引导态”或上下文临时片段，TTL 短期，避免 DB 写放大。
 - 验收：
   - Reply + @Bot 在已绑定群创建任务，写入 tasks/task_context_snapshots；Notion Page 创建成功。
+  - **未绑定 Notion 时，任务写入 DB 且 sync_status='Pending'，不报错。**
   - 多人 @ 时写多条 task_assignees；未 Start 过 Bot 的用户返回群内提示。
   - Forward 到私聊时写入个人默认库；若未配置默认库则回复选择提示。
   - 创建成功后群内回执含 deep link + jump 按钮；上下文仅包含文本占位。
@@ -264,13 +265,14 @@
   - 相关人收到，操作者不重复；Block 用户标记不可达。
   - `notifications` 记录送达状态；重试/补偿可查。
 
-### 13) Notion ←→ Telegram 同步循环
-- 内容：轮询/监听 Notion 更新（状态/评论/新建），同步到本地并推送 Telegram；缺字段/库丢失告警；限流退避。
-- TDD 要点：模拟 Notion 回调/轮询增量；429/403/404 退避；库丢失转 Inactive；重复事件幂等。
+### 13) Notion ←→ Telegram 同步循环（含手动同步）
+- 内容：轮询/监听 Notion 更新（状态/评论/新建），同步到本地并推送 Telegram；缺字段/库丢失告警；限流退避；**手动批量同步接口**。
+- TDD 要点：模拟 Notion 回调/轮询增量；429/403/404 退避；库丢失转 Inactive；重复事件幂等；**Pending 任务批量写入 Notion**。
 - Redis 用法：轮询游标/offset、退避计数、分布式锁（同库/任务同步防并发），TTL 控制；异常时可回退到 DB 状态。
 - 验收：
   - 状态/评论在 2 分钟内同步并触发通知；来源标记正确。
   - 429/403/404 有退避与告警；库丢失标记绑定 Inactive。
+  - **调用 `/tasks/sync` 能将历史 Pending 任务写入 Notion 并更新状态为 Synced。**
 
 ### 14) 每日摘要 / 运营推送
 - 覆盖 PRD P1：每日 9:00 Digest。
