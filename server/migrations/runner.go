@@ -18,7 +18,7 @@ func Run(db *sql.DB) error {
 		return ErrNilDatabase
 	}
 
-	sourceDriver, err := iofs.New(Files, ".")
+	sourceDriver, err := iofs.New(Files, "sql")
 	if err != nil {
 		return fmt.Errorf("init migration source: %w", err)
 	}
