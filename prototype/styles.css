@@ -20,6 +20,169 @@
     --status-done-border: #FFFFFF;
 }
 
+.light-mode {
+    /* Cyberpunk Light / High-Tech Lab Theme */
+    --bg-black: #E0E5EC;
+    /* Cool grey base */
+    --bg-panel: rgba(255, 255, 255, 0.7);
+    /* Frosted glass */
+    --text-primary: #1A1A1A;
+    /* Sharp black */
+    --text-secondary: #5C6B7F;
+    /* Tech blue-grey */
+    --border-dim: #A3B1C6;
+    /* Metallic border */
+
+    /* Vivid Accents for Light Mode - Darker for Contrast */
+    --neon-green: #00A862;
+    /* Darker Emerald for better text contrast on white */
+    --neon-green-dim: rgba(0, 168, 98, 0.15);
+    --neon-text: #FFFFFF;
+
+    --status-done-border: #5C6B7F;
+}
+
+/* Light Mode Specific Overrides for Cyberpunk Feel */
+.light-mode .grid-bg {
+    /* Dot Matrix Pattern */
+    background-image:
+        radial-gradient(rgba(163, 177, 198, 0.5) 1px, transparent 1px);
+    background-size: 20px 20px;
+    opacity: 0.8;
+}
+
+/* Vignette Overlay for Depth */
+.light-mode .grid-bg::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, transparent 0%, rgba(224, 229, 236, 0.8) 100%);
+    pointer-events: none;
+}
+
+.light-mode .scan-line {
+    background: linear-gradient(to bottom, transparent, rgba(0, 168, 98, 0.2), transparent);
+    height: 4px;
+}
+
+.light-mode .app-container {
+    text-shadow: none;
+}
+
+.light-mode .task-card {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(163, 177, 198, 0.6);
+    box-shadow: 0 4px 20px rgba(163, 177, 198, 0.3);
+    /* Chamfered Corner (Bottom Right) */
+    clip-path: polygon(0 0,
+            100% 0,
+            100% calc(100% - 16px),
+            calc(100% - 16px) 100%,
+            0 100%);
+    /* Tech Left Border */
+    border-left: 4px solid var(--border-dim);
+    padding-left: 12px;
+    /* Adjust padding for border */
+}
+
+.light-mode .task-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0, 168, 98, 0.15);
+    border-color: var(--neon-green);
+    border-left-color: var(--neon-green);
+}
+
+/* Add "Tech Corner" decoration via pseudo-element */
+.light-mode .task-card::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 16px;
+    height: 16px;
+    background: linear-gradient(135deg, transparent 50%, var(--border-dim) 50%);
+    z-index: 1;
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.light-mode .task-card:hover::before {
+    background: linear-gradient(135deg, transparent 50%, var(--neon-green) 50%);
+    opacity: 1;
+}
+
+/* --- Light Mode Overrides for Other Components --- */
+
+/* HUD & Action Bar */
+.light-mode .bottom-hud,
+.light-mode .bottom-action-bar {
+    background: rgba(224, 229, 236, 0.95);
+    /* Frosted grey */
+    border-top: 1px solid rgba(163, 177, 198, 0.5);
+    box-shadow: 0 -4px 20px rgba(163, 177, 198, 0.3);
+}
+
+/* Inputs */
+.light-mode .hud-input-wrapper,
+.light-mode .action-input-wrapper {
+    background: rgba(255, 255, 255, 0.8);
+    border-color: rgba(163, 177, 198, 0.6);
+}
+
+.light-mode .hud-input-wrapper input,
+.light-mode .action-input-wrapper input {
+    color: var(--text-primary);
+}
+
+/* Chat Bubbles */
+.light-mode .chat-bubble.other {
+    background: #FFFFFF;
+    color: var(--text-primary);
+    border: 1px solid rgba(163, 177, 198, 0.4);
+    box-shadow: 2px 2px 8px rgba(163, 177, 198, 0.2);
+}
+
+.light-mode .context-content {
+    background: rgba(224, 229, 236, 0.3);
+    /* Lighter background for chat area */
+}
+
+.light-mode .chat-system span {
+    background: transparent;
+    /* Remove black background */
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+/* Settings Icons */
+.light-mode .settings-item {
+    background: rgba(255, 255, 255, 0.8);
+    border-color: rgba(163, 177, 198, 0.6);
+}
+
+.light-mode .hud-toggle-btn {
+    background: #FFFFFF;
+    border-color: rgba(163, 177, 198, 0.6);
+}
+
+.light-mode .header {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0) 100%);
+    border-bottom: 1px solid rgba(163, 177, 198, 0.2);
+}
+
+.light-mode .modal-overlay {
+    background: rgba(224, 229, 236, 0.6);
+    backdrop-filter: blur(8px);
+}
+
+.light-mode .modal-content {
+    box-shadow: 0 -10px 40px rgba(0, 217, 126, 0.1);
+    border-top: 1px solid var(--neon-green);
+}
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -361,6 +524,11 @@ body {
     transform: scale(0.98);
 }
 
+.primary-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 .secondary-link {
     margin-top: 20px;
     color: var(--text-secondary);
@@ -372,6 +540,20 @@ body {
 .secondary-link:hover {
     color: var(--text-primary);
     border-color: var(--text-primary);
+}
+
+.onboarding-status {
+    margin-top: 20px;
+    font-size: 12px;
+    font-family: var(--font-mono);
+    color: var(--text-secondary);
+}
+
+.onboarding-error {
+    margin-top: 8px;
+    font-size: 12px;
+    font-family: var(--font-mono);
+    color: #FF8A80;
 }
 
 /* Detail Page Styles */
@@ -765,7 +947,8 @@ body {
     background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(4px);
     display: flex;
-    align-items: center;
+    align-items: flex-end;
+    /* Bottom align for bottom sheet */
     justify-content: center;
     z-index: 1000;
     /* Increased z-index to show above HUD */

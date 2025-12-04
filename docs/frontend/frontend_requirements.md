@@ -262,23 +262,65 @@
 
 ---
 
-## 三、 关键技术实现
+## 三、 技术选型与要求 (Technology Stack)
 
-### 3.1 HUD 驾驶舱交互
+### 3.1 核心框架
+- **Framework**: **Vue 3** (Composition API + `<script setup>`)
+- **Build Tool**: **Vite** (极速构建与 HMR)
+- **Language**: **TypeScript** (强类型约束)
+
+### 3.2 UI 系统
+- **CSS Framework**: **Tailwind CSS** (Utility-first)
+- **Component Library**: **DaisyUI** (基于 Tailwind 的组件库，提供 Cyberpunk/Dark 主题基础)
+- **Icons**: **Remix Icon** (与设计风格一致的线性图标)
+- **Animation**: CSS Transitions + `animate.css` (用于扫描线等特效)
+
+### 3.3 状态管理与路由
+- **State Management**: **Pinia**
+    - 使用 `pinia-plugin-persistedstate` 缓存任务列表与用户设置，优化离线体验
+- **Routing**: **Vue Router**
+    - Mode: `WebHistory` (需配置 Vercel Rewrites) 或 `WebHashHistory` (更稳妥的 Mini App 方案)
+    - 路由守卫: 处理未授权跳转与页面过渡动画
+
+### 3.4 Telegram 集成
+- **SDK**: `@twa-dev/sdk` (TypeScript 类型支持完善)
+- **Capabilities**:
+    - `HapticFeedback`: 触感反馈
+    - `BackButton`: 导航控制
+    - `ThemeParams`: 读取 Telegram 主题色（虽然本应用强制 Dark Mode，但需适配 Safe Area）
+    - `InitData`: 用于后端鉴权
+
+### 3.5 数据交互
+- **HTTP Client**: **Axios**
+    - Interceptors: 自动注入 `TelegramWebAppData` 到 Header
+    - Error Handling: 统一处理 401/403/429 状态码
+- **Mocking**: 开发阶段使用 Mock Service Worker (MSW) 或本地 JSON Server
+
+### 3.6 代码规范
+- **Linter**: ESLint + Prettier
+- **Convention**:
+    - 组件名: PascalCase (`TaskCard.vue`)
+    - 组合式函数: camelCase (`useAuth.ts`)
+
+---
+
+## 四、 关键技术实现
+
+### 4.1 HUD 驾驶舱交互
 
 **核心思路**：将操作下沉到屏幕底部,最大化拇指可达区域。
 
 **智能折叠逻辑**：滚动到页面底部时自动展开属性胶囊,向上滚动时收起,节省屏幕空间。
 
-### 3.2 评论嵌套渲染
+### 4.2 评论嵌套渲染
 
 支持多层嵌套回复,通过递归渲染实现。评论卡片支持"回复"和"点赞"操作(mock)。
 
-### 3.3 自定义 Modal 组件
+### 4.3 自定义 Modal 组件
 
 所有选择器(状态、日期)采用底部弹窗设计,替代原生 Select/Date Picker,保持视觉一致性。支持点击空白区域关闭。
 
-### 3.4 性能优化
+### 4.4 性能优化
 
 - **缓存策略**: `localStorage` 缓存任务列表
 - **分页**: 首屏加载 20 条, 触底加载更多
@@ -286,7 +328,7 @@
 
 ---
 
-## 四、 API 需求摘要
+## 五、 API 需求摘要
 
 1. **认证**: `GET /auth/status`, `POST /auth/notion`
 2. **任务**: `GET/POST/PATCH/DELETE /tasks`

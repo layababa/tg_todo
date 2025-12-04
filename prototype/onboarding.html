@@ -26,14 +26,18 @@
         <h1 class="onboarding-title">系统初始化</h1>
         <p class="onboarding-subtitle">建立 Telegram 与 Notion 的神经连接</p>
 
-        <a href="index.html" class="primary-btn">
+        <button type="button" class="primary-btn" id="connectNotionButton">
             连接 NOTION 工作区
-        </a>
+        </button>
+
+        <p class="onboarding-status" id="onboardingStatus"></p>
+        <p class="onboarding-error" id="onboardingError" role="alert" hidden></p>
 
         <a href="index.html" class="secondary-link">
             [ 游客模式访问 ]
         </a>
     </div>
+    <script defer src="onboarding.js"></script>
 </body>
 
 </html>
