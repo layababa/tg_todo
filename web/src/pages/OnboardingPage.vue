@@ -1,172 +1,285 @@
 <script setup lang="ts">
-import { computed, onMounted, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/store/auth'
 
-const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
+const currentSlide = ref(0)
+const totalSlides = 3
 
-const startParam = computed(() => (route.query.start_param as string | undefined) ?? undefined)
-
-const isLoading = computed(() => authStore.loadingStatus || authStore.loadingLink)
-
-const statusText = computed(() => {
-  if (!authStore.hasInitData) {
-    return '缺少 Telegram init data，请从 Telegram Mini App 内打开应用，或调用 window.tgTodo.setMockInitData() 注入测试数据。'
-  }
-  if (authStore.loadingStatus) {
-    return '正在读取您的 Telegram 会话...'
-  }
-  return authStore.statusMessage
-})
-
-onMounted(() => {
-  if (authStore.hasInitData) {
-    authStore.fetchStatus(startParam.value).catch(() => {
-      /* error handled by store */
-    })
-  }
-})
-
-watch(
-  () => authStore.notionConnected,
-  (connected) => {
-    if (connected) {
-      router.replace({ name: 'home', query: route.query })
-    }
+const slides = [
+  {
+    icon: 'ri-flashlight-fill',
+    title: '秒级创建',
+    desc: '无需离开对话，在聊天中直接生成任务。'
   },
-  { immediate: true }
-)
-
-watch(
-  () => route.query.start_param,
-  (param) => {
-    if (param && typeof param === 'string') {
-      authStore.fetchStatus(param).catch(() => {})
-    }
+  {
+    icon: 'ri-brain-line',
+    title: '智能上下文',
+    desc: 'AI 自动抓取讨论背景，拒绝信息丢失。'
+  },
+  {
+    icon: 'ri-flow-chart',
+    title: '灵活协作',
+    desc: '在 Mini App 聚合管理，Notion 同步按需开启。'
   }
-)
+]
 
-const handleConnect = async () => {
-  if (!authStore.hasInitData) return
-  try {
-    const url = await authStore.requestNotionAuthUrl()
-    window.location.href = url
-  } catch {
-    /* error surfaced via store */
+const nextSlide = () => {
+  if (currentSlide.value < totalSlides - 1) {
+    currentSlide.value++
+  } else {
+    enterApp()
   }
 }
 
-const handleGuest = async () => {
-  if (!authStore.notionConnected && authStore.hasInitData && !authStore.user) {
-    await authStore.fetchStatus(startParam.value).catch(() => {})
+const enterApp = () => {
+  router.replace({ name: 'home' })
+}
+
+const connectNotion = async () => {
+  try {
+    const url = await authStore.requestNotionAuthUrl()
+    window.location.href = url
+  } catch (e) {
+    console.error('Failed to get auth url', e)
+    // Fallback or error toast could go here
+    // For now, if it fails, maybe just let them enter app or show alert
+    alert('连接服务暂不可用，请稍后重试')
   }
-  router.push({ name: 'home', query: route.query })
 }
 </script>
 
 <template>
-  <main class="relative min-h-screen overflow-hidden bg-[#040404] text-base-content">
-    <div class="grid-overlay" />
-    <div class="scan-line" />
+  <div class="grid-bg"></div>
+  <div class="scan-line"></div>
 
-    <section
-      class="relative z-10 mx-auto flex min-h-screen max-w-md flex-col items-center justify-center px-6 text-center"
-    >
-      <div class="hero-graphic mb-10">
-        <i class="ri-link-m" />
-      </div>
-      <h1 class="text-3xl font-light tracking-tight text-white">系统初始化</h1>
-      <p class="mt-3 font-mono text-xs uppercase text-white/60">
-        建立 Telegram 与 Notion 的神经连接
-      </p>
+  <div class="onboarding-container">
+    <!-- Skip Button -->
+    <div class="skip-btn-container">
+      <button @click="enterApp" class="secondary-link skip-btn">
+        SKIP
+      </button>
+    </div>
 
-      <button
-        class="btn btn-primary btn-block mt-10"
-        :disabled="isLoading || !authStore.hasInitData"
-        @click="handleConnect"
+    <!-- Carousel Area -->
+    <div class="carousel-content">
+      <transition name="fade-slide" mode="out-in">
+        <div :key="currentSlide" class="slide-item">
+          <div class="hero-graphic">
+            <i :class="slides[currentSlide].icon"></i>
+          </div>
+          
+          <h2 class="onboarding-title">{{ slides[currentSlide].title }}</h2>
+          <p class="onboarding-subtitle">{{ slides[currentSlide].desc }}</p>
+        </div>
+      </transition>
+    </div>
+
+    <!-- Indicators -->
+    <div class="indicators">
+      <div 
+        v-for="i in totalSlides" 
+        :key="i"
+        class="indicator-dot"
+        :class="{ active: (i - 1) === currentSlide }"
+      ></div>
+    </div>
+
+    <!-- Action Area -->
+    <div class="action-area">
+      <button 
+        @click="nextSlide" 
+        class="primary-btn"
       >
-        <span v-if="isLoading" class="loading loading-spinner loading-sm mr-2" />
-        连接 NOTION 工作区
+        {{ currentSlide === totalSlides - 1 ? '立即体验' : '下一步' }}
       </button>
 
-      <p
-        v-if="statusText"
-        class="mt-6 text-xs font-mono text-white/70"
+      <button 
+         v-if="currentSlide === totalSlides - 1"
+         @click="connectNotion"
+         class="secondary-link flex-center"
       >
-        {{ statusText }}
-      </p>
-
-      <p
-        v-if="authStore.error"
-        class="mt-2 text-xs font-mono text-error"
-      >
-        {{ authStore.error }}
-      </p>
-
-      <button
-        class="btn btn-ghost btn-sm mt-8 font-mono uppercase tracking-widest text-white/80"
-        :disabled="authStore.loadingStatus"
-        @click="handleGuest"
-      >
-        [ 游客模式访问 ]
+        <i class="ri-notion-fill" style="margin-right: 4px;"></i> (可选) 连接 Notion
       </button>
-    </section>
-  </main>
+    </div>
+  </div>
 </template>
 
 <style scoped>
-.grid-overlay {
-  position: absolute;
-  inset: 0;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
-  background-size: 20px 20px;
-  opacity: 0.35;
+.onboarding-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    padding: 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
 }
 
-.scan-line {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 3px;
-  background: linear-gradient(90deg, transparent, rgba(171, 246, 0, 0.6), transparent);
-  animation: scan 4s linear infinite;
+.skip-btn-container {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    z-index: 20;
+}
+
+.skip-btn {
+    font-size: 12px;
+    opacity: 0.6;
+}
+
+.carousel-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.slide-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 400px;
 }
 
 .hero-graphic {
-  @apply flex h-28 w-28 items-center justify-center rounded-full border border-dashed border-primary/40 shadow-[0_0_30px_rgba(171,246,0,0.3)];
-  position: relative;
-  color: #abf600;
-  font-size: 48px;
+    width: 120px;
+    height: 120px;
+    border: 1px solid var(--neon-green, #ABF600);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 40px;
+    box-shadow: 0 0 30px rgba(171, 246, 0, 0.1);
+    position: relative;
+}
+
+.hero-graphic i {
+    font-size: 48px;
+    color: var(--neon-green, #ABF600);
 }
 
 .hero-graphic::after {
-  content: '';
-  position: absolute;
-  inset: -12px;
-  border: 1px solid rgba(171, 246, 0, 0.2);
-  border-radius: 9999px;
-  animation: orbit 12s linear infinite;
+    content: '';
+    position: absolute;
+    width: 140%;
+    height: 140%;
+    border: 1px dashed var(--border-dim, #333333);
+    border-radius: 50%;
+    animation: spin 10s linear infinite;
 }
 
-@keyframes orbit {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.onboarding-title {
+    font-size: 32px;
+    font-weight: 300;
+    margin-bottom: 16px;
+    letter-spacing: -1px;
+    color: var(--text-primary, #FFFFFF);
 }
 
-@keyframes scan {
-  from {
-    transform: translateX(-100%);
-  }
-  to {
-    transform: translateX(100%);
-  }
+.onboarding-subtitle {
+    color: var(--text-secondary, #666666);
+    margin-bottom: 20px;
+    font-family: var(--font-mono, monospace);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.primary-btn {
+    width: 100%;
+    padding: 16px;
+    background: var(--neon-green, #ABF600);
+    color: #000000;
+    border: none;
+    font-family: var(--font-mono, monospace);
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+    transition: transform 0.2s, background 0.2s;
+}
+
+.primary-btn:active {
+    transform: scale(0.98);
+}
+
+.primary-btn:hover {
+    background: #c2ff1f;
+}
+
+.secondary-link {
+    margin-top: 16px;
+    color: var(--text-secondary, #666666);
+    font-size: 12px;
+    text-decoration: none;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.secondary-link:hover {
+    color: var(--text-primary, #FFFFFF);
+}
+
+.indicators {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 32px;
+}
+
+.indicator-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--border-dim, #333333);
+    transition: all 0.3s ease;
+}
+
+.indicator-dot.active {
+    background: var(--neon-green, #ABF600);
+    width: 24px;
+    border-radius: 4px;
+}
+
+.action-area {
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@keyframes spin {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition: all 0.3s ease;
+}
+
+.fade-slide-enter-from {
+  opacity: 0;
+  transform: translateX(20px);
+}
+
+.fade-slide-leave-to {
+  opacity: 0;
+  transform: translateX(-20px);
 }
 </style>
