@@ -19,5 +19,7 @@ interface Window {
   }
   tgTodo?: {
     setMockInitData?: (value: string) => void
+    inspectInitData?: () => string
+    clearInitData?: () => void
   }
 }

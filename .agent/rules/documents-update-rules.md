@@ -47,3 +47,15 @@ trigger: always_on
 ## 规则七：开发与交付溯源
 - **引用检查**：提交 UI 变更或功能实现前，必须对照 `docs/prd/prd.md` 与 `docs/frontend/frontend_requirements.md` 的具体章节编号。
 - **PR 标注**：在 Pull Request (PR) 描述中明确标注引用的文档章节（如 "Ref: PRD Section 4.2"），确保产品、设计和开发三方可快速定位决策背景。
+
+## 规则八：规划地图维护
+- 新增 `docs/project-roadmap.md` 作为长期规划地图，记录 7 大阶段与模块 1-16 的目标/功能/验收摘要。
+- 该文档仅在产品范围或路线图发生变更时更新；日常执行、状态同步和阶段成果请记录在《当前工作日志.md》与 `docs/server/backend-progress-*.md`。
+- 若确需调整规划地图，需先在会话中获得 User 确认，再同步更新 `docs/document-map.md` 与本规则说明。
+
+## 规则九：API 文档自动同步
+- 任何业务开发引入新的 HTTP 接口、修改路径/字段/鉴权或调整状态码时，必须同步维护两份权威文档：
+  1. `docs/server/api-by-page.md` —— 侧重页面场景与示例，供产品/前端快速阅读。
+  2. `docs/server/openapi.yaml` —— 机器可读规范，供 QA/自动化工具/SDK 使用。
+- 允许使用代码生成器或脚本自动更新 OpenAPI，但提交前需人工校对字段说明及中文备注，确保信息准确。
+- 如变更涉及文档结构（新增章节/文件），请更新 `docs/document-map.md` 并在《当前工作日志.md》记录同步动作。

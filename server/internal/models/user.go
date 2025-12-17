@@ -8,17 +8,18 @@ import (
 
 // User represents a Telegram user in the system
 type User struct {
-	ID              string         `gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"id"`
-	TgID            int64          `gorm:"uniqueIndex;not null" json:"tg_id"`
-	TgUsername      string         `gorm:"type:text" json:"tg_username,omitempty"`
-	Name            string         `gorm:"type:text;not null" json:"name"`
-	PhotoURL        string         `gorm:"type:text" json:"photo_url,omitempty"`
-	Avatar          string         `gorm:"type:text" json:"avatar,omitempty"` // Deprecated, use PhotoURL
-	Timezone        string         `gorm:"type:text;not null;default:'UTC+0'" json:"timezone"`
-	NotionConnected bool           `gorm:"not null;default:false" json:"notion_connected"`
-	CreatedAt       time.Time      `json:"created_at"`
-	UpdatedAt       time.Time      `json:"updated_at"`
-	DeletedAt       gorm.DeletedAt `gorm:"index" json:"deleted_at,omitempty"`
+	ID                string         `gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"id"`
+	TgID              int64          `gorm:"uniqueIndex;not null" json:"tg_id"`
+	TgUsername        string         `gorm:"type:text" json:"tg_username,omitempty"`
+	Name              string         `gorm:"type:text;not null" json:"name"`
+	PhotoURL          string         `gorm:"type:text" json:"photo_url,omitempty"`
+	Avatar            string         `gorm:"type:text" json:"avatar,omitempty"` // Deprecated, use PhotoURL
+	Timezone          string         `gorm:"type:text;not null;default:'UTC+0'" json:"timezone"`
+	DefaultDatabaseID *string        `gorm:"type:text" json:"default_database_id,omitempty"`
+	NotionConnected   bool           `gorm:"not null;default:false" json:"notion_connected"`
+	CreatedAt         time.Time      `json:"created_at"`
+	UpdatedAt         time.Time      `json:"updated_at"`
+	DeletedAt         gorm.DeletedAt `gorm:"index" json:"deleted_at,omitempty"`
 }
 
 // TableName overrides the table name

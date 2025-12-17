@@ -17,10 +17,12 @@ import (
 
 // Mock UserRepository
 type mockUserRepository struct {
-	users      map[int64]*models.User
-	createErr  error
-	findErr    error
-	shouldFail bool
+	users          map[int64]*models.User
+	createErr      error
+	findErr        error
+	shouldFail     bool
+	findByTgIDFunc func(ctx context.Context, tgID int64) (*models.User, error)
+	findByIDFunc   func(ctx context.Context, id string) (*models.User, error)
 }
 
 func newMockUserRepository() *mockUserRepository {
@@ -30,6 +32,9 @@ func newMockUserRepository() *mockUserRepository {
 }
 
 func (m *mockUserRepository) FindByTgID(ctx context.Context, tgID int64) (*models.User, error) {
+	if m.findByTgIDFunc != nil {
+		return m.findByTgIDFunc(ctx, tgID)
+	}
 	if m.findErr != nil {
 		return nil, m.findErr
 	}
@@ -38,6 +43,19 @@ func (m *mockUserRepository) FindByTgID(ctx context.Context, tgID int64) (*model
 		return nil, gorm.ErrRecordNotFound
 	}
 	return user, nil
+}
+
+func (m *mockUserRepository) FindByID(ctx context.Context, id string) (*models.User, error) {
+	if m.findByIDFunc != nil {
+		return m.findByIDFunc(ctx, id)
+	}
+	// Default implementation: iterate through users to find by ID
+	for _, user := range m.users {
+		if user.ID == id {
+			return user, nil
+		}
+	}
+	return nil, gorm.ErrRecordNotFound
 }
 
 func (m *mockUserRepository) Create(ctx context.Context, user *models.User) error {
@@ -57,12 +75,20 @@ func (m *mockUserRepository) Update(ctx context.Context, user *models.User) erro
 	return nil
 }
 
+func (m *mockUserRepository) GetByUsername(ctx context.Context, username string) (*models.User, error) {
+	return nil, nil // Not needed for auth tests
+}
+
 func (m *mockUserRepository) FindNotionToken(ctx context.Context, userID string) (*models.UserNotionToken, error) {
 	return nil, gorm.ErrRecordNotFound
 }
 
 func (m *mockUserRepository) SaveNotionToken(ctx context.Context, token *models.UserNotionToken) error {
 	return nil
+}
+
+func (m *mockUserRepository) ListAll(ctx context.Context) ([]models.User, error) {
+	return nil, nil
 }
 
 func TestTelegramAuth_ValidInitData_NewUser(t *testing.T) {

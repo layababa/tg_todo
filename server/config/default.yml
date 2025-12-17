@@ -9,3 +9,7 @@ redis:
 build:
   version: 0.0.1
   git_commit: HEAD
+telegram:
+  bot_token: ""
+  bot_name: ""
+  web_app_url: ""

@@ -1,18 +1,18 @@
-import type { Config } from 'tailwindcss'
+import type { Config } from "tailwindcss";
 
-import daisyui from 'daisyui'
+import daisyui from "daisyui";
 
 const config: Config = {
-  content: ['./index.html', './src/**/*.{vue,ts,js,tsx}'],
+  content: ["./index.html", "./src/**/*.{vue,ts,js,tsx}"],
   theme: {
-    extend: {}
+    extend: {},
   },
   plugins: [daisyui],
   daisyui: {
-    themes: ['lemonade'],
+    themes: ["business", "black"], // Dark themes
     base: true,
-    darkTheme: 'lemonade'
-  }
-}
+    darkTheme: "business",
+  },
+};
 
-export default config
+export default config;

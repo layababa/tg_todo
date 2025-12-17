@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -145,13 +146,43 @@ func TestNotionCallbackInvalidState(t *testing.T) {
 	require.Equal(t, http.StatusBadRequest, w.Code)
 }
 
+func TestHMACStateCodecRoundTrip(t *testing.T) {
+	codec, err := newHMACStateCodec(testEncryptionKey)
+	require.NoError(t, err)
+
+	state, err := codec.Encode(987654321)
+	require.NoError(t, err)
+
+	decoded, err := codec.Decode(state)
+	require.NoError(t, err)
+	require.Equal(t, int64(987654321), decoded)
+}
+
+func TestHMACStateCodecRejectsTamperedState(t *testing.T) {
+	codec, err := newHMACStateCodec(testEncryptionKey)
+	require.NoError(t, err)
+
+	state, err := codec.Encode(42)
+	require.NoError(t, err)
+
+	raw, err := base64.RawURLEncoding.DecodeString(state)
+	require.NoError(t, err)
+	raw[0] = '9'
+	tampered := base64.RawURLEncoding.EncodeToString(raw)
+
+	_, err = codec.Decode(tampered)
+	require.Error(t, err)
+}
+
 // --- test helpers ---
 
 type mockUserRepository struct {
-	users        map[int64]*models.User
-	savedToken   *models.UserNotionToken
-	saveTokenErr error
-	updateErr    error
+	users          map[int64]*models.User
+	savedToken     *models.UserNotionToken
+	saveTokenErr   error
+	updateErr      error
+	findByTgIDFunc func(ctx context.Context, tgID int64) (*models.User, error)
+	findByIDFunc   func(ctx context.Context, id string) (*models.User, error)
 }
 
 func newMockUserRepository() *mockUserRepository {
@@ -161,11 +192,18 @@ func newMockUserRepository() *mockUserRepository {
 }
 
 func (m *mockUserRepository) FindByTgID(ctx context.Context, tgID int64) (*models.User, error) {
+	if m.findByTgIDFunc != nil {
+		return m.findByTgIDFunc(ctx, tgID)
+	}
 	user, ok := m.users[tgID]
 	if !ok {
 		return nil, gorm.ErrRecordNotFound
 	}
 	return user, nil
+}
+
+func (m *mockUserRepository) FindByID(ctx context.Context, id string) (*models.User, error) {
+	return nil, nil
 }
 
 func (m *mockUserRepository) Create(ctx context.Context, user *models.User) error {
@@ -181,6 +219,10 @@ func (m *mockUserRepository) Update(ctx context.Context, user *models.User) erro
 	return nil
 }
 
+func (m *mockUserRepository) GetByUsername(ctx context.Context, username string) (*models.User, error) {
+	return nil, nil // Not needed for auth tests
+}
+
 func (m *mockUserRepository) FindNotionToken(ctx context.Context, userID string) (*models.UserNotionToken, error) {
 	if m.savedToken != nil && m.savedToken.UserID == userID {
 		return m.savedToken, nil
@@ -194,6 +236,10 @@ func (m *mockUserRepository) SaveNotionToken(ctx context.Context, token *models.
 	}
 	m.savedToken = token
 	return nil
+}
+
+func (m *mockUserRepository) ListAll(ctx context.Context) ([]models.User, error) {
+	return nil, nil
 }
 
 type stubOAuthService struct {
