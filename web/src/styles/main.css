@@ -25,6 +25,48 @@
     --status-done-border: #FFFFFF;
 }
 
+/* Override daisyUI theme colors for tgtodo theme */
+[data-theme="tgtodo"] {
+    /* Primary: Neon Green #ABF600 in OKLCH */
+    --p: 91.19% 0.2576 116.35;
+    --pc: 0% 0 0; /* Black text on primary */
+    
+    /* Secondary: Border dim #333333 */
+    --s: 28.26% 0 0;
+    --sc: 100% 0 0;
+    
+    /* Accent: Same as primary */
+    --a: 91.19% 0.2576 116.35;
+    --ac: 0% 0 0;
+    
+    /* Neutral: Panel background #0A0A0A */
+    --n: 8.87% 0 0;
+    --nc: 100% 0 0;
+    
+    /* Base colors */
+    --b1: 0% 0 0; /* #000000 - Main background */
+    --b2: 8.87% 0 0; /* #0A0A0A - Panel */
+    --b3: 15.64% 0 0; /* #1A1A1A - Lighter */
+    --bc: 100% 0 0; /* White text */
+    
+    /* Status colors */
+    --in: 91.19% 0.2576 116.35; /* Info - neon green */
+    --su: 91.19% 0.2576 116.35; /* Success - neon green */
+    --wa: 79.53% 0.1519 74.08; /* Warning #FFB300 */
+    --er: 59.64% 0.2709 13.77; /* Error #FF0055 */
+    
+    /* Sharp corners for tech feel */
+    --rounded-box: 0;
+    --rounded-btn: 0;
+    --rounded-badge: 0;
+    --animation-btn: 0.2s;
+    --animation-input: 0.2s;
+    --btn-focus-scale: 0.98;
+    --border-btn: 1px;
+    --tab-border: 1px;
+    --tab-radius: 0;
+}
+
 .light-mode {
     /* Cyberpunk Light / High-Tech Lab Theme */
     --bg-black: #E0E5EC;
