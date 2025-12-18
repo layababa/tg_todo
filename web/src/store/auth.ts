@@ -51,14 +51,14 @@ export const useAuthStore = defineStore("auth", {
       this.error = null;
       try {
         const params = startParam ? { start_param: startParam } : undefined;
-        const response = await apiClient.get<AuthStatusPayload>(
+        const response = await apiClient.get<{ success: boolean; data: AuthStatusPayload }>(
           "/auth/status",
           {
             headers: this.buildHeaders(),
             params,
           }
         );
-        const payload = response.data;
+        const payload = response.data.data;
         this.user = payload.user;
         this.notionConnected = Boolean(payload.notion_connected);
         this.redirectHint = payload.redirect_hint ?? startParam ?? null;

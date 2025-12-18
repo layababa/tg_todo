@@ -118,3 +118,5 @@ docker compose logs -f api
 curl http://localhost:8080/healthz
 # 预期返回: {"status":"ok", "version":"...", "git_hash":"..."}
 ```
+
+window.tgTodo?.setMockInitData('user=%7B%22id%22%3A7510111701%2C%22first_name%22%3A%22door%22%2C%22last_name%22%3A%22%22%2C%22username%22%3A%22holddoordoor2%22%2C%22language_code%22%3A%22zh-hans%22%2C%22is_premium%22%3Atrue%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2Ff5S7hr25hkkgNiEF64QqY1trSeDzy_V_BS59uBdL22a765kThczGidboJ8kDmvsJ.svg%22%7D&chat_instance=2366503172739678373&chat_type=private&auth_date=1766079643&signature=9MNEwGkknSRU-ORygKygoYpNEOWwA2bM_h2lzKM5w0hZ3SphGEqNTFZEKqyZaMWQkjIORdvH4OAI8zMSlX9LCg&hash=6442ff49c3b6cd63d6c3b6c0f3cbb5e3f82602c6bad2ce432ffe400f92e8a62e')

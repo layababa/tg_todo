@@ -1,0 +1,1795 @@
+openapi: 3.1.0
+info:
+  title: Telegram To-Do Mini App API
+  version: 0.3.0
+  description:
+    "Telegram To-Do Mini App \u7684\u6240\u6709 HTTP API\uFF0C\u4EE5\u7EDF\
+    \u4E00\u7684 OpenAPI \u89C4\u8303\u5448\u73B0\uFF0C\u65B9\u4FBF\u524D\u540E\u7AEF\
+    \u3001QA\n\u4E0E\u5916\u90E8\u7CFB\u7EDF\u5FEB\u901F\u5BF9\u9F50\u3002\u6240\u6709\
+    \u666E\u901A\u4E1A\u52A1\u63A5\u53E3\u9ED8\u8BA4\u91C7\u7528\u7EDF\u4E00\u54CD\
+    \u5E94\u5305\u88F9\uFF1A\n\n```json\n{\n  \"success\": true,\n  \"data\": {},\n\
+    \  \"error\": null,\n  \"meta\": {}\n}\n```\n\n- \u9274\u6743\uFF1AMini App \u901A\
+    \u8FC7 `X-Telegram-Init-Data` \u8BF7\u6C42\u5934\u4F20\u5165 Telegram \u63D0\u4F9B\
+    \u7684 init data\uFF0C\u540E\u7AEF\u9A8C\u8BC1\u540E\u83B7\u5F97\u7528\u6237\u8EAB\
+    \u4EFD\u3002\n- \u65F6\u95F4\uFF1A\u9664\u975E\u7279\u6B8A\u8BF4\u660E\uFF0C\u5747\
+    \u4E3A ISO8601 UTC \u65F6\u95F4\u5B57\u7B26\u4E32\uFF0C\u5BA2\u6237\u7AEF\u53EF\
+    \u6309\u65F6\u533A\u6E32\u67D3\u3002\n"
+servers:
+  - url: https://api.tg-todo.local
+    description: "\u672C\u5730/\u5185\u7F51\u8054\u8C03\u73AF\u5883"
+  - url: https://api.tg-todo.app
+    description: "\u6B63\u5F0F\u751F\u4EA7\u73AF\u5883"
+tags:
+  - name: Health
+    description: "\u5065\u5EB7\u68C0\u67E5\u4E0E\u4F9D\u8D56\u72B6\u6001\u76D1\u63A7"
+  - name: Auth & Onboarding
+    description:
+      "\u7528\u6237\u8EAB\u4EFD\u3001Notion \u6388\u6743\u4E0E\u5F15\u5BFC\
+      \u6D41\u7A0B"
+  - name: Tasks
+    description:
+      "\u4EFB\u52A1\u5217\u8868\u3001\u8BE6\u60C5\u4E0E\u8BC4\u8BBA\u7B49\
+      \u6838\u5FC3\u529F\u80FD"
+  - name: Settings
+    description:
+      "\u7528\u6237\u8D44\u6599\u3001Notion/\u6570\u636E\u5E93\u64CD\u4F5C\
+      \u4E0E\u624B\u52A8\u540C\u6B65"
+  - name: Groups
+    description:
+      "\u7FA4\u7EC4\u5217\u8868\u3001\u7ED1\u5B9A\u6821\u9A8C\u4E0E\u6570\
+      \u636E\u5E93\u521D\u59CB\u5316"
+  - name: Routing
+    description: "Deep Link/start_param \u89E3\u6790\u5165\u53E3"
+  - name: Webhook
+    description: "Telegram Webhook \u76F8\u5173\u63A5\u53E3"
+components:
+  securitySchemes:
+    TelegramInitData:
+      type: apiKey
+      in: header
+      name: X-Telegram-Init-Data
+      description:
+        "Mini App \u521D\u59CB\u5316\u6570\u636E\uFF0C\u540E\u7AEF\u4F1A\
+        \u6821\u9A8C\u7B7E\u540D\u5E76\u6620\u5C04 user_id/chat_id\u3002\u6240\u6709\
+        \u9700\u8981\u767B\u5F55\u6001\u7684\u63A5\u53E3\u5747\u9700\u643A\u5E26\u3002\
+        \n"
+    TelegramWebhookSecret:
+      type: apiKey
+      in: header
+      name: X-Telegram-Bot-Api-Secret-Token
+      description:
+        "Telegram Webhook \u4E13\u7528\u5BC6\u94A5\uFF0C\u4E0E BotFather\
+        \ \u914D\u7F6E\u7684 secret token \u5BF9\u9F50\uFF0C\u7528\u4E8E\u963B\u6B62\
+        \u4F2A\u9020\u8BF7\u6C42\u3002\n"
+  parameters:
+    CursorParam:
+      name: cursor
+      in: query
+      required: false
+      schema:
+        type: string
+        nullable: true
+      description:
+        "\u5206\u9875\u6E38\u6807\uFF0C\u6765\u81EA\u4E0A\u4E00\u6B21\u54CD\
+        \u5E94\u7684 `data.next_cursor`\uFF0C\u4E3A\u7A7A\u8868\u793A\u83B7\u53D6\u7B2C\
+        \u4E00\u9875\u3002\n"
+    LimitParam:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+      description:
+        "\u6BCF\u9875\u8FD4\u56DE\u7684\u6700\u5927\u8BB0\u5F55\u6570\uFF0C\
+        \u5408\u7406\u63A7\u5236\u4EE5\u51CF\u5C11 Telegram Mini App \u7F51\u7EDC\u8017\
+        \u65F6\u3002\n"
+    ViewParam:
+      name: view
+      in: query
+      required: false
+      schema:
+        type: string
+        enum:
+          - assigned
+          - created
+          - all
+        default: assigned
+      description:
+        "\u5217\u8868\u89C6\u56FE\u7C7B\u578B\uFF1A`assigned`(\u6307\u6D3E\
+        \u7ED9\u6211)\u3001`created`(\u6211\u521B\u5EFA\u7684)\u3001`all`(\u6240\u6709\
+        \u4EFB\u52A1)\u3002\n"
+    DatabaseSearchParam:
+      name: search
+      in: query
+      schema:
+        type: string
+        maxLength: 64
+      description:
+        "\u6570\u636E\u5E93\u7B5B\u9009\u5173\u952E\u5B57\uFF0C\u652F\u6301\
+        \u6309\u540D\u79F0/\u5DE5\u4F5C\u533A\u6A21\u7CCA\u5339\u914D\uFF1B\u4E3A\u7A7A\
+        \u65F6\u8FD4\u56DE\u6700\u8FD1\u5E38\u7528\u5217\u8868\u3002\n"
+    IncludeParam:
+      name: include
+      in: query
+      required: false
+      schema:
+        type: string
+        description:
+          "\u9017\u53F7\u5206\u9694\u7684\u6269\u5C55\u5B57\u6BB5\uFF0C\
+          \u76EE\u524D\u652F\u6301 `context`\u3001`comments`\u3002"
+      description:
+        "\u8BE6\u60C5\u9875\u53EF\u9009\u662F\u5426\u8FD4\u56DE\u4E0A\u4E0B\
+        \u6587\u4E0E\u8BC4\u8BBA\uFF0C\u51CF\u5C11\u4E0D\u5FC5\u8981\u7684\u6570\u636E\
+        \u4F20\u8F93\uFF1B\u793A\u4F8B\uFF1A`include=context,comments`\u3002\n"
+    StartParam:
+      name: start_param
+      in: query
+      required: false
+      schema:
+        type: string
+        maxLength: 64
+      description:
+        "Telegram Mini App start_param\uFF0COnboarding \u6210\u529F\u540E\
+        \u524D\u7AEF\u53EF\u6839\u636E\u8BE5\u503C\u51B3\u5B9A\u521D\u59CB\u8DEF\u7531\
+        \u3002\n"
+    BootstrapParam:
+      name: tg_web_app_start_param
+      in: query
+      required: false
+      schema:
+        type: string
+        maxLength: 64
+      description:
+        "Telegram `tgWebAppStartParam`\uFF0C\u7528\u4E8E Deep Link \u2192\
+        \ Mini App \u7684\u8DF3\u8F6C\u89E3\u6790\u3002\n"
+    RoleParam:
+      name: role
+      in: query
+      required: false
+      schema:
+        type: string
+        enum:
+          - admin
+          - member
+        default: admin
+      description:
+        "\u7FA4\u7EC4\u89D2\u8272\u8FC7\u6EE4\u6761\u4EF6\uFF0C\u9ED8\u8BA4\
+        \u4EC5\u5C55\u793A\u5F53\u524D\u7528\u6237\u4F5C\u4E3A\u7BA1\u7406\u5458\u7684\
+        \u7FA4\u7EC4\uFF0C\u4FBF\u4E8E\u96C6\u4E2D\u7BA1\u7406\u7ED1\u5B9A\u5173\u7CFB\
+        \u3002\n"
+  schemas:
+    Envelope:
+      type: object
+      required:
+        - success
+      properties:
+        success:
+          type: boolean
+          description:
+            "\u8BF7\u6C42\u662F\u5426\u6210\u529F\uFF0C\u5931\u8D25\u65F6\
+            \u9700\u8981\u67E5\u770B `error`\u3002"
+        data:
+          nullable: true
+          description:
+            "\u4E1A\u52A1\u6570\u636E\u4E3B\u4F53\uFF0C\u7ED3\u6784\u56E0\
+            \u63A5\u53E3\u800C\u5F02\u3002"
+        error:
+          $ref: "#/components/schemas/ErrorObject"
+        meta:
+          type: object
+          nullable: true
+          description:
+            "\u989D\u5916\u5143\u6570\u636E\uFF08\u5982\u5206\u9875\u4FE1\
+            \u606F\uFF09\uFF0C\u4E3A\u4FDD\u6301\u6269\u5C55\u6027\u9ED8\u8BA4\u53EF\
+            \u4E3A\u7A7A\u5BF9\u8C61\u3002"
+      description:
+        "\u540E\u7AEF HTTP API \u7684\u7EDF\u4E00\u54CD\u5E94\u7ED3\u6784\
+        \u3002"
+    ErrorObject:
+      type: object
+      properties:
+        code:
+          type: string
+          description:
+            "\u673A\u5668\u53EF\u8BFB\u9519\u8BEF\u7801\uFF0C\u4F8B\u5982\
+            \ `unauthorized`\u3002"
+        message:
+          type: string
+          description:
+            "\u4FBF\u4E8E\u7528\u6237\u7406\u89E3\u7684\u4E2D\u6587/\u82F1\
+            \u6587\u63CF\u8FF0\u3002"
+        details:
+          type: object
+          additionalProperties: true
+          nullable: true
+          description:
+            "\u53EF\u9009\u7684\u8C03\u8BD5\u5B57\u6BB5\uFF08\u5B57\u6BB5\
+            \u7F3A\u5931\u7B49\uFF09\u3002"
+      required:
+        - code
+        - message
+    UserProfile:
+      type: object
+      required:
+        - id
+        - name
+        - timezone
+        - notion_connected
+      properties:
+        id:
+          type: string
+          description:
+            "\u5185\u90E8\u7528\u6237\u4E3B\u952E\uFF08`users.id`\uFF09\
+            \uFF0C\u4F9B\u524D\u7AEF\u505A\u7F13\u5B58 key\u3002"
+        tg_id:
+          type: integer
+          format: int64
+          description:
+            "Telegram \u7528\u6237 ID\uFF0C\u53EF\u4E0E Bot API \u6570\u636E\
+            \u6BD4\u5BF9\u3002"
+        name:
+          type: string
+          description:
+            "\u7528\u6237\u5728 Bot \u4FA7\u5C55\u793A\u7684\u6635\u79F0\
+            \u3002"
+        photo_url:
+          type: string
+          format: uri
+          nullable: true
+          description:
+            "Telegram \u5934\u50CF\u5730\u5740\uFF0C\u524D\u7AEF\u53EF\u6309\
+            \u9700\u5C55\u793A\u3002"
+        timezone:
+          type: string
+          description:
+            "\u7528\u6237\u504F\u597D\u7684\u65F6\u533A\uFF08\u5982 `UTC+8`\uFF09\
+            \uFF0C\u7528\u4E8E\u622A\u6B62\u65F6\u95F4\u6E32\u67D3\u3002"
+        notion_connected:
+          type: boolean
+          description: "\u662F\u5426\u5DF2\u5B8C\u6210 Notion OAuth \u7ED1\u5B9A\u3002"
+        username:
+          type: string
+          nullable: true
+          description: "Telegram \u7528\u6237\u540D\uFF08\u4E0D\u542B @\uFF09\u3002"
+        telegram_photo:
+          type: string
+          nullable: true
+          description:
+            "Telegram \u5934\u50CF\uFF08\u4E0E photo_url \u4E00\u81F4\uFF0C\
+            \u517C\u5BB9\u65E7\u5B57\u6BB5\uFF09\u3002"
+        telegram_username:
+          type: string
+          nullable: true
+          description: "Telegram \u7528\u6237\u540D\u5197\u4F59\u5B57\u6BB5\u3002"
+    UserRef:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          description: "\u7528\u6237\u4E3B\u952E\u6216\u5916\u90E8 ID\u3002"
+        name:
+          type: string
+          description: "\u663E\u793A\u6635\u79F0\u3002"
+        photo_url:
+          type: string
+          format: uri
+          nullable: true
+          description:
+            "\u5934\u50CF\u5C0F\u56FE\uFF0C\u7528\u4E8E\u8BC4\u8BBA/\u4EFB\
+            \u52A1\u5217\u8868\u3002"
+    DatabaseSummary:
+      type: object
+      required:
+        - id
+        - name
+        - workspace
+      properties:
+        id:
+          type: string
+          description:
+            "Notion \u6570\u636E\u5E93 ID\uFF0C\u7EDF\u4E00\u4E3A slug/UUID\
+            \ \u5B57\u7B26\u4E32\u3002"
+        name:
+          type: string
+          description:
+            "Notion \u4E2D\u5C55\u793A\u7684\u6570\u636E\u5E93\u540D\u79F0\
+            \u3002"
+        workspace:
+          type: string
+          description:
+            "\u6240\u5C5E\u5DE5\u4F5C\u533A\u6216\u4E2A\u4EBA\u7A7A\u95F4\
+            \uFF0C\u53EF\u5E2E\u52A9\u533A\u5206\u76F8\u4F3C\u6570\u636E\u5E93\u3002"
+        icon:
+          type: string
+          nullable: true
+          description:
+            "\u63A8\u8350\u4F7F\u7528 RemixIcon \u7B49 icon \u5173\u952E\
+            \u5B57\u6216 URL\u3002"
+    GroupSummary:
+      type: object
+      required:
+        - id
+        - title
+        - status
+        - role
+      properties:
+        id:
+          type: string
+          description:
+            "\u7FA4\u7EC4\u5728\u7CFB\u7EDF\u4E2D\u7684\u552F\u4E00 ID\uFF08\
+            \u901A\u5E38\u4E0E Telegram chat_id \u7ED1\u5B9A\uFF09\u3002"
+        title:
+          type: string
+          description: "\u7FA4\u7EC4\u6807\u9898\u3002"
+        status:
+          type: string
+          enum:
+            - Connected
+            - Unbound
+            - Inactive
+          description:
+            "\u7ED1\u5B9A\u72B6\u6001\uFF0CConnected \u8868\u793A\u5DF2\
+            \u5173\u8054\u6570\u636E\u5E93\u3002"
+        db:
+          $ref: "#/components/schemas/DatabaseSummary"
+          nullable: true
+          description:
+            "\u5DF2\u7ED1\u5B9A\u7684 Notion \u6570\u636E\u5E93\uFF0C\u672A\
+            \u7ED1\u5B9A\u65F6\u4E3A null\u3002"
+        role:
+          type: string
+          enum:
+            - Admin
+            - Member
+          description:
+            "\u5F53\u524D\u7528\u6237\u5728\u7FA4\u7EC4\u4E2D\u7684\u89D2\
+            \u8272\u3002"
+    TaskStatus:
+      type: string
+      enum:
+        - To Do
+        - In Progress
+        - Done
+      description:
+        "\u4EFB\u52A1\u72B6\u6001\u679A\u4E3E\uFF0C\u4E0E Notion \u4E2D\
+        \u7684 Status \u5B57\u6BB5\u4FDD\u6301\u4E00\u81F4\uFF1B\u9ED8\u8BA4\u5C55\
+        \u793A\u4E3A\u4E2D\u6587\u6587\u6848\u3002\n"
+    TaskSyncStatus:
+      type: string
+      enum:
+        - Pending
+        - Synced
+        - Failed
+      description:
+        "Notion \u540C\u6B65\u72B6\u6001\uFF0C\u53EF\u7528\u4E8E\u63D0\u9192\
+        \u7528\u6237\u540C\u6B65\u5F02\u5E38\u3002"
+    TaskSummary:
+      type: object
+      required:
+        - id
+        - title
+        - status
+        - group_id
+        - group_title
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: "\u4EFB\u52A1\u4E3B\u952E\u3002"
+        title:
+          type: string
+          description: "\u5217\u8868\u5C55\u793A\u7684\u4EFB\u52A1\u6807\u9898\u3002"
+        status:
+          $ref: "#/components/schemas/TaskStatus"
+        group_id:
+          type: string
+          description: "\u6240\u5C5E\u7FA4\u7EC4 ID\u3002"
+        group_title:
+          type: string
+          description: "\u7FA4\u7EC4\u663E\u793A\u540D\u79F0\u3002"
+        db_id:
+          type: string
+          nullable: true
+          description: "\u5BF9\u5E94\u7684 Notion \u6570\u636E\u5E93 ID\u3002"
+        topic:
+          type: string
+          nullable: true
+          description: "\u53EF\u9009\u4E3B\u9898/\u6807\u7B7E\u3002"
+        due_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: "\u622A\u6B62\u65F6\u95F4\uFF08UTC\uFF09\u3002"
+        creator:
+          $ref: "#/components/schemas/UserRef"
+        assignee:
+          $ref: "#/components/schemas/UserRef"
+        chat_jump_url:
+          type: string
+          format: uri
+          nullable: true
+          description:
+            "Telegram \u6D88\u606F\u8DF3\u8F6C\u94FE\u63A5\uFF0C\u4F9B\u4E00\
+            \u952E\u56DE\u6EAF\u4E0A\u4E0B\u6587\u3002"
+        sync_status:
+          $ref: "#/components/schemas/TaskSyncStatus"
+          nullable: true
+    TaskContextEntry:
+      type: object
+      required:
+        - role
+        - text
+        - ts
+      properties:
+        role:
+          type: string
+          enum:
+            - me
+            - other
+            - system
+          description:
+            "\u6587\u672C\u6240\u5C5E\u8EAB\u4EFD\uFF1B`system` \u7528\u4E8E\
+            \ Bot \u81EA\u52A8\u5907\u6CE8\u3002"
+        author:
+          type: string
+          nullable: true
+          description: "\u6587\u672C\u4F5C\u8005\u6635\u79F0\u3002"
+        text:
+          type: string
+          description: "\u539F\u6587\u5185\u5BB9\uFF0C\u4FDD\u7559\u6362\u884C\u3002"
+        ts:
+          type: string
+          format: date-time
+          description: "\u6D88\u606F\u65F6\u95F4\u3002"
+    TaskDescriptionBlock:
+      type: object
+      required:
+        - type
+        - text
+      properties:
+        type:
+          type: string
+          description:
+            "\u6587\u672C\u5757\u7C7B\u578B\uFF08paragraph/bullet \u7B49\
+            \uFF09\uFF0C\u5BF9\u5E94 Notion \u540C\u6B65\u7ED3\u6784\u3002"
+        text:
+          type: string
+          description: "\u5C55\u793A\u6587\u6848\u3002"
+    TaskComment:
+      type: object
+      required:
+        - id
+        - author
+        - text
+        - created_at
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: "\u8BC4\u8BBA ID\u3002"
+        author:
+          $ref: "#/components/schemas/UserRef"
+        text:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        replies:
+          type: array
+          items:
+            $ref: "#/components/schemas/TaskComment"
+          description: "\u9012\u5F52\u7684\u697C\u4E2D\u697C\u8BC4\u8BBA\u3002"
+    TaskDetail:
+      allOf:
+        - $ref: "#/components/schemas/TaskSummary"
+        - type: object
+          properties:
+            notion_url:
+              type: string
+              format: uri
+              nullable: true
+              description:
+                "\u5BF9\u5E94 Notion \u9875\u9762\u7684\u5206\u4EAB\u94FE\
+                \u63A5\u3002"
+            description:
+              type: string
+              nullable: true
+              description: "\u4EFB\u52A1\u63CF\u8FF0\u6587\u672C\u3002"
+            context_snapshot:
+              type: array
+              items:
+                $ref: "#/components/schemas/TaskContextEntry"
+              nullable: true
+            comments:
+              type: array
+              items:
+                $ref: "#/components/schemas/TaskComment"
+              nullable: true
+    TaskList:
+      type: object
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/TaskSummary"
+        next_cursor:
+          type: string
+          nullable: true
+          description:
+            "\u4E0B\u4E00\u9875\u6E38\u6807\uFF0C\u524D\u7AEF\u7528\u4E8E\
+            \u65E0\u9650\u6EDA\u52A8\u3002"
+    CommentList:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/TaskComment"
+        next_cursor:
+          type: string
+          nullable: true
+    DatabaseValidationResult:
+      type: object
+      required:
+        - id
+        - name
+        - compatible
+        - required_fields
+        - missing_fields
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        compatible:
+          type: boolean
+          description:
+            "\u662F\u5426\u6EE1\u8DB3\u6240\u6709\u5FC5\u586B\u5B57\u6BB5\
+            \u8981\u6C42\u3002"
+        required_fields:
+          type: array
+          items:
+            type: string
+        missing_fields:
+          type: array
+          items:
+            type: string
+          description:
+            "\u53EF\u8BFB\u6027\u8BF4\u660E\uFF0C\u4F8B\u5982\u201C\u7ED3\
+            \u6784\u5B8C\u7F8E\u5339\u914D\u201D\u3002"
+    GroupBindingState:
+      type: object
+      required:
+        - group_id
+        - db_id
+        - status
+      properties:
+        group_id:
+          type: string
+        db_id:
+          type: string
+        status:
+          type: string
+          enum:
+            - Connected
+            - Unbound
+    BootstrapRoute:
+      type: object
+      required:
+        - route
+      properties:
+        route:
+          type: string
+          description:
+            "\u524D\u7AEF\u76EE\u6807\u8DEF\u7531\uFF08\u5982 `task_detail`\u3001\
+            `settings`\uFF09\u3002"
+        task_id:
+          type: string
+          nullable: true
+          description:
+            "\u5F53 route=task_detail \u65F6\u8FD4\u56DE\u7684\u4EFB\u52A1\
+            \ ID\u3002"
+        extra:
+          type: object
+          additionalProperties: true
+          nullable: true
+          description: "\u5176\u4ED6\u9700\u8981\u900F\u4F20\u7684\u4FE1\u606F\u3002"
+    HealthPayload:
+      type: object
+      required:
+        - version
+        - git_hash
+        - uptime
+        - dependencies
+      properties:
+        version:
+          type: string
+          description: "\u6784\u5EFA\u7248\u672C\u53F7\u3002"
+        git_hash:
+          type: string
+          description: "Git \u63D0\u4EA4\u54C8\u5E0C\u3002"
+        uptime:
+          type: string
+          description:
+            "\u8FD0\u884C\u65F6\u957F\uFF08Go runtime \u683C\u5F0F\uFF0C\
+            \u4F8B\u5982 `5m23.112s`\uFF09\u3002"
+        dependencies:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              status:
+                type: string
+                enum:
+                  - up
+                  - down
+    TaskStatusPatchRequest:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          $ref: "#/components/schemas/TaskStatus"
+          description:
+            "\u65B0\u72B6\u6001\uFF0C\u540E\u7AEF\u4F1A\u505A\u6743\u9650\
+            \u4E0E\u6D41\u8F6C\u6821\u9A8C\u3002"
+    TaskJumpRequest:
+      type: object
+      required:
+        - chat_id
+        - message_id
+      properties:
+        chat_id:
+          type: string
+          description:
+            "Telegram chat ID\uFF08\u5B57\u7B26\u4E32\u4EE5\u517C\u5BB9\
+            \u8D85\u7EA7\u7FA4\uFF09\u3002"
+        message_id:
+          type: string
+          description: "\u539F\u59CB\u6D88\u606F ID\u3002"
+    TaskCommentRequest:
+      type: object
+      required:
+        - text
+      properties:
+        text:
+          type: string
+          minLength: 1
+          description: "\u8BC4\u8BBA\u6B63\u6587\uFF0C\u652F\u6301\u6362\u884C\u3002"
+        parent_id:
+          type: integer
+          format: int64
+          nullable: true
+          description:
+            "\u697C\u4E2D\u697C\u56DE\u590D\u76EE\u6807\uFF0Cnull \u8868\
+            \u793A\u6839\u8BC4\u8BBA\u3002"
+    TaskPatchRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        status:
+          $ref: "#/components/schemas/TaskStatus"
+        assignee_id:
+          type: string
+        due_at:
+          type: string
+          format: date-time
+        description:
+          type: array
+          items:
+            $ref: "#/components/schemas/TaskDescriptionBlock"
+      description:
+        "\u4EFB\u610F\u5B57\u6BB5\u53EF\u9009\uFF1B\u7A7A\u5BF9\u8C61\u5219\
+        \u4E0D\u66F4\u65B0\u3002"
+    SettingsPatchRequest:
+      type: object
+      properties:
+        default_db_id:
+          type: string
+          description:
+            "\u8BBE\u7F6E\u9ED8\u8BA4\u6536\u96C6\u7BB1\u6570\u636E\u5E93\
+            \u3002"
+        timezone:
+          type: string
+          description: "\u8BBE\u7F6E\u9ED8\u8BA4\u663E\u793A\u65F6\u533A\u3002"
+      minProperties: 1
+    DatabaseRefreshRequest:
+      type: object
+      properties:
+        force:
+          type: boolean
+          description:
+            "\u662F\u5426\u65E0\u89C6\u7F13\u5B58\u5F3A\u5236\u5237\u65B0\
+            \uFF08\u9ED8\u8BA4 false\uFF09\u3002"
+      description:
+        "\u9884\u7559\u5B57\u6BB5\uFF0C\u5F53\u524D\u4EC5\u7528\u4E8E\u89E6\
+        \u53D1\u5237\u65B0\u52A8\u4F5C\u3002"
+    TaskSyncRequest:
+      type: object
+      properties:
+        target_db_id:
+          type: string
+          nullable: true
+          description:
+            "\u6307\u5B9A\u540C\u6B65\u5230\u7684\u6570\u636E\u5E93\uFF1B\
+            \u672A\u63D0\u4F9B\u65F6\u4F18\u5148\u4F7F\u7528\u4EFB\u52A1\u6240\u5C5E\
+            \u7FA4\u7EC4\u7ED1\u5B9A\uFF0C\u518D fallback \u9ED8\u8BA4\u5E93\u3002\
+            \n"
+    GroupValidateRequest:
+      type: object
+      required:
+        - db_id
+      properties:
+        db_id:
+          type: string
+          description: "\u5F85\u6821\u9A8C\u7684\u6570\u636E\u5E93 ID\u3002"
+    GroupBindRequest:
+      type: object
+      required:
+        - db_id
+      properties:
+        db_id:
+          type: string
+          description: "\u76EE\u6807\u6570\u636E\u5E93 ID\u3002"
+        mode:
+          type: string
+          enum:
+            - replace
+            - append
+          default: replace
+          description:
+            "\u7ED1\u5B9A\u6A21\u5F0F\uFF1B`replace` \u8868\u793A\u8986\
+            \u76D6\u539F\u7ED1\u5B9A\u3002"
+    GroupInitRequest:
+      type: object
+      required:
+        - db_id
+        - fields
+      properties:
+        db_id:
+          type: string
+        fields:
+          type: array
+          items:
+            type: string
+          description:
+            "\u7F3A\u5931\u5B57\u6BB5\u5217\u8868\uFF0C\u540E\u7AEF\u4F1A\
+            \u6279\u91CF\u521B\u5EFA\u3002"
+    TelegramUpdateMinimal:
+      type: object
+      properties:
+        update_id:
+          type: integer
+          format: int64
+        message:
+          type: object
+          properties:
+            message_id:
+              type: integer
+              format: int64
+            from:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  format: int64
+                username:
+                  type: string
+                  nullable: true
+            chat:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  format: int64
+            text:
+              type: string
+            reply_to_message:
+              type: object
+              properties:
+                message_id:
+                  type: integer
+                  format: int64
+      description:
+        "Telegram \u5B98\u65B9 Update \u5BF9\u8C61\u7684\u5B50\u96C6\uFF0C\
+        WebHook \u53EA\u9700\u4F9D\u8D56\u8FD9\u4E9B\u5B57\u6BB5\u5373\u53EF\u5B8C\
+        \u6210\u5E42\u7B49\u53CA\u4EFB\u52A1\u8BC6\u522B\u3002"
+paths:
+  /healthz:
+    get:
+      tags:
+        - Health
+      summary: "\u68C0\u67E5 API \u670D\u52A1\u5065\u5EB7\u72B6\u6001"
+      description:
+        "\u8FD4\u56DE\u5F53\u524D\u670D\u52A1\u7248\u672C\u3001Git \u63D0\
+        \u4EA4\u3001\u8FD0\u884C\u65F6\u95F4\u4EE5\u53CA\u6570\u636E\u5E93\u3001Redis\
+        \ \u7B49\u4F9D\u8D56\u7684\u53EF\u7528\u6027\u3002\n"
+      operationId: getHealthz
+      responses:
+        "200":
+          description: "\u6240\u6709\u4F9D\u8D56\u6B63\u5E38"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Envelope"
+                  - type: object
+                    properties:
+                      success:
+                        type: boolean
+                        const: true
+                      data:
+                        $ref: "#/components/schemas/HealthPayload"
+              examples:
+                healthy:
+                  value:
+                    success: true
+                    data:
+                      version: v0.3.0
+                      git_hash: 7c83b27
+                      uptime: 5m13.22s
+                      dependencies:
+                        - name: database
+                          status: up
+                        - name: redis
+                          status: up
+        "503":
+          description: "\u67D0\u4E9B\u4F9D\u8D56\u5F02\u5E38"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Envelope"
+                  - type: object
+                    properties:
+                      success:
+                        type: boolean
+                        const: false
+                      data:
+                        $ref: "#/components/schemas/HealthPayload"
+  /auth/status:
+    get:
+      tags:
+        - Auth & Onboarding
+      security:
+        - TelegramInitData: []
+      summary: "\u67E5\u770B\u5F53\u524D\u7528\u6237\u7684\u7ED1\u5B9A\u72B6\u6001"
+      description:
+        "Onboarding \u9875\u9996\u5C4F\u8C03\u7528\uFF0C\u8BFB\u53D6\u7528\
+        \u6237\u8D44\u6599\u3001Notion \u7ED1\u5B9A\u72B6\u6001\u53CA\u5F85\u540C\u6B65\
+        \u6570\u91CF\uFF0C\u5E76\u900F\u4F20 start_param\u3002\n"
+      operationId: getAuthStatus
+      parameters:
+        - $ref: "#/components/parameters/StartParam"
+      responses:
+        "200":
+          description: "\u6210\u529F\u8FD4\u56DE\u7528\u6237\u8D44\u6599"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Envelope"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - user
+                          - notion_connected
+                          - pending_sync_count
+                        properties:
+                          user:
+                            $ref: "#/components/schemas/UserProfile"
+                          notion_connected:
+                            type: boolean
+                          pending_sync_count:
+                            type: integer
+                          redirect_hint:
+                            type: string
+                            nullable: true
+              examples:
+                basic:
+                  value:
+                    success: true
+                    data:
+                      user:
+                        id: u_1001
+                        tg_id: 12345678
+                        name: John Doe
+                        photo_url: https://t.me/i/userpic/320/xxx.jpg
+                        timezone: UTC+8
+                        notion_connected: false
+                        username: johndoe
+                        telegram_photo: https://t.me/i/userpic/320/xxx.jpg
+                        telegram_username: johndoe
+                      notion_connected: false
+                      pending_sync_count: 5
+                      redirect_hint: detail:task_123
+                    error: null
+        "401":
+          description: "\u521D\u59CB\u5316\u6570\u636E\u7F3A\u5931\u6216\u65E0\u6548"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Envelope"
+  /auth/notion/url:
+    get:
+      tags:
+        - Auth & Onboarding
+      security:
+        - TelegramInitData: []
+      summary: "\u751F\u6210\u5E26\u7B7E\u540D\u7684 Notion OAuth URL"
+      operationId: getNotionAuthURL
+      responses:
+        "200":
+          description: "\u8FD4\u56DE\u91CD\u5B9A\u5411\u5730\u5740"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Envelope"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - url
+                        properties:
+                          url:
+                            type: string
+                            format: uri
+                            description:
+                              "Notion OAuth \u6388\u6743\u9875\u5730\u5740\
+                              \uFF0C\u5305\u542B state\u3002"
+  /auth/notion/callback:
+    post:
+      tags:
+        - Auth & Onboarding
+      security:
+        - TelegramInitData: []
+      summary: "\u4FDD\u5B58 Notion \u6388\u6743\u4FE1\u606F"
+      description:
+        "\u524D\u7AEF\u62FF\u5230 code/state \u540E\u8C03\u7528\uFF0C\u540E\
+        \u7AEF\u4F1A\u6821\u9A8C state\u3001\u52A0\u5BC6\u5B58\u50A8 access_token\uFF0C\
+        \u5E76\u6807\u8BB0 user.notion_connected\u3002\n"
+      operationId: postNotionCallback
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - code
+                - state
+              properties:
+                code:
+                  type: string
+                  description: "Notion OAuth \u8FD4\u56DE\u7684\u6388\u6743\u7801\u3002"
+                state:
+                  type: string
+                  description: "\u7531\u540E\u7AEF\u751F\u6210\u7684 HMAC state\u3002"
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - code
+                - state
+              properties:
+                code:
+                  type: string
+                state:
+                  type: string
+      responses:
+        "200":
+          description: "\u6388\u6743\u6210\u529F"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Envelope"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          notion_connected:
+                            type: boolean
+                            const: true
+        "400":
+          description: "state \u6821\u9A8C\u5931\u8D25\u6216\u7F3A\u5C11\u53C2\u6570"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Envelope"
+        "404":
+          description: "\u7528\u6237\u4E0D\u5B58\u5728 (invalid state payload)"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Envelope"
+        "500":
+          description:
+            "\u670D\u52A1\u7AEF\u5185\u90E8\u9519\u8BEF (\u52A0\u5BC6/\u5B58\
+            \u50A8\u5931\u8D25)"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Envelope"
+        "502":
+          description: "Notion API \u4EA4\u4E92\u5931\u8D25 (Exchange Code Failed)"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Envelope"
+  /tasks:
+    get:
+      tags:
+        - Tasks
+      security:
+        - TelegramInitData: []
+      summary: "\u67E5\u8BE2\u4EFB\u52A1\u5217\u8868"
+      description:
+        "\u9996\u9875 tabs \u4E0E\u7B5B\u9009\u5F39\u7A97\u7684\u4E3B\u8981\
+        \u6570\u636E\u6E90\uFF0C\u53EF\u6309\u89C6\u56FE\u3001\u6570\u636E\u5E93\u5206\
+        \u9875\u67E5\u8BE2\u3002\n"
+      operationId: listTasks
+      parameters:
+        - $ref: "#/components/parameters/ViewParam"
+        - $ref: "#/components/parameters/LimitParam"
+        - $ref: "#/components/parameters/CursorParam"
+        - name: db_id
+          in: query
+          required: false
+          schema:
+            type: string
+          description:
+            "\u6307\u5B9A\u6570\u636E\u5E93 ID\uFF0C\u4EC5\u8FD4\u56DE\u8BE5\
+            \u5E93\u4E0B\u7684\u4EFB\u52A1\u3002"
+        - in: query
+          name: database_id
+          required: false
+          schema:
+            type: string
+          description: "\u8FC7\u6EE4\u6307\u5B9A\u7684 Notion \u6570\u636E\u5E93"
+      responses:
+        "200":
+          description: "\u8FD4\u56DE\u4EFB\u52A1\u5206\u9875\u7ED3\u679C"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Envelope"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/TaskList"
+              examples:
+                default:
+                  value:
+                    success: true
+                    data:
+                      items:
+                        - id: 2
+                          title: "\u4FEE\u590D iOS \u767B\u5F55 Bug"
+                          status: To Do
+                          group_id: g_dev
+                          group_title: Dev Squad
+                          db_id: db_dev
+                          topic: Bugs
+                          due_at: "2023-11-20T10:00:00Z"
+                          creator:
+                            id: u_alice
+                            name: Alice
+                          assignee:
+                            id: u_me
+                            name: Me
+                          chat_jump_url: https://t.me/c/123/456
+                          sync_status: Pending
+                        - id: 3
+                          title: "\u66F4\u65B0\u9690\u79C1\u653F\u7B56"
+                          status: Done
+                          group_id: g_personal
+                          group_title: Personal Life
+                          db_id: db_personal
+                          due_at: "2023-11-15T09:00:00Z"
+                          creator:
+                            id: u_me
+                            name: Me
+                          assignee:
+                            id: u_me
+                            name: Me
+                    meta:
+                      page_size: 20
+  /tasks/{task_id}/status:
+    patch:
+      tags:
+        - Tasks
+      security:
+        - TelegramInitData: []
+      summary: "\u5FEB\u901F\u66F4\u65B0\u4EFB\u52A1\u72B6\u6001"
+      operationId: patchTaskStatus
+      parameters:
+        - name: task_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskStatusPatchRequest"
+      responses:
+        "200":
+          description: "\u72B6\u6001\u66F4\u65B0\u6210\u529F"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Envelope"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            format: int64
+                          status:
+                            $ref: "#/components/schemas/TaskStatus"
+                          updated_by:
+                            type: string
+                            description:
+                              "\u5B8C\u6210\u64CD\u4F5C\u7684\u7528\u6237\
+                              \ ID\u3002"
+  /tasks/{task_id}/jump:
+    post:
+      tags:
+        - Tasks
+      security:
+        - TelegramInitData: []
+      summary: "\u751F\u6210/\u9A8C\u8BC1\u4EFB\u52A1\u8DF3\u8F6C\u94FE\u63A5"
+      description:
+        "\u67D0\u4E9B\u60C5\u51B5\u4E0B\u9700\u8981\u91CD\u65B0\u8BA1\u7B97\
+        \ `chat_jump_url`\uFF08\u4F8B\u5982\u7FA4\u7EC4\u8FC1\u79FB\uFF09\uFF0C\u53EF\
+        \u901A\u8FC7\u8BE5\u63A5\u53E3\u751F\u6210\u6700\u65B0 deeplink\u3002\n"
+      operationId: postTaskJump
+      parameters:
+        - name: task_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskJumpRequest"
+      responses:
+        "200":
+          description: "\u8FD4\u56DE\u53EF\u7528\u8DF3\u8F6C\u94FE\u63A5"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Envelope"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          deeplink:
+                            type: string
+                            format: uri
+                            description:
+                              "Telegram `https://t.me/c/...` \u94FE\u63A5\
+                              \u3002"
+  /databases:
+    get:
+      tags:
+        - Tasks
+        - Groups
+      security:
+        - TelegramInitData: []
+      summary: "\u67E5\u8BE2\u53EF\u7528\u7684 Notion \u6570\u636E\u5E93"
+      operationId: listDatabases
+      parameters:
+        - $ref: "#/components/parameters/DatabaseSearchParam"
+      responses:
+        "200":
+          description: "\u6570\u636E\u5E93\u5217\u8868"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Envelope"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: "#/components/schemas/DatabaseSummary"
+  /databases/{database_id}/validate:
+    get:
+      tags:
+        - Groups
+      security:
+        - TelegramInitData: []
+      summary: "\u6821\u9A8C\u624B\u52A8\u8F93\u5165\u7684\u6570\u636E\u5E93"
+      operationId: validateDatabase
+      parameters:
+        - name: database_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "\u8FD4\u56DE\u5B57\u6BB5\u68C0\u67E5\u7ED3\u679C"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Envelope"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/DatabaseValidationResult"
+  /databases/{database_id}/refresh-schema:
+    post:
+      tags:
+        - Settings
+      security:
+        - TelegramInitData: []
+      summary: "\u624B\u52A8\u5237\u65B0\u6570\u636E\u5E93\u5B57\u6BB5\u7F13\u5B58"
+      operationId: refreshDatabaseSchema
+      parameters:
+        - name: database_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DatabaseRefreshRequest"
+      responses:
+        "200":
+          description: "\u5237\u65B0\u6210\u529F"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Envelope"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          status:
+                            type: string
+                            enum:
+                              - ok
+                          fields:
+                            type: array
+                            items:
+                              type: string
+  /tasks/{task_id}:
+    get:
+      tags:
+        - Tasks
+      security:
+        - TelegramInitData: []
+      summary: "\u83B7\u53D6\u4EFB\u52A1\u8BE6\u60C5"
+      operationId: getTask
+      parameters:
+        - name: task_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/IncludeParam"
+      responses:
+        "200":
+          description: "\u8FD4\u56DE\u5B8C\u6574\u4EFB\u52A1\u8BE6\u60C5"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Envelope"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/TaskDetail"
+    patch:
+      tags:
+        - Tasks
+      security:
+        - TelegramInitData: []
+      summary: "\u66F4\u65B0\u4EFB\u52A1\u5B57\u6BB5"
+      operationId: patchTask
+      parameters:
+        - name: task_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskPatchRequest"
+      responses:
+        "200":
+          description: "\u8FD4\u56DE\u66F4\u65B0\u540E\u7684\u4EFB\u52A1"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Envelope"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/TaskDetail"
+    delete:
+      tags:
+        - Tasks
+      security:
+        - TelegramInitData: []
+      summary: "\u5F52\u6863/\u5220\u9664\u4EFB\u52A1"
+      operationId: deleteTask
+      parameters:
+        - name: task_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "\u6807\u8BB0\u5F52\u6863\u6210\u529F"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Envelope"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            format: int64
+                          archived:
+                            type: boolean
+                            const: true
+  /tasks/{task_id}/comments:
+    get:
+      tags:
+        - Tasks
+      security:
+        - TelegramInitData: []
+      summary: "\u62C9\u53D6\u4EFB\u52A1\u8BC4\u8BBA"
+      operationId: listTaskComments
+      parameters:
+        - name: task_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - $ref: "#/components/parameters/CursorParam"
+      responses:
+        "200":
+          description: "\u8FD4\u56DE\u8BC4\u8BBA\u6811"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Envelope"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/CommentList"
+    post:
+      tags:
+        - Tasks
+      security:
+        - TelegramInitData: []
+      summary: "\u65B0\u589E\u4EFB\u52A1\u8BC4\u8BBA"
+      operationId: createTaskComment
+      parameters:
+        - name: task_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskCommentRequest"
+      responses:
+        "200":
+          description: "\u8BC4\u8BBA\u521B\u5EFA\u6210\u529F"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Envelope"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            format: int64
+                          created_at:
+                            type: string
+                            format: date-time
+  /me:
+    get:
+      tags:
+        - Settings
+      security:
+        - TelegramInitData: []
+      summary: "\u8BFB\u53D6\u7528\u6237\u8BBE\u7F6E\u9875\u4FE1\u606F"
+      operationId: getMe
+      responses:
+        "200":
+          description: "\u6210\u529F\u8FD4\u56DE\u8BBE\u7F6E\u9879"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Envelope"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          name:
+                            type: string
+                          photo_url:
+                            type: string
+                            format: uri
+                            nullable: true
+                          notion_connected:
+                            type: boolean
+                          timezone:
+                            type: string
+                          group_count:
+                            type: integer
+                          default_db:
+                            $ref: "#/components/schemas/DatabaseSummary"
+  /me/settings:
+    patch:
+      tags:
+        - Settings
+      security:
+        - TelegramInitData: []
+      summary: "\u66F4\u65B0\u9ED8\u8BA4\u6570\u636E\u5E93/\u65F6\u533A"
+      operationId: patchSettings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SettingsPatchRequest"
+      responses:
+        "200":
+          description: "\u8BBE\u7F6E\u6210\u529F"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Envelope"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          updated:
+                            type: boolean
+                            const: true
+  /auth/logout:
+    post:
+      tags:
+        - Settings
+      security:
+        - TelegramInitData: []
+      summary: "\u9000\u51FA\u767B\u5F55/\u4E22\u5F03\u7F13\u5B58"
+      description:
+        "\u6E05\u9664\u540E\u7AEF\u4F1A\u8BDD\u6216\u524D\u7AEF\u672C\u5730\
+        \u7F13\u5B58\uFF0C\u7531 Mini App \u4E3B\u52A8\u8C03\u7528\uFF1B\u540E\u7AEF\
+        \u4E3B\u8981\u8BB0\u5F55\u5BA1\u8BA1\u65E5\u5FD7\u3002\n"
+      operationId: postLogout
+      responses:
+        "200":
+          description: "\u64CD\u4F5C\u6210\u529F"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Envelope"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          success:
+                            type: boolean
+                            const: true
+  /tasks/sync:
+    post:
+      tags:
+        - Settings
+      security:
+        - TelegramInitData: []
+      summary: "\u624B\u52A8\u540C\u6B65\u4EFB\u52A1\u5230 Notion"
+      operationId: postTaskSync
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskSyncRequest"
+      responses:
+        "200":
+          description: "\u8FD4\u56DE\u672C\u6B21\u540C\u6B65\u7ED3\u679C"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Envelope"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          synced_count:
+                            type: integer
+                          failed_count:
+                            type: integer
+  /groups:
+    get:
+      tags:
+        - Groups
+      security:
+        - TelegramInitData: []
+      summary: "\u7BA1\u7406\u7AEF\u7FA4\u7EC4\u5217\u8868"
+      operationId: listGroups
+      parameters:
+        - $ref: "#/components/parameters/RoleParam"
+      responses:
+        "200":
+          description: "\u8FD4\u56DE\u7FA4\u7EC4\u53CA\u7ED1\u5B9A\u72B6\u6001"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Envelope"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: "#/components/schemas/GroupSummary"
+  /groups/refresh:
+    post:
+      tags:
+        - Groups
+      security:
+        - TelegramInitData: []
+      summary: "\u624B\u52A8\u5237\u65B0 Telegram \u7FA4\u5217\u8868"
+      operationId: postGroupsRefresh
+      responses:
+        "200":
+          description: "\u8FD4\u56DE\u5237\u65B0\u65F6\u95F4"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Envelope"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          refreshed_at:
+                            type: string
+                            format: date-time
+  /groups/{group_id}/db/validate:
+    post:
+      tags:
+        - Groups
+      security:
+        - TelegramInitData: []
+      summary:
+        "\u68C0\u67E5\u7FA4\u7EC4\u53EF\u5426\u7ED1\u5B9A\u76EE\u6807\u6570\
+        \u636E\u5E93"
+      operationId: postGroupValidateDatabase
+      parameters:
+        - name: group_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GroupValidateRequest"
+      responses:
+        "200":
+          description: "\u8FD4\u56DE\u517C\u5BB9\u6027"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Envelope"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          compatible:
+                            type: boolean
+                          missing_fields:
+                            type: array
+                            items:
+                              type: string
+                          analysis:
+                            type: string
+                            nullable: true
+  /groups/{group_id}/bind:
+    post:
+      tags:
+        - Groups
+      security:
+        - TelegramInitData: []
+      summary: "\u7FA4\u7EC4\u7ED1\u5B9A\u6570\u636E\u5E93"
+      operationId: postGroupBind
+      parameters:
+        - name: group_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GroupBindRequest"
+      responses:
+        "200":
+          description: "\u7ED1\u5B9A\u6210\u529F"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Envelope"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/GroupBindingState"
+  /groups/{group_id}/db/init:
+    post:
+      tags:
+        - Groups
+      security:
+        - TelegramInitData: []
+      summary: "\u4E00\u952E\u8865\u9F50 Notion \u7F3A\u5931\u5B57\u6BB5"
+      operationId: postGroupDbInit
+      parameters:
+        - name: group_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GroupInitRequest"
+      responses:
+        "200":
+          description: "\u521D\u59CB\u5316\u7ED3\u679C"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Envelope"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          initialized:
+                            type: boolean
+                          created_fields:
+                            type: array
+                            items:
+                              type: string
+  /bootstrap:
+    get:
+      tags:
+        - Routing
+      security:
+        - TelegramInitData: []
+      summary: "Deep Link start_param \u89E3\u6790"
+      operationId: getBootstrap
+      parameters:
+        - $ref: "#/components/parameters/BootstrapParam"
+      responses:
+        "200":
+          description: "\u8FD4\u56DE\u5EFA\u8BAE\u8DEF\u7531"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Envelope"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/BootstrapRoute"
+  /webhook/telegram:
+    post:
+      tags:
+        - Webhook
+      security:
+        - TelegramWebhookSecret: []
+      summary: "\u63A5\u6536 Telegram Update"
+      description:
+        "Telegram \u63A8\u9001\u5165\u53E3\uFF0C\u5185\u90E8\u4F1A\u505A\
+        \ Secret Token \u6821\u9A8C\u3001Redis \u5E42\u7B49\u3001\u539F\u59CB Update\
+        \ \u843D\u5E93\uFF0C\u5E76\u5C1D\u8BD5\u89E6\u53D1\u4EFB\u52A1\u521B\u5EFA\
+        \u3002\n"
+      operationId: postTelegramWebhook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TelegramUpdateMinimal"
+      responses:
+        "200":
+          description:
+            "Update \u5DF2\u5904\u7406/\u5FFD\u7565\uFF08\u65E0\u54CD\u5E94\
+            \u4F53\uFF09"
+        "401":
+          description: "Secret Token \u6821\u9A8C\u5931\u8D25"

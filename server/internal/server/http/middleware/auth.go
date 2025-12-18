@@ -117,6 +117,25 @@ func TelegramAuth(botToken string, userRepo repository.UserRepository) gin.Handl
 				})
 				return
 			}
+		} else {
+			// Sync user profile from Telegram (name, photo, username may change)
+			needsUpdate := false
+			newName := buildUserName(initData.User)
+			if user.Name != newName && newName != "User" {
+				user.Name = newName
+				needsUpdate = true
+			}
+			if user.TgUsername != initData.User.Username {
+				user.TgUsername = initData.User.Username
+				needsUpdate = true
+			}
+			if user.PhotoURL != initData.User.PhotoURL && initData.User.PhotoURL != "" {
+				user.PhotoURL = initData.User.PhotoURL
+				needsUpdate = true
+			}
+			if needsUpdate {
+				_ = userRepo.Update(c.Request.Context(), user) // Best effort, don't block auth
+			}
 		}
 
 		// Store user in context
