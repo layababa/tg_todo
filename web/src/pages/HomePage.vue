@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { listTasks } from '@/api/task'
 import { listDatabases } from '@/api/notion'
@@ -20,6 +20,79 @@ const filterOpen = ref(false)
 // Filter State
 const databases = ref<DatabaseSummary[]>([])
 const selectedDbId = ref<string>('') // Empty string = All
+
+// Scroll State - with large hysteresis to prevent jitter from header height change
+const isHeaderCollapsed = ref(false)
+let ticking = false
+let lastScrollY = 0
+
+// Swipe gesture state
+let touchStartX = 0
+let touchStartY = 0
+let touchEndX = 0
+let touchEndY = 0
+
+const tabs: Array<'assigned' | 'created' | 'all'> = ['assigned', 'created', 'all']
+
+const handleTouchStart = (e: TouchEvent) => {
+    touchStartX = e.changedTouches[0].screenX
+    touchStartY = e.changedTouches[0].screenY
+}
+
+const handleTouchEnd = (e: TouchEvent) => {
+    touchEndX = e.changedTouches[0].screenX
+    touchEndY = e.changedTouches[0].screenY
+    handleSwipe()
+}
+
+const handleSwipe = () => {
+    const deltaX = touchEndX - touchStartX
+    const deltaY = touchEndY - touchStartY
+    
+    // Only trigger if horizontal swipe is dominant and significant
+    const minSwipeDistance = 50
+    if (Math.abs(deltaX) < minSwipeDistance) return
+    if (Math.abs(deltaY) > Math.abs(deltaX)) return // Vertical scroll, not swipe
+    
+    const currentIndex = tabs.indexOf(currentTab.value)
+    
+    if (deltaX < 0) {
+        // Swipe left -> next tab
+        if (currentIndex < tabs.length - 1) {
+            currentTab.value = tabs[currentIndex + 1]
+        }
+    } else {
+        // Swipe right -> previous tab
+        if (currentIndex > 0) {
+            currentTab.value = tabs[currentIndex - 1]
+        }
+    }
+}
+
+const handleScroll = () => {
+    if (!ticking) {
+        requestAnimationFrame(() => {
+            const scrollY = window.scrollY
+            const scrollDelta = scrollY - lastScrollY
+            lastScrollY = scrollY
+            
+            // Only respond to user scroll direction, ignore layout-induced scroll changes
+            // Large hysteresis: collapse threshold must be > collapse area height (~70px) + expand threshold
+            const collapseThreshold = 100
+            const expandThreshold = 15
+            
+            if (!isHeaderCollapsed.value && scrollY > collapseThreshold && scrollDelta > 0) {
+                // Scrolling down past threshold
+                isHeaderCollapsed.value = true
+            } else if (isHeaderCollapsed.value && scrollY < expandThreshold) {
+                // Back to top
+                isHeaderCollapsed.value = false
+            }
+            ticking = false
+        })
+        ticking = true
+    }
+}
 
 // Computed
 const user = computed(() => authStore.user)
@@ -91,6 +164,13 @@ onMounted(() => {
     fetchTasks()
     fetchDatabases()
     if (!authStore.user) authStore.fetchStatus()
+    
+    // Add scroll listener
+    window.addEventListener('scroll', handleScroll, { passive: true })
+})
+
+onUnmounted(() => {
+    window.removeEventListener('scroll', handleScroll)
 })
 </script>
 
@@ -100,8 +180,14 @@ onMounted(() => {
 
   <div class="app-container">
     <!-- Header -->
-    <header class="header sticky top-0 z-30">
-        <div class="flex justify-between items-center mb-6">
+    <header 
+        class="header sticky top-0 z-30 bg-base-100 backdrop-blur-md"
+        :class="{ 'shadow-lg shadow-black/20': isHeaderCollapsed }"
+    >
+        <!-- Top Bar (Always visible) -->
+        <div class="flex justify-between items-center"
+            :class="isHeaderCollapsed ? 'py-2' : 'py-4 mb-2'"
+        >
             <div class="font-mono text-[10px] text-primary border border-primary px-1.5 py-0.5 tracking-widest">系统.V2.0</div>
             <div class="flex gap-3">
                 <button class="icon-btn tech-btn" :class="{ '!text-primary !border-primary': filterOpen || selectedDbId }" aria-label="Filter" @click="filterOpen = !filterOpen">
@@ -113,14 +199,15 @@ onMounted(() => {
             </div>
         </div>
 
-        <div class="mb-6">
+        <!-- User Greeting (Collapsible) - instant toggle -->
+        <div v-show="!isHeaderCollapsed" class="mb-4">
             <h1 class="text-3xl font-light mb-2 tracking-tight">你好, <span class="font-bold">{{ userName }}</span></h1>
             <div class="flex items-center gap-1.5 font-mono text-[10px] text-base-content/60">
                 <span class="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_6px_var(--primary)] animate-pulse"></span> 系统在线
             </div>
         </div>
 
-        <!-- Tech Tabs -->
+        <!-- Tech Tabs (Always visible) -->
         <div class="border-b border-base-content/10">
             <div class="flex relative">
                 <button 
@@ -139,8 +226,8 @@ onMounted(() => {
                     :class="{ 'text-primary font-bold': currentTab === 'all' }"
                 >全部任务</button>
                 
-                <!-- Active Line Indicator -->
-                <div class="absolute bottom-[-1px] left-0 w-1/3 h-0.5 bg-primary shadow-[0_-2px_8px_rgba(171,246,0,0.2)] transition-transform duration-300"
+                <!-- Active Line Indicator - instant switch for mobile sync -->
+                <div class="absolute bottom-[-1px] left-0 w-1/3 h-0.5 bg-primary shadow-[0_-2px_8px_rgba(171,246,0,0.2)]"
                     :style="{ transform: `translateX(${currentTab === 'assigned' ? 0 : currentTab === 'created' ? 100 : 200}%)` }"
                 ></div>
             </div>
@@ -180,8 +267,13 @@ onMounted(() => {
         <button class="text-base-content/40 hover:text-base-content" @click="selectDb('')">Clear</button>
     </div>
 
-    <!-- Task List -->
-    <main class="px-0 pb-24" id="taskList">
+    <!-- Task List (with swipe gesture) -->
+    <main 
+        class="px-0 pb-24" 
+        id="taskList"
+        @touchstart="handleTouchStart"
+        @touchend="handleTouchEnd"
+    >
         <div v-if="loading && tasks.length === 0" class="flex flex-col gap-4 p-4">
              <div v-for="i in 3" :key="i" class="skeleton h-24 w-full rounded bg-base-200/50"></div>
         </div>
@@ -252,13 +344,14 @@ onMounted(() => {
         </template>
     </main>
 
-    <!-- FAB -->
-    <button class="fixed bottom-6 right-6 w-14 h-14 bg-primary text-black rounded-none flex items-center justify-center text-2xl shadow-[0_0_20px_rgba(171,246,0,0.4)] transition-transform hover:scale-105 active:scale-95 z-40"
-        style="clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);"
-        @click="goToDetail('new')"
-    >
-        <i class="ri-add-line"></i>
-    </button>
-
   </div>
+
+  <!-- FAB - outside app-container for proper fixed positioning -->
+  <button class="fixed bottom-6 right-6 w-14 h-14 bg-primary text-black rounded-none flex items-center justify-center text-2xl shadow-[0_0_20px_rgba(171,246,0,0.4)] transition-transform hover:scale-105 active:scale-95 z-40"
+      style="clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);"
+      @click="goToDetail('new')"
+  >
+      <i class="ri-add-line"></i>
+  </button>
 </template>
+
