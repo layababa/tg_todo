@@ -6,14 +6,21 @@ const route = useRoute()
 const transitionName = ref('page-slide-right')
 
 // 监听路由深度或历史记录来决定动画方向
+// 监听路由深度或历史记录来决定动画方向
 watch(() => route.path, (toPath, fromPath) => {
+  // Disable transition for Onboarding page
+  if (toPath === '/onboarding' || toPath === '/') {
+    transitionName.value = ''
+    return
+  }
+
   const toDepth = toPath.split('/').filter(Boolean).length
   const fromDepth = fromPath ? fromPath.split('/').filter(Boolean).length : 0
   
   if (toDepth < fromDepth || toPath === '/home') {
-    transitionName.value = 'page-slide-left'
+    transitionName.value = 'page-slide-left' // Back/Pop
   } else {
-    transitionName.value = 'page-slide-right'
+    transitionName.value = 'page-slide-right' // Forward/Push
   }
 })
 </script>
