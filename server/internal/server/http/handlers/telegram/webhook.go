@@ -189,7 +189,35 @@ func (h *Handler) HandleWebhook(c *gin.Context) {
 			if err != nil {
 				h.logger.Error("failed to ensure group", zap.Error(err))
 			} else {
-				h.tgClient.SendMessage(mcm.Chat.ID, "Hello! I am ready. Use /bind to connect Notion.")
+				// Send welcome message - focus on core task management
+				welcomeText := fmt.Sprintf(
+					"👋 欢迎使用 Telegram To-Do 助手！\n\n"+
+						"📝 **如何创建任务**\n"+
+						"• 在群内 @%s + 文本\n"+
+						"• 回复消息 + @%s\n"+
+						"• 使用 @ 提及成员可指派任务\n\n"+
+						"💡 输入 /help 查看更多功能",
+					h.botUsername, h.botUsername,
+				)
+
+				// Try to add bind button if webAppURL is configured
+				startParam := "bind_" + groupID
+				markup := h.buildWebAppMarkup("⚙️ 高级设置", startParam)
+
+				if markup != nil {
+					// If webAppURL is configured, mention advanced features
+					welcomeText = fmt.Sprintf(
+						"👋 欢迎使用 Telegram To-Do 助手！\n\n"+
+							"📝 **如何创建任务**\n"+
+							"• 在群内 @%s + 文本\n"+
+							"• 回复消息 + @%s\n"+
+							"• 使用 @ 提及成员可指派任务\n\n"+
+							"💡 点击下方按钮可配置高级功能（如 Notion 同步）",
+						h.botUsername, h.botUsername,
+					)
+				}
+
+				h.sendMessage(mcm.Chat.ID, welcomeText, markup)
 			}
 		} else if status == "left" || status == "kicked" {
 			// Bot left
@@ -226,7 +254,8 @@ func (h *Handler) HandleWebhook(c *gin.Context) {
 		case "/close", "/hide":
 			h.handleHideKeyboard(msg.Chat.ID)
 		default:
-			if msg.ReplyToMessage != nil && strings.Contains(msg.Text, "@") {
+			// PRD Story S1/S2: 群聊中 @Bot 或 Reply + @Bot 创建任务
+			if h.shouldCreateTask(msg) {
 				h.handleTaskCommand(ctx, msg)
 			}
 		}
@@ -316,22 +345,85 @@ func (h *Handler) handleTaskCommand(ctx context.Context, msg *Message) {
 		h.sendMessage(msg.Chat.ID, "❌ 创建任务失败，请稍后再试。", nil)
 		return
 	}
-	var markup interface{}
-	replyText := fmt.Sprintf("✅ 已创建任务：%s", createdTask.Title)
 
-	if createdTask.DatabaseID == nil {
-		replyText += "\n(当前仅保存在服务端，待绑定 Notion 后可同步)"
-		// Add Bind Button
-		groupID := fmt.Sprintf("%d", msg.Chat.ID)
-		startParam := "bind_" + groupID
-		markup = h.buildWebAppMarkup("⚙️ 绑定 Notion", startParam)
-	} else {
-		replyText += "\n(已同步到 Notion)"
+	// Build detailed reply message
+	var replyText string
+	assigneeCount := len(createdTask.Assignees)
+
+	// Build task URL for Mini App using Telegram deep link
+	// Format: https://t.me/<BotUsername>?startapp=task_<TaskID>
+	taskURL := ""
+	if h.botUsername != "" {
+		// Remove @ prefix if present
+		cleanBotName := strings.TrimPrefix(h.botUsername, "@")
+		taskURL = fmt.Sprintf("https://t.me/%s?startapp=task_%s", cleanBotName, createdTask.ID)
 	}
+
+	// Check if this is a group chat
+	// Telegram WebApp buttons are NOT supported in group chats, only in private chats
+	isGroupChat := msg.Chat.Type == "group" || msg.Chat.Type == "supergroup"
+
+	if isGroupChat {
+		// In group chats: @ assignees and provide task URL
+		if assigneeCount > 0 {
+			// @ all assignees
+			var mentions []string
+			for _, assignee := range createdTask.Assignees {
+				if assignee.TgUsername != "" {
+					mentions = append(mentions, "@"+assignee.TgUsername)
+				}
+			}
+
+			if len(mentions) > 0 {
+				// Use HTML link format: <a href="URL">text</a>
+				replyText = fmt.Sprintf("✅ 已创建任务：%s\n\n%s 请点击 <a href=\"%s\">查看任务</a>",
+					createdTask.Title,
+					strings.Join(mentions, " "),
+					taskURL)
+			} else {
+				// No usernames available, just show task created
+				replyText = fmt.Sprintf("✅ 已创建任务：%s\n\n👥 已指派给 %d 人\n<a href=\"%s\">查看任务</a>",
+					createdTask.Title,
+					assigneeCount,
+					taskURL)
+			}
+		} else {
+			// No assignees
+			replyText = fmt.Sprintf("✅ 已创建任务：%s\n\n<a href=\"%s\">查看任务</a>", createdTask.Title, taskURL)
+		}
+	} else {
+		// In private chats: use WebApp buttons
+		if assigneeCount > 1 {
+			replyText = fmt.Sprintf("✅ 已创建任务：%s\n👥 已指派给 %d 人", createdTask.Title, assigneeCount)
+		} else {
+			replyText = fmt.Sprintf("✅ 已创建任务：%s", createdTask.Title)
+		}
+	}
+
+	var markup interface{}
+	if isGroupChat {
+		// No buttons in group chats
+		markup = nil
+	} else {
+		// In private chats, we can use WebApp buttons
+		if createdTask.DatabaseID == nil {
+			groupID := fmt.Sprintf("%d", msg.Chat.ID)
+			startParam := "bind_" + groupID
+			markup = h.buildWebAppMarkup("⚙️ 设置", startParam)
+		} else {
+			replyText += "\n✓ 已同步"
+			taskParam := fmt.Sprintf("task_%s", createdTask.ID)
+			markup = h.buildWebAppMarkup("📋 查看详情", taskParam)
+		}
+	}
+
 	h.sendMessage(msg.Chat.ID, replyText, markup)
 }
 
 func (h *Handler) sendMessage(chatID int64, text string, markup interface{}) {
+	h.logger.Debug("sendMessage called",
+		zap.Int64("chatID", chatID),
+		zap.Bool("hasMarkup", markup != nil))
 	var err error
 	if markup != nil {
 		err = h.tgClient.SendMessageWithMarkup(chatID, text, markup)
@@ -345,7 +437,13 @@ func (h *Handler) sendMessage(chatID int64, text string, markup interface{}) {
 
 func (h *Handler) buildWebAppMarkup(buttonText, startParam string) *telegram.InlineKeyboardMarkup {
 	url := h.buildWebAppButtonURL(startParam)
+	h.logger.Debug("buildWebAppMarkup called",
+		zap.String("webAppURL", h.webAppURL),
+		zap.String("buttonText", buttonText),
+		zap.String("startParam", startParam),
+		zap.String("generatedURL", url))
 	if url == "" {
+		h.logger.Warn("buildWebAppMarkup returning nil because URL is empty")
 		return nil
 	}
 	return &telegram.InlineKeyboardMarkup{
@@ -461,6 +559,44 @@ func (h *Handler) handleMenu(chatID int64) {
 
 func (h *Handler) handleHideKeyboard(chatID int64) {
 	h.sendMessage(chatID, "✅ 已隐藏快捷菜单，如需再次显示请输入 /menu。", &telegram.ReplyKeyboardRemove{RemoveKeyboard: true})
+}
+
+// shouldCreateTask checks if a message should trigger task creation
+// According to PRD Story S1/S2:
+// - Group chat: @Bot + text creates task
+// - Group chat: Reply + @Bot creates task
+func (h *Handler) shouldCreateTask(msg *Message) bool {
+	if msg == nil {
+		return false
+	}
+
+	// Only in group chats
+	if msg.Chat.Type != "group" && msg.Chat.Type != "supergroup" {
+		return false
+	}
+
+	text := msg.Text
+	if text == "" {
+		return false
+	}
+
+	// Check if bot is mentioned
+	botMentioned := false
+	if h.botUsername != "" {
+		botMentioned = strings.Contains(text, "@"+h.botUsername)
+	}
+
+	// Case 1: @Bot + text (direct mention)
+	if botMentioned {
+		return true
+	}
+
+	// Case 2: Reply + @ (any mention in reply)
+	if msg.ReplyToMessage != nil && strings.Contains(text, "@") {
+		return true
+	}
+
+	return false
 }
 
 func extractCommand(text string) (string, []string) {

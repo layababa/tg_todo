@@ -94,10 +94,21 @@ func (c *Client) SendMessage(chatID int64, text string) error {
 	})
 }
 
+// SendMessageWithButtons sends a message with inline keyboard buttons
+func (c *Client) SendMessageWithButtons(chatID int64, text string, markup InlineKeyboardMarkup) error {
+	return c.sendJSON("sendMessage", sendMessageReq{
+		ChatID:      chatID,
+		Text:        text,
+		ParseMode:   "HTML",
+		ReplyMarkup: markup,
+	})
+}
+
 func (c *Client) SendMessageWithMarkup(chatID int64, text string, markup interface{}) error {
 	return c.sendJSON("sendMessage", sendMessageReq{
 		ChatID:      chatID,
 		Text:        text,
+		ParseMode:   "HTML",
 		ReplyMarkup: markup,
 	})
 }
@@ -133,6 +144,9 @@ func (c *Client) sendJSON(method string, payload interface{}) error {
 	if err != nil {
 		return err
 	}
+
+	// Debug: log the JSON being sent
+	fmt.Printf("[DEBUG] Telegram API %s request: %s\n", method, string(body))
 
 	resp, err := c.httpClient.Post(url, "application/json", bytes.NewBuffer(body))
 	if err != nil {

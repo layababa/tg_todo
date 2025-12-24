@@ -80,6 +80,13 @@ func (h *Handler) GetStatus(c *gin.Context) {
 	}
 
 	redirectHint := c.Query("start_param")
+	if redirectHint == "" {
+		// Fallback to start_param from signed init_data
+		if initData, ok := middleware.GetInitDataFromContext(c); ok {
+			redirectHint = initData.StartParam
+		}
+	}
+
 	var hint any
 	if redirectHint != "" {
 		hint = redirectHint

@@ -16,6 +16,7 @@ import (
 const (
 	HeaderTelegramInitData = "X-Telegram-Init-Data"
 	ContextKeyUser         = "user"
+	ContextKeyInitData     = "init_data"
 	MaxInitDataAge         = 24 * time.Hour // Init data expires after 24 hours
 )
 
@@ -140,6 +141,7 @@ func TelegramAuth(botToken string, userRepo repository.UserRepository) gin.Handl
 
 		// Store user in context
 		c.Set(ContextKeyUser, user)
+		c.Set(ContextKeyInitData, initData)
 
 		// Continue to next handler
 		c.Next()
@@ -168,4 +170,14 @@ func GetUserFromContext(c *gin.Context) (*models.User, bool) {
 	}
 	u, ok := user.(*models.User)
 	return u, ok
+}
+
+// GetInitDataFromContext retrieves the parsed Telegram init data from the Gin context
+func GetInitDataFromContext(c *gin.Context) (*telegramauth.InitData, bool) {
+	data, exists := c.Get(ContextKeyInitData)
+	if !exists {
+		return nil, false
+	}
+	id, ok := data.(*telegramauth.InitData)
+	return id, ok
 }

@@ -4,11 +4,13 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/robfig/cron/v3"
 	"go.uber.org/zap"
 
 	"github.com/layababa/tg_todo/server/internal/repository"
+	"github.com/layababa/tg_todo/server/internal/service/notification"
 	"github.com/layababa/tg_todo/server/internal/service/telegram"
 )
 
@@ -17,15 +19,17 @@ type Service struct {
 	cron     *cron.Cron
 	userRepo repository.UserRepository
 	taskRepo repository.TaskRepository
+	notifier *notification.Service
 	tgClient *telegram.Client
 }
 
-func NewService(logger *zap.Logger, userRepo repository.UserRepository, taskRepo repository.TaskRepository, tgClient *telegram.Client) *Service {
+func NewService(logger *zap.Logger, userRepo repository.UserRepository, taskRepo repository.TaskRepository, notifier *notification.Service, tgClient *telegram.Client) *Service {
 	return &Service{
 		logger:   logger,
 		cron:     cron.New(),
 		userRepo: userRepo,
 		taskRepo: taskRepo,
+		notifier: notifier,
 		tgClient: tgClient,
 	}
 }
@@ -42,6 +46,14 @@ func (s *Service) Start() {
 		s.logger.Info("daily digest scheduled for 09:00 AM")
 	}
 
+	// Schedule Task Reminders every minute
+	_, err = s.cron.AddFunc("* * * * *", func() {
+		s.CheckReminders(context.Background())
+	})
+	if err != nil {
+		s.logger.Error("failed to schedule task reminders", zap.Error(err))
+	}
+
 	s.cron.Start()
 }
 
@@ -49,7 +61,6 @@ func (s *Service) Stop() {
 	s.cron.Stop()
 }
 
-// SendDailyDigest manually triggers the digest (can be called by Cron or Debug)
 func (s *Service) SendDailyDigest(ctx context.Context) {
 	users, err := s.userRepo.ListAll(ctx)
 	if err != nil {
@@ -66,11 +77,6 @@ func (s *Service) SendDailyDigest(ctx context.Context) {
 }
 
 func (s *Service) processUserDigest(ctx context.Context, userID string, chatID int64) {
-	// List pending tasks (To Do + In Progress)
-	// We iterate views to get all. Or we can just use TaskViewAll and filter in memory?
-	// But ListByUser filters by Creator OR Assignee.
-	// TaskViewAll + Limit 50 should be enough for digest.
-
 	filter := repository.TaskListFilter{
 		View:  repository.TaskViewAll,
 		Limit: 100,
@@ -89,18 +95,12 @@ func (s *Service) processUserDigest(ctx context.Context, userID string, chatID i
 	}
 
 	if len(pendingTasks) == 0 {
-		// Verify if we should send "No tasks" message?
-		// PRD usually implies silence is golden, or maybe a "You're all clear!"
-		// Let's settle for silence to avoid spam, unless User configured "Send even if empty".
-		// For now: Silence.
 		return
 	}
 
-	// Build Message
 	var sb strings.Builder
 	sb.WriteString(fmt.Sprintf("📅 每日摘要 (Daily Digest)\n\n您有 %d 个待办任务：\n", len(pendingTasks)))
 
-	// Show top 10
 	limit := 10
 	for i, t := range pendingTasks {
 		if i >= limit {
@@ -118,8 +118,60 @@ func (s *Service) processUserDigest(ctx context.Context, userID string, chatID i
 
 	sb.WriteString("\n\n💪 加油！输入 /todo 添加新任务。")
 
-	// Send
 	if err := s.tgClient.SendMessage(chatID, sb.String()); err != nil {
 		s.logger.Error("failed to send digest", zap.Int64("chat_id", chatID), zap.Error(err))
 	}
 }
+
+// CheckReminders scans for tasks that need reminders
+func (s *Service) CheckReminders(ctx context.Context) {
+	now := time.Now()
+	tasks, err := s.taskRepo.ListForReminders(ctx, now)
+	if err != nil {
+		s.logger.Error("failed to list tasks for reminders", zap.Error(err))
+		return
+	}
+
+	for _, task := range tasks {
+		s.processTaskReminders(ctx, task, now)
+	}
+}
+
+func (s *Service) processTaskReminders(ctx context.Context, task repository.Task, now time.Time) {
+	remind1h := false
+	remindDue := false
+
+	if task.DueAt == nil {
+		return
+	}
+
+	// 1. Check 1h reminder
+	oneHourFromNow := now.Add(1 * time.Hour)
+	if task.DueAt.Before(oneHourFromNow) && !task.Reminder1hSent {
+		remind1h = true
+	}
+
+	// 2. Check due reminder
+	if task.DueAt.Before(now) && !task.ReminderDueSent {
+		remindDue = true
+	}
+
+	if !remind1h && !remindDue {
+		return
+	}
+
+	// Send notifications
+	if s.notifier != nil {
+		if remindDue {
+			s.notifier.NotifyReminder(ctx, notification.EventReminderDue, &task)
+		} else if remind1h {
+			s.notifier.NotifyReminder(ctx, notification.EventReminder1h, &task)
+		}
+	}
+
+	// Update flags
+	if err := s.taskRepo.UpdateReminderFlags(ctx, task.ID, remind1h, remindDue); err != nil {
+		s.logger.Error("failed to update reminder flags", zap.String("task_id", task.ID), zap.Error(err))
+	}
+}
+

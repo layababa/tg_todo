@@ -24,9 +24,10 @@ type Config struct {
 		GitCommit string `mapstructure:"git_commit"`
 	} `mapstructure:"build"`
 	Telegram struct {
-		BotToken  string `mapstructure:"bot_token"`
-		BotName   string `mapstructure:"bot_name"`
-		WebAppURL string `mapstructure:"web_app_url"`
+		BotToken     string `mapstructure:"bot_token"`
+		BotName      string `mapstructure:"bot_name"`
+		AppShortName string `mapstructure:"app_short_name"`
+		WebAppURL    string `mapstructure:"web_app_url"`
 	} `mapstructure:"telegram"`
 	Notion struct {
 		ClientID     string `mapstructure:"client_id"`
@@ -59,6 +60,7 @@ func Load(path string) (*Config, error) {
 	_ = v.BindEnv("build.git_commit", "GIT_COMMIT")
 	_ = v.BindEnv("telegram.bot_token", "TELEGRAM_BOT_TOKEN")
 	_ = v.BindEnv("telegram.bot_name", "TELEGRAM_BOT_NAME")
+	_ = v.BindEnv("telegram.app_short_name", "TELEGRAM_APP_SHORT_NAME")
 	_ = v.BindEnv("telegram.web_app_url", "TELEGRAM_WEB_APP_URL")
 	_ = v.BindEnv("notion.client_id", "NOTION_CLIENT_ID")
 	_ = v.BindEnv("notion.client_secret", "NOTION_CLIENT_SECRET")

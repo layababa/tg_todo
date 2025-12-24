@@ -39,23 +39,25 @@ const (
 
 // Task represents the tasks table
 type Task struct {
-	ID           string         `gorm:"type:uuid;primary_key;default:gen_random_uuid()"`
-	NotionPageID *string        `gorm:"type:text"`
-	Title        string         `gorm:"type:text;not null"`
-	Description  string         `gorm:"type:text"`
-	Status       TaskStatus     `gorm:"type:task_status;default:'To Do';not null"`
-	SyncStatus   TaskSyncStatus `gorm:"type:task_sync_status;default:'Pending';not null"`
-	GroupID      *string        `gorm:"type:uuid"`
-	DatabaseID   *string        `gorm:"type:text"`
-	Topic        string         `gorm:"type:text"`
-	DueAt        *time.Time     `gorm:"type:timestamptz"`
-	CreatorID    *string        `gorm:"type:uuid"`
-	ChatJumpURL  string         `gorm:"type:text"`
-	NotionURL    *string        `gorm:"type:text"`
-	Archived     bool           `gorm:"default:false"`
-	CreatedAt    time.Time      `gorm:"default:now()"`
-	UpdatedAt    time.Time      `gorm:"default:now()"`
-	DeletedAt    gorm.DeletedAt `gorm:"index"`
+	ID              string         `gorm:"type:uuid;primary_key;default:gen_random_uuid()"`
+	NotionPageID    *string        `gorm:"type:text"`
+	Title           string         `gorm:"type:text;not null"`
+	Description     string         `gorm:"type:text"`
+	Status          TaskStatus     `gorm:"type:task_status;default:'To Do';not null"`
+	SyncStatus      TaskSyncStatus `gorm:"type:task_sync_status;default:'Pending';not null"`
+	GroupID         *string        `gorm:"type:text"` // Telegram Chat ID (matches groups.id)
+	DatabaseID      *string        `gorm:"type:text"`
+	Topic           string         `gorm:"type:text"`
+	DueAt           *time.Time     `gorm:"type:timestamptz"`
+	CreatorID       *string        `gorm:"type:uuid"`
+	ChatJumpURL     string         `gorm:"type:text"`
+	NotionURL       *string        `gorm:"type:text"`
+	Archived        bool           `gorm:"default:false"`
+	Reminder1hSent  bool           `gorm:"column:reminder_1h_sent;default:false"`
+	ReminderDueSent bool           `gorm:"column:reminder_due_sent;default:false"`
+	CreatedAt       time.Time      `gorm:"default:now()"`
+	UpdatedAt       time.Time      `gorm:"default:now()"`
+	DeletedAt       gorm.DeletedAt `gorm:"index"`
 
 	Assignees []models.User         `gorm:"many2many:task_assignees;"`
 	Snapshots []TaskContextSnapshot `gorm:"foreignKey:TaskID"`
@@ -119,6 +121,8 @@ type TaskRepository interface {
 	ListComments(ctx context.Context, taskID string) ([]TaskComment, error)
 	GetByNotionPageID(ctx context.Context, pageID string) (*Task, error)
 	ListPendingByGroup(ctx context.Context, groupID string) ([]Task, error)
+	ListForReminders(ctx context.Context, now time.Time) ([]Task, error)
+	UpdateReminderFlags(ctx context.Context, id string, reminder1h, reminderDue bool) error
 }
 
 type taskRepository struct {
@@ -173,7 +177,7 @@ func (r *taskRepository) UpdateStatus(ctx context.Context, task *Task) error {
 
 // Update updates main task fields (Title, Description, Status, DueAt, etc)
 func (r *taskRepository) Update(ctx context.Context, task *Task) error {
-	return r.db.WithContext(ctx).Model(task).Select("Title", "Description", "Status", "SyncStatus", "Topic", "DueAt").Updates(task).Error
+	return r.db.WithContext(ctx).Model(task).Select("Title", "Description", "Status", "SyncStatus", "Topic", "DueAt", "Reminder1hSent", "ReminderDueSent").Updates(task).Error
 }
 
 // TaskView represents the type of list view
@@ -281,4 +285,33 @@ func (r *taskRepository) ListPendingByGroup(ctx context.Context, groupID string)
 		return nil, err
 	}
 	return tasks, nil
+}
+
+// ListForReminders finds tasks that need reminders sent
+func (r *taskRepository) ListForReminders(ctx context.Context, now time.Time) ([]Task, error) {
+	var tasks []Task
+	// 1. Tasks due in <= 1 hour but reminder_1h not sent
+	// 2. Tasks past due but reminder_due not sent
+	err := r.db.WithContext(ctx).
+		Preload("Assignees").
+		Where("status != ? AND due_at IS NOT NULL AND archived = false AND deleted_at IS NULL", TaskStatusDone).
+		Where("(due_at <= ? AND reminder_1h_sent = false) OR (due_at <= ? AND reminder_due_sent = false)",
+			now.Add(1*time.Hour), now).
+		Find(&tasks).Error
+	return tasks, err
+}
+
+// UpdateReminderFlags updates the reminder sent flags
+func (r *taskRepository) UpdateReminderFlags(ctx context.Context, id string, reminder1h, reminderDue bool) error {
+	updates := make(map[string]interface{})
+	if reminder1h {
+		updates["reminder_1h_sent"] = true
+	}
+	if reminderDue {
+		updates["reminder_due_sent"] = true
+	}
+	if len(updates) == 0 {
+		return nil
+	}
+	return r.db.WithContext(ctx).Model(&Task{}).Where("id = ?", id).Updates(updates).Error
 }

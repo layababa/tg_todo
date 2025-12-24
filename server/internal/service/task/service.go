@@ -49,6 +49,7 @@ type UpdateParams struct {
 	Title       *string
 	Description *string
 	Status      *repository.TaskStatus
+	DueAt       *time.Time
 	SyncStatus  *repository.TaskSyncStatus // Added to support manual sync reset if needed
 }
 
@@ -129,8 +130,15 @@ func (s *Service) UpdateTask(ctx context.Context, id string, params UpdateParams
 		task.Description = *params.Description
 	}
 
+	if params.DueAt != nil {
+		task.DueAt = params.DueAt
+		// Reset reminder flags when due date changes
+		task.Reminder1hSent = false
+		task.ReminderDueSent = false
+	}
+
 	// Reset sync status if critical fields changed
-	if params.Title != nil || params.Status != nil || params.Description != nil {
+	if params.Title != nil || params.Status != nil || params.Description != nil || params.DueAt != nil {
 		task.SyncStatus = repository.TaskSyncStatusPending
 	}
 	if params.SyncStatus != nil {

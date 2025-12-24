@@ -31,6 +31,7 @@ export const getTask = async (id: string): Promise<Task> => {
 export interface PatchTaskRequest {
   title?: string;
   status?: string;
+  due_at?: string | null;
 }
 
 export const patchTask = async (

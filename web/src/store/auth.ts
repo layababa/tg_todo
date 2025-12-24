@@ -43,12 +43,27 @@ export const useAuthStore = defineStore("auth", {
       return headers;
     },
     async fetchStatus(startParam?: string) {
-      if (!this.hasInitData) {
-        this.error = "缺少 Telegram init data，请从 Telegram 内打开应用。";
-        return;
-      }
       this.loadingStatus = true;
       this.error = null;
+
+      // 尝试多次获取 initData，因为 Telegram SDK 可能初始化较慢
+      let retryCount = 0;
+      const maxRetries = 5;
+      
+      while (!this.hasInitData && retryCount < maxRetries) {
+        this.initData = resolveInitData();
+        if (this.hasInitData) break;
+        
+        await new Promise(resolve => setTimeout(resolve, 200));
+        retryCount++;
+      }
+
+      if (!this.hasInitData) {
+        this.error = "缺少 Telegram init data，请从 Telegram 内打开应用。";
+        this.loadingStatus = false;
+        return;
+      }
+
       try {
         const params = startParam ? { start_param: startParam } : undefined;
         const response = await apiClient.get<{ success: boolean; data: AuthStatusPayload }>(

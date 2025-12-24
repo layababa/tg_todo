@@ -149,6 +149,9 @@ func main() {
 	})
 	r.GET("/healthz", healthHandler.Handle)
 
+	// API Route Group
+	api := r.Group("/api")
+
 	userRepo := repository.NewUserRepository(gormDB)
 	authHandler, err := authhandler.NewHandler(authhandler.Config{
 		UserRepo: userRepo,
@@ -163,7 +166,7 @@ func main() {
 		logger.Fatal("failed to initialize auth handler", zap.Error(err))
 	}
 
-	authGroup := r.Group("/auth")
+	authGroup := api.Group("/auth")
 	authGroup.Use(middleware.TelegramAuth(cfg.Telegram.BotToken, userRepo))
 	authGroup.GET("/status", authHandler.GetStatus)
 	authGroup.GET("/notion/url", authHandler.GetNotionAuthURL)
@@ -173,13 +176,14 @@ func main() {
 	notionService := notionsvc.NewService(logger, userRepo, cfg.Encryption.Key)
 	notionHandler := notionhandler.NewHandler(logger, notionService)
 
-	dbGroup := r.Group("/databases")
+	dbGroup := api.Group("/databases")
 	dbGroup.Use(middleware.TelegramAuth(cfg.Telegram.BotToken, userRepo))
 	dbGroup.GET("", notionHandler.ListDatabases)
 	dbGroup.GET("/:database_id/validate", notionHandler.ValidateDatabase)
 
 	// Groups Service
 	groupRepo := repository.NewGroupRepository(gormDB)
+	userGroupRepo := repository.NewUserGroupRepository(gormDB)
 	groupService := groupsvc.NewService(logger, groupRepo, notionService)
 
 	// Telegram Client (Hoist for Notification Service)
@@ -201,7 +205,10 @@ func main() {
 	}
 
 	taskRepo := repository.NewTaskRepository(gormDB)
-	notificationService := notification.NewService(logger, taskRepo, userRepo, tgClient)
+	logger.Info("Initializing notification service",
+		zap.String("bot_name", cfg.Telegram.BotName),
+		zap.String("app_short_name", cfg.Telegram.AppShortName))
+	notificationService := notification.NewService(logger, taskRepo, userRepo, tgClient, cfg.Telegram.BotName, cfg.Telegram.AppShortName)
 
 	// -- Task Service (Injects Notification Service)
 	taskService := task.NewService(task.ServiceConfig{
@@ -213,7 +220,7 @@ func main() {
 	})
 
 	// -- Scheduler Service (Daily Digest)
-	schedulerService := scheduler.NewService(logger, userRepo, taskRepo, tgClient)
+	schedulerService := scheduler.NewService(logger, userRepo, taskRepo, notificationService, tgClient)
 	schedulerService.Start()
 	// defer schedulerService.Stop() // Optional: Stop on graceful shutdown
 
@@ -223,13 +230,13 @@ func main() {
 	defer pollerService.Stop()
 
 	// -- Handlers
-	taskHandler := taskhandler.NewHandler(logger, taskService)
+	taskHandler := taskhandler.NewHandler(logger, taskService, userGroupRepo)
 	userHandler := userhandler.NewHandler(logger, userRepo)
 
 	// Group Handler needs Task Service now
 	groupHandler := grouphandler.NewHandler(logger, groupService, taskService)
 
-	groupGroup := r.Group("/groups")
+	groupGroup := api.Group("/groups")
 	groupGroup.Use(middleware.TelegramAuth(cfg.Telegram.BotToken, userRepo))
 	groupGroup.GET("", groupHandler.ListGroups)
 	groupGroup.POST("/refresh", groupHandler.RefreshGroups)
@@ -238,7 +245,7 @@ func main() {
 	groupGroup.POST("/:group_id/db/validate", groupHandler.ValidateGroupDatabase)
 	groupGroup.POST("/:group_id/db/init", groupHandler.InitGroupDatabase)
 
-	taskGroup := r.Group("/tasks")
+	taskGroup := api.Group("/tasks")
 	taskGroup.Use(middleware.TelegramAuth(cfg.Telegram.BotToken, userRepo))
 	taskGroup.GET("", taskHandler.List)
 	taskGroup.GET("/:task_id", taskHandler.Get)
@@ -248,12 +255,13 @@ func main() {
 	taskGroup.GET("/:task_id/comments", taskHandler.ListComments)
 	taskGroup.POST("/:task_id/comments", taskHandler.CreateComment)
 
-	meGroup := r.Group("/me")
+	meGroup := api.Group("/me")
 	meGroup.Use(middleware.TelegramAuth(cfg.Telegram.BotToken, userRepo))
 	meGroup.GET("", userHandler.GetMe)
 	meGroup.PATCH("/settings", userHandler.UpdateSettings)
 
-	// Telegram Webhook
+	// Telegram Webhook (Keeping at root or moving to /api/webhook)
+	// Let's keep it at /webhook/telegram for now as it's typically configured once in BotFather
 	tgUpdateRepo := repository.NewTelegramUpdateRepository(gormDB)
 	taskCreator := task.NewCreator(task.CreatorConfig{
 		Logger:      logger,

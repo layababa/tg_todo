@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/store/auth'
 
@@ -7,6 +7,8 @@ const router = useRouter()
 const authStore = useAuthStore()
 const currentSlide = ref(0)
 const totalSlides = 3
+const isInitializing = ref(true)
+const showCarousel = ref(false)
 
 const slides = [
   {
@@ -26,16 +28,72 @@ const slides = [
   }
 ]
 
+onMounted(async () => {
+  // Start initializing
+  const startTime = Date.now()
+  
+  // 1. 获取 start_param (处理多种获取方式)
+  let startParam = ''
+  try {
+    const urlParams = new URLSearchParams(window.location.search)
+    // 兼容 Telegram 各种注入方式
+    startParam = urlParams.get('tgWebAppStartParam') || 
+                 urlParams.get('start_param') || 
+                 // @ts-ignore
+                 (window.Telegram?.WebApp?.initDataUnsafe?.start_param as string) || ''
+  } catch (e) {
+    console.warn('Failed to get start_param', e)
+  }
+
+  try {
+    await authStore.fetchStatus(startParam)
+    
+    // Check if user has seen onboarding before
+    const hasCompletedOnboarding = localStorage.getItem('onboarding_completed') === 'true'
+    
+    // Minimum splash time
+    const minSplashTime = 1200 
+    const elapsedTime = Date.now() - startTime
+    const remainingTime = Math.max(0, minSplashTime - elapsedTime)
+    
+    setTimeout(() => {
+      // 只要有 start_param，就直接尝试进入 App 进行跳转
+      if (startParam || (hasCompletedOnboarding && authStore.user)) {
+        enterApp()
+      } else {
+        isInitializing.value = false
+        showCarousel.value = true
+      }
+    }, remainingTime)
+    
+  } catch (e) {
+    console.error('Initialization failed', e)
+    isInitializing.value = false
+    showCarousel.value = true
+  }
+})
+
 const nextSlide = () => {
   if (currentSlide.value < totalSlides - 1) {
     currentSlide.value++
   } else {
-    enterApp()
+    completeOnboarding()
   }
 }
 
+const completeOnboarding = () => {
+  localStorage.setItem('onboarding_completed', 'true')
+  enterApp()
+}
+
 const enterApp = () => {
-  router.replace({ name: 'home' })
+  const hint = authStore.redirectHint
+  if (hint && hint.startsWith('task_')) {
+    const taskId = hint.replace('task_', '')
+    router.replace({ name: 'task-detail', params: { id: taskId } })
+  } else {
+    router.replace({ name: 'home' })
+  }
 }
 
 const connectNotion = async () => {
@@ -52,62 +110,182 @@ const connectNotion = async () => {
 </script>
 
 <template>
-  <div class="grid-bg"></div>
-  <div class="scan-line"></div>
+  <div class="page-root">
 
-  <div class="onboarding-container">
-    <!-- Skip Button -->
-    <div class="skip-btn-container">
-      <button @click="enterApp" class="secondary-link skip-btn">
-        SKIP
-      </button>
-    </div>
 
-    <!-- Carousel Area -->
-    <div class="carousel-content">
-      <transition name="fade-slide" mode="out-in">
-        <div :key="currentSlide" class="slide-item">
-          <div class="hero-graphic">
-            <i :class="slides[currentSlide].icon"></i>
+    <!-- Splash Screen / Startup Animation -->
+    <transition name="fade">
+      <div v-if="isInitializing" class="splash-container">
+        <div class="splash-logo">
+          <div class="logo-outer"></div>
+          <div class="logo-inner">
+            <i class="ri-flashlight-fill"></i>
           </div>
-          
-          <h2 class="onboarding-title">{{ slides[currentSlide].title }}</h2>
-          <p class="onboarding-subtitle">{{ slides[currentSlide].desc }}</p>
         </div>
-      </transition>
-    </div>
+        <div class="splash-text">
+          <span class="glitch-text" data-text="TG TODO">TG TODO</span>
+          <div class="loading-bar-container">
+            <div class="loading-bar"></div>
+          </div>
+          <div class="status-text">INITIALIZING SYSTEM...</div>
+        </div>
+      </div>
+    </transition>
 
-    <!-- Indicators -->
-    <div class="indicators">
-      <div 
-        v-for="i in totalSlides" 
-        :key="i"
-        class="indicator-dot"
-        :class="{ active: (i - 1) === currentSlide }"
-      ></div>
-    </div>
+    <!-- Onboarding Carousel -->
+    <div v-if="showCarousel" class="onboarding-container">
+      <!-- Skip Button -->
+      <div class="skip-btn-container">
+        <button @click="completeOnboarding" class="secondary-link skip-btn">
+          SKIP
+        </button>
+      </div>
 
-    <!-- Action Area -->
-    <div class="action-area">
-      <button 
-        @click="nextSlide" 
-        class="primary-btn"
-      >
-        {{ currentSlide === totalSlides - 1 ? '立即体验' : '下一步' }}
-      </button>
+      <!-- Carousel Area -->
+      <div class="carousel-content">
+        <transition name="fade-slide" mode="out-in">
+          <div :key="currentSlide" class="slide-item">
+            <div class="hero-graphic">
+              <i :class="slides[currentSlide].icon"></i>
+            </div>
+            
+            <h2 class="onboarding-title">{{ slides[currentSlide].title }}</h2>
+            <p class="onboarding-subtitle">{{ slides[currentSlide].desc }}</p>
+          </div>
+        </transition>
+      </div>
 
-      <button 
-         v-if="currentSlide === totalSlides - 1"
-         @click="connectNotion"
-         class="secondary-link flex-center"
-      >
-        <i class="ri-notion-fill" style="margin-right: 4px;"></i> (可选) 连接 Notion
-      </button>
+      <!-- Indicators -->
+      <div class="indicators">
+        <div 
+          v-for="i in totalSlides" 
+          :key="i"
+          class="indicator-dot"
+          :class="{ active: (i - 1) === currentSlide }"
+        ></div>
+      </div>
+
+      <!-- Action Area -->
+      <div class="action-area">
+        <button 
+          @click="nextSlide" 
+          class="primary-btn"
+        >
+          {{ currentSlide === totalSlides - 1 ? '立即体验' : '下一步' }}
+        </button>
+
+        <button 
+           v-if="currentSlide === totalSlides - 1"
+           @click="connectNotion"
+           class="secondary-link flex-center"
+        >
+          <i class="ri-notion-fill" style="margin-right: 4px;"></i> (可选) 连接 Notion
+        </button>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+.splash-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    background: var(--bg-color, #000000);
+}
+
+.splash-logo {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    margin-bottom: 40px;
+}
+
+.logo-outer {
+    position: absolute;
+    top: -10%;
+    left: -10%;
+    width: 120%;
+    height: 120%;
+    border: 2px solid var(--neon-green, #ABF600);
+    border-radius: 35% 65% 70% 30% / 30% 30% 70% 70%;
+    animation: morph 3s ease-in-out infinite;
+    opacity: 0.3;
+}
+
+.logo-inner {
+    width: 100%;
+    height: 100%;
+    background: rgba(171, 246, 0, 0.1);
+    border: 1px solid var(--neon-green, #ABF600);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    clip-path: polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%);
+}
+
+.logo-inner i {
+    font-size: 32px;
+    color: var(--neon-green, #ABF600);
+    text-shadow: 0 0 10px rgba(171, 246, 0, 0.5);
+}
+
+.splash-text {
+    text-align: center;
+}
+
+.glitch-text {
+    font-family: var(--font-mono, monospace);
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    color: #FFFFFF;
+    margin-bottom: 20px;
+    display: block;
+}
+
+.loading-bar-container {
+    width: 200px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 20px auto;
+    overflow: hidden;
+}
+
+.loading-bar {
+    width: 100%;
+    height: 100%;
+    background: var(--neon-green, #ABF600);
+    animation: loading 1.5s ease-in-out infinite;
+    transform-origin: left;
+}
+
+.status-text {
+    font-family: var(--font-mono, monospace);
+    font-size: 10px;
+    color: var(--text-secondary, #666666);
+    letter-spacing: 2px;
+}
+
+@keyframes morph {
+    0% { border-radius: 35% 65% 70% 30% / 30% 30% 70% 70%; }
+    50% { border-radius: 50% 50% 33% 67% / 55% 27% 73% 45%; }
+    100% { border-radius: 35% 65% 70% 30% / 30% 30% 70% 70%; }
+}
+
+@keyframes loading {
+    0% { transform: translateX(-100%) scaleX(0.1); }
+    50% { transform: translateX(0) scaleX(0.5); }
+    100% { transform: translateX(100%) scaleX(0.1); }
+}
+
 .onboarding-container {
     display: flex;
     flex-direction: column;
@@ -281,5 +459,15 @@ const connectNotion = async () => {
 .fade-slide-leave-to {
   opacity: 0;
   transform: translateX(-20px);
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

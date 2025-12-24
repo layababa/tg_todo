@@ -10,6 +10,12 @@ import { useAuthStore } from '@/store/auth'
 try {
   WebApp.ready()
   WebApp.expand()
+  // Disable vertical swipes to prevent "pull-to-collapse" behavior
+  // Only available in Telegram WebApp SDK version 7.7 or higher
+  const version = parseFloat(WebApp.version)
+  if (version >= 7.7 && WebApp.isVerticalSwipesEnabled) {
+    WebApp.isVerticalSwipesEnabled = false
+  }
 } catch (err) {
   console.warn('[tg-miniapp] Telegram WebApp bridge missing', err)
 }

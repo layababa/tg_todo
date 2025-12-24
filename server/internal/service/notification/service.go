@@ -2,30 +2,33 @@ package notification
 
 import (
 	"context"
-	// Added import here
 	"github.com/layababa/tg_todo/server/internal/repository"
+	"github.com/layababa/tg_todo/server/internal/service/telegram"
 	"go.uber.org/zap"
 )
 
 type TelegramClient interface {
 	SendMessage(chatID int64, text string) error
-	// Maybe SendMessageMarkdown? For now assume SendMessage handles text.
-	// But our template generates Markdown. We might need a generalized Send method or update the client interface.
+	SendMessageWithButtons(chatID int64, text string, markup telegram.InlineKeyboardMarkup) error
 }
 
 type Service struct {
-	logger   *zap.Logger
-	repo     repository.TaskRepository
-	userRepo repository.UserRepository
-	tgClient TelegramClient
+	logger       *zap.Logger
+	repo         repository.TaskRepository
+	userRepo     repository.UserRepository
+	tgClient     TelegramClient
+	botName      string
+	appShortName string
 }
 
-func NewService(logger *zap.Logger, repo repository.TaskRepository, userRepo repository.UserRepository, tgClient TelegramClient) *Service {
+func NewService(logger *zap.Logger, repo repository.TaskRepository, userRepo repository.UserRepository, tgClient TelegramClient, botName, appShortName string) *Service {
 	return &Service{
-		logger:   logger,
-		repo:     repo,
-		userRepo: userRepo,
-		tgClient: tgClient,
+		logger:       logger,
+		repo:         repo,
+		userRepo:     userRepo,
+		tgClient:     tgClient,
+		botName:      botName,
+		appShortName: appShortName,
 	}
 }
 
@@ -51,17 +54,14 @@ func (s *Service) Notify(ctx context.Context, event EventType, task *repository.
 		return
 	}
 
-	// Lint said: undefined: repository.User in template.go.
-	// This means repository package does NOT expose User.
-	// `server/internal/repository/task.go` likely has `User` struct used in `Assignees []User`?
-	// Let's assume we need to import `models` in template.go and use `models.User`.
-
-	// Prepare dummy actor for now to fix compile, we will fix imports in next step.
+	// Prepare template data
 	data := TemplateData{
-		Event:   event,
-		Task:    task,
-		Comment: comment,
-		Actor:   nil, // Will fix
+		Event:        event,
+		Task:         task,
+		Comment:      comment,
+		Actor:        nil,
+		BotName:      s.botName,
+		AppShortName: s.appShortName,
 	}
 
 	// Fetch Actor (skip if actorID is empty)
@@ -86,8 +86,19 @@ func (s *Service) Notify(ctx context.Context, event EventType, task *repository.
 			continue
 		}
 
-		if err := s.tgClient.SendMessage(user.TgID, msg); err != nil {
-			s.logger.Error("failed to send notification", zap.Int64("chat_id", user.TgID), zap.Error(err))
+		markup := BuildTaskMarkup(task.ID, s.botName, s.appShortName)
+		s.logger.Info("sending notification", 
+			zap.Int64("chat_id", user.TgID), 
+			zap.String("url", markup.InlineKeyboard[0][0].URL))
+
+		if markup.InlineKeyboard != nil {
+			if err := s.tgClient.SendMessageWithButtons(user.TgID, msg, markup); err != nil {
+				s.logger.Error("failed to send notification with buttons", zap.Int64("chat_id", user.TgID), zap.Error(err))
+			}
+		} else {
+			if err := s.tgClient.SendMessage(user.TgID, msg); err != nil {
+				s.logger.Error("failed to send notification", zap.Int64("chat_id", user.TgID), zap.Error(err))
+			}
 		}
 	}
 
@@ -95,4 +106,57 @@ func (s *Service) Notify(ctx context.Context, event EventType, task *repository.
 		zap.String("event", string(event)),
 		zap.String("task_id", task.ID),
 		zap.Int("recipient_count", len(recipients)))
+}
+
+// NotifyReminder sends differentiated reminders to creator and assignees
+func (s *Service) NotifyReminder(ctx context.Context, event EventType, task *repository.Task) {
+	markup := BuildTaskMarkup(task.ID, s.botName, s.appShortName)
+	s.logger.Info("preparing reminders", zap.String("url", markup.InlineKeyboard[0][0].URL))
+
+	// 1. Creator
+	if task.CreatorID != nil {
+		user, err := s.userRepo.FindByID(ctx, *task.CreatorID)
+		if err == nil && user.TgID != 0 {
+			msg := formatMessage(TemplateData{
+				Event:         event,
+				Task:          task,
+				RecipientRole: RoleCreator,
+				BotName:       s.botName,
+				AppShortName:  s.appShortName,
+			})
+			if markup.InlineKeyboard != nil {
+				_ = s.tgClient.SendMessageWithButtons(user.TgID, msg, markup)
+			} else {
+				_ = s.tgClient.SendMessage(user.TgID, msg)
+			}
+		}
+	}
+
+	// 2. Assignees
+	for _, assignee := range task.Assignees {
+		// Avoid double notification if creator is also an assignee
+		if task.CreatorID != nil && assignee.ID == *task.CreatorID {
+			continue
+		}
+
+		user, err := s.userRepo.FindByID(ctx, assignee.ID)
+		if err == nil && user.TgID != 0 {
+			msg := formatMessage(TemplateData{
+				Event:         event,
+				Task:          task,
+				RecipientRole: RoleAssignee,
+				BotName:       s.botName,
+				AppShortName:  s.appShortName,
+			})
+			if markup.InlineKeyboard != nil {
+				_ = s.tgClient.SendMessageWithButtons(user.TgID, msg, markup)
+			} else {
+				_ = s.tgClient.SendMessage(user.TgID, msg)
+			}
+		}
+	}
+
+	s.logger.Info("Reminders dispatched",
+		zap.String("event", string(event)),
+		zap.String("task_id", task.ID))
 }

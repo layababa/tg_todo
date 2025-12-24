@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -28,14 +29,16 @@ type taskService interface {
 }
 
 type Handler struct {
-	logger  *zap.Logger
-	service taskService
+	logger        *zap.Logger
+	service       taskService
+	userGroupRepo repository.UserGroupRepository
 }
 
-func NewHandler(logger *zap.Logger, service taskService) *Handler {
+func NewHandler(logger *zap.Logger, service taskService, userGroupRepo repository.UserGroupRepository) *Handler {
 	return &Handler{
-		logger:  logger,
-		service: service,
+		logger:        logger,
+		service:       service,
+		userGroupRepo: userGroupRepo,
 	}
 }
 
@@ -105,9 +108,40 @@ func (h *Handler) Delete(c *gin.Context) {
 		c.AbortWithStatus(http.StatusUnauthorized)
 		return
 	}
-	_ = user
 
 	id := c.Param("task_id")
+
+	// Get existing task to check permission
+	existingTask, err := h.service.GetTask(c.Request.Context(), id)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"success": false, "error": gin.H{"code": "not_found", "message": "task not found"}})
+			return
+		}
+		h.logger.Error("get task failed", zap.Error(err), zap.String("task_id", id))
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": gin.H{"code": "internal_error", "message": "failed to get task"}})
+		return
+	}
+
+	// Check permission
+	canModify, err := task.CanModifyTask(c.Request.Context(), user.ID, existingTask, h.userGroupRepo)
+	if err != nil {
+		h.logger.Error("permission check failed", zap.Error(err))
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": gin.H{"code": "internal_error", "message": "permission check failed"}})
+		return
+	}
+
+	if !canModify {
+		c.JSON(http.StatusForbidden, gin.H{
+			"success": false,
+			"error": gin.H{
+				"code":    "forbidden",
+				"message": "您没有权限删除此任务。只有创建人、指派人或群管理员可以删除任务。",
+			},
+		})
+		return
+	}
+
 	if err := h.service.DeleteTask(c.Request.Context(), id); err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"success": false, "error": gin.H{"code": "not_found", "message": "task not found"}})
@@ -123,6 +157,7 @@ func (h *Handler) Delete(c *gin.Context) {
 type UpdateRequest struct {
 	Title  *string                `json:"title"`
 	Status *repository.TaskStatus `json:"status"`
+	DueAt  *time.Time             `json:"due_at"`
 }
 
 func (h *Handler) Update(c *gin.Context) {
@@ -131,9 +166,40 @@ func (h *Handler) Update(c *gin.Context) {
 		c.AbortWithStatus(http.StatusUnauthorized)
 		return
 	}
-	_ = user
 
 	id := c.Param("task_id")
+
+	// Get existing task to check permission
+	existingTask, err := h.service.GetTask(c.Request.Context(), id)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"success": false, "error": gin.H{"code": "not_found", "message": "task not found"}})
+			return
+		}
+		h.logger.Error("get task failed", zap.Error(err), zap.String("task_id", id))
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": gin.H{"code": "internal_error", "message": "failed to get task"}})
+		return
+	}
+
+	// Check permission
+	canModify, err := task.CanModifyTask(c.Request.Context(), user.ID, existingTask, h.userGroupRepo)
+	if err != nil {
+		h.logger.Error("permission check failed", zap.Error(err))
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": gin.H{"code": "internal_error", "message": "permission check failed"}})
+		return
+	}
+
+	if !canModify {
+		c.JSON(http.StatusForbidden, gin.H{
+			"success": false,
+			"error": gin.H{
+				"code":    "forbidden",
+				"message": "您没有权限修改此任务。只有创建人、指派人或群管理员可以修改任务。",
+			},
+		})
+		return
+	}
+
 	var req UpdateRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": gin.H{"code": "invalid_request", "message": err.Error()}})
@@ -143,6 +209,7 @@ func (h *Handler) Update(c *gin.Context) {
 	updatedTask, err := h.service.UpdateTask(c.Request.Context(), id, task.UpdateParams{
 		Title:  req.Title,
 		Status: req.Status,
+		DueAt:  req.DueAt,
 	})
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) || err.Error() == "task not found" {

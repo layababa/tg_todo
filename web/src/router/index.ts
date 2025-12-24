@@ -31,6 +31,11 @@ const router = createRouter({
       name: "task-detail",
       component: () => import("@/pages/TaskDetailPage.vue"),
     },
+    // 增加一个中转路由，处理从 Telegram 直接链接进入但没有 ID 的情况
+    {
+      path: "/tasks/",
+      redirect: "/",
+    },
     {
       path: "/settings",
       name: "settings",

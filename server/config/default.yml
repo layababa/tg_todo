@@ -12,4 +12,5 @@ build:
 telegram:
   bot_token: ""
   bot_name: ""
+  app_short_name: "todo"
   web_app_url: ""

@@ -14,6 +14,7 @@ export interface Task {
   DatabaseID?: string;
   NotionURL?: string;
   CreatedAt: string;
+  DueAt?: string | null;
   // Details
   Description?: string; // Currently missing in backend struct? Or is it handled elsewhere?
   ChatJumpURL?: string;

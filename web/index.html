@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <title>Telegram To-Do Mini App</title>
     
@@ -16,6 +16,22 @@
     <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
     <script>
       eruda.init();
+      
+      // Prevent pinch zoom and double tap zoom on mobile
+      document.addEventListener('touchstart', function (event) {
+        if (event.touches.length > 1) {
+          event.preventDefault();
+        }
+      }, { passive: false });
+      
+      let lastTouchEnd = 0;
+      document.addEventListener('touchend', function (event) {
+        const now = (new Date()).getTime();
+        if (now - lastTouchEnd <= 300) {
+          event.preventDefault();
+        }
+        lastTouchEnd = now;
+      }, false);
     </script>
   </head>
   <body>

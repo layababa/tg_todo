@@ -14,19 +14,29 @@ export const isValidInitData = (value?: string | null): value is string =>
 
 export const resolveInitData = (): string => {
   // 1. Telegram WebView 注入的 init data
-  const webAppInitData = window.Telegram?.WebApp?.initData;
+  // 增加对 Telegram 对象是否存在的检查
+  const telegram = (window as any).Telegram;
+  const webAppInitData = telegram?.WebApp?.initData;
+  
   if (isValidInitData(webAppInitData)) {
     persist(webAppInitData);
     debug("using initData from window.Telegram.WebApp");
     return webAppInitData;
   }
+  
   if (webAppInitData) {
-    debug("window.Telegram.WebApp.initData missing hash/auth_date", preview(webAppInitData));
+    debug("window.Telegram.WebApp.initData exists but is invalid (missing hash/auth_date)", preview(webAppInitData));
+  } else {
+    debug("window.Telegram.WebApp.initData is empty");
   }
 
+  // 2. URL 参数 (tgWebAppData 是 Telegram 某些版本的标准参数名)
   const url = new URL(window.location.href);
   let queryInitData =
-    url.searchParams.get("init_data") ?? url.searchParams.get("tgWebAppData");
+    url.searchParams.get("init_data") ?? 
+    url.searchParams.get("tgWebAppData") ??
+    // 有时 Telegram 会把数据放在 hash 里的 tgWebAppData 参数中
+    new URLSearchParams(url.hash.slice(1)).get("tgWebAppData");
 
   // 3. Hash 参数
   if (!isValidInitData(queryInitData) && url.hash.length > 1) {
