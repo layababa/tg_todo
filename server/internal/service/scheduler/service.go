@@ -174,4 +174,3 @@ func (s *Service) processTaskReminders(ctx context.Context, task repository.Task
 		s.logger.Error("failed to update reminder flags", zap.String("task_id", task.ID), zap.Error(err))
 	}
 }
-

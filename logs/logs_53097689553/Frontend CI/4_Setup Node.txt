@@ -1,0 +1,22 @@
+﻿2025-12-27T13:02:42.4516195Z ##[group]Run actions/setup-node@v4
+2025-12-27T13:02:42.4517234Z with:
+2025-12-27T13:02:42.4517936Z   node-version: 20.x
+2025-12-27T13:02:42.4518953Z   cache: pnpm
+2025-12-27T13:02:42.4519839Z   cache-dependency-path: web/package-lock.json
+2025-12-27T13:02:42.4521008Z   always-auth: false
+2025-12-27T13:02:42.4521830Z   check-latest: false
+2025-12-27T13:02:42.4522885Z   token: ***
+2025-12-27T13:02:42.4523633Z env:
+2025-12-27T13:02:42.4524310Z   GO_VERSION: 1.21.x
+2025-12-27T13:02:42.4525125Z   NODE_VERSION: 20.x
+2025-12-27T13:02:42.4526126Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+2025-12-27T13:02:42.4527318Z ##[endgroup]
+2025-12-27T13:02:42.6369149Z Found in cache @ /opt/hostedtoolcache/node/20.19.6/x64
+2025-12-27T13:02:42.6374336Z ##[group]Environment details
+2025-12-27T13:02:44.6760059Z node: v20.19.6
+2025-12-27T13:02:44.6844181Z npm: 10.8.2
+2025-12-27T13:02:44.6844817Z yarn: 1.22.22
+2025-12-27T13:02:44.6846122Z ##[endgroup]
+2025-12-27T13:02:44.6856004Z [command]/home/runner/setup-pnpm/node_modules/.bin/pnpm store path --silent
+2025-12-27T13:02:45.1711798Z /home/runner/setup-pnpm/node_modules/.bin/store/v3
+2025-12-27T13:02:45.3375151Z pnpm cache is not found

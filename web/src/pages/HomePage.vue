@@ -70,8 +70,8 @@ const groupedTasks = computed(() => {
     const list = tasks.value.map(td => td.task)
     
     if (currentTab.value === 'assigned') {
-        const selfCreated = list.filter(t => t.CreatorID === myId.value)
-        const otherCreated = list.filter(t => t.CreatorID !== myId.value)
+        const selfCreated = list.filter(t => t.Creator?.id === myId.value)
+        const otherCreated = list.filter(t => t.Creator?.id !== myId.value)
         return {
             '自己创建': selfCreated,
             '他人创建': otherCreated
@@ -85,8 +85,8 @@ const groupedTasks = computed(() => {
             '指派自己': assignedSelf
         }
     } else { // Done
-        const selfCreated = list.filter(t => t.CreatorID === myId.value)
-        const otherCreated = list.filter(t => t.CreatorID !== myId.value)
+        const selfCreated = list.filter(t => t.Creator?.id === myId.value)
+        const otherCreated = list.filter(t => t.Creator?.id !== myId.value)
         return {
             '自己创建': selfCreated,
             '他人创建': otherCreated
@@ -327,9 +327,9 @@ onUnmounted(() => {
                 <button v-for="(groupTasks, groupName) in groupedTasks" :key="'chip-' + groupName"
                     @click="scrollToGroup(groupName)"
                     class="px-3 py-1 rounded-full text-[10px] font-mono border transition-all whitespace-nowrap"
-                    :class="groupTasks.length > 0 ? 'border-primary text-primary bg-primary/5 hover:bg-primary/10' : 'border-base-content/10 text-base-content/40'"
+                    :class="(groupTasks?.length || 0) > 0 ? 'border-primary text-primary bg-primary/5 hover:bg-primary/10' : 'border-base-content/10 text-base-content/40'"
                 >
-                    {{ groupName }} ({{ groupTasks.length }})
+                    {{ groupName }} ({{ groupTasks?.length || 0 }})
                 </button>
             </div>
         </div>
@@ -381,7 +381,7 @@ onUnmounted(() => {
                     <div 
                         class="pl-8 pr-1 py-3 text-[10px] font-mono text-primary uppercase tracking-widest flex items-center justify-between border-b border-base-content/5 mb-2"
                     >
-                        <span>{{ groupName }} <span class="opacity-50 ml-1">({{ groupTasks.length }})</span></span>
+                        <span>{{ groupName }} <span class="opacity-50 ml-1">({{ groupTasks?.length || 0 }})</span></span>
                     </div>
 
                     <div>
@@ -413,7 +413,7 @@ onUnmounted(() => {
                             </div>
                         </div>
                         
-                        <div v-if="groupTasks.length === 0" class="text-center py-4 text-xs opacity-30 font-mono">
+                        <div v-if="(groupTasks?.length || 0) === 0" class="text-center py-4 text-xs opacity-30 font-mono">
                             空空如也
                         </div>
                     </div>

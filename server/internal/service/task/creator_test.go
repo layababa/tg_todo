@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"testing"
+	"time"
 
 	gonotion "github.com/dstotijn/go-notion"
 	"github.com/stretchr/testify/assert"
@@ -187,8 +188,24 @@ func (m *mockTaskRepo) Update(_ context.Context, task *repository.Task) error {
 	return nil
 }
 
-func (m *mockTaskRepo) CreateComment(_ context.Context, _ *repository.TaskComment) error {
+func (m *mockTaskRepo) CreateComment(_ context.Context, _ *repository.TaskComment) (*repository.TaskComment, error) {
+	return nil, nil
+}
+
+func (m *mockTaskRepo) ListForReminders(ctx context.Context, now time.Time) ([]repository.Task, error) {
+	return nil, nil
+}
+
+func (m *mockTaskRepo) UpdateReminderFlags(ctx context.Context, id string, reminder1h, reminderDue bool) error {
 	return nil
+}
+
+func (m *mockTaskRepo) AssignTask(ctx context.Context, taskID, userID string) error {
+	return nil
+}
+
+func (m *mockTaskRepo) GetTaskCounts(ctx context.Context, userID string) (*repository.TaskCounts, error) {
+	return nil, nil
 }
 
 func (m *mockTaskRepo) ListComments(_ context.Context, _ string) ([]repository.TaskComment, error) {

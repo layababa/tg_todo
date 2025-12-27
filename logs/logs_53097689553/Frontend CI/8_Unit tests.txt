@@ -1,0 +1,22 @@
+﻿2025-12-27T13:03:15.9716915Z ##[group]Run pnpm run test
+2025-12-27T13:03:15.9717263Z [36;1mpnpm run test[0m
+2025-12-27T13:03:15.9749524Z shell: /usr/bin/bash -e {0}
+2025-12-27T13:03:15.9749757Z env:
+2025-12-27T13:03:15.9749926Z   GO_VERSION: 1.21.x
+2025-12-27T13:03:15.9750126Z   NODE_VERSION: 20.x
+2025-12-27T13:03:15.9750370Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+2025-12-27T13:03:15.9750672Z ##[endgroup]
+2025-12-27T13:03:16.3814412Z 
+2025-12-27T13:03:16.3815423Z > tg-miniapp-web@0.1.0 test /home/runner/work/tg_todo/tg_todo/web
+2025-12-27T13:03:16.3816371Z > vitest run
+2025-12-27T13:03:16.3816595Z 
+2025-12-27T13:03:16.8579640Z 
+2025-12-27T13:03:16.8581940Z [7m[1m[36m RUN [39m[22m[27m [36mv1.6.1[39m [90m/home/runner/work/tg_todo/tg_todo/web[39m
+2025-12-27T13:03:16.8582579Z 
+2025-12-27T13:03:16.8710311Z [2minclude: [22m[33m**/*.{test,spec}.?(c|m)[jt]s?(x)[39m
+2025-12-27T13:03:16.8712651Z [2mexclude:  [22m[33m**/node_modules/**[2m, [22m**/dist/**[2m, [22m**/cypress/**[2m, [22m**/.{idea,git,cache,output,temp}/**[2m, [22m**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*[39m
+2025-12-27T13:03:16.8714513Z [2mwatch exclude:  [22m[33m**/node_modules/**[2m, [22m**/dist/**[39m
+2025-12-27T13:03:16.8715125Z [31m
+2025-12-27T13:03:16.8715632Z No test files found, exiting with code 1[39m
+2025-12-27T13:03:16.8833436Z  ELIFECYCLE  Test failed. See above for more details.
+2025-12-27T13:03:16.9036233Z ##[error]Process completed with exit code 1.

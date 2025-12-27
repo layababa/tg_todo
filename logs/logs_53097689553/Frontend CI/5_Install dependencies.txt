@@ -1,0 +1,79 @@
+﻿2025-12-27T13:02:45.3499310Z ##[group]Run pnpm install
+2025-12-27T13:02:45.3499690Z [36;1mpnpm install[0m
+2025-12-27T13:02:45.3541100Z shell: /usr/bin/bash -e {0}
+2025-12-27T13:02:45.3541356Z env:
+2025-12-27T13:02:45.3541543Z   GO_VERSION: 1.21.x
+2025-12-27T13:02:45.3541782Z   NODE_VERSION: 20.x
+2025-12-27T13:02:45.3542074Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+2025-12-27T13:02:45.3542367Z ##[endgroup]
+2025-12-27T13:02:45.8091052Z  WARN  Ignoring not compatible lockfile at /home/runner/work/tg_todo/tg_todo/web/pnpm-lock.yaml
+2025-12-27T13:02:46.0375312Z Progress: resolved 1, reused 0, downloaded 0, added 0
+2025-12-27T13:02:46.4012129Z  WARN  deprecated eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+2025-12-27T13:02:47.0460467Z Progress: resolved 51, reused 0, downloaded 38, added 0
+2025-12-27T13:02:48.0457278Z Progress: resolved 211, reused 0, downloaded 194, added 0
+2025-12-27T13:02:49.0464311Z Progress: resolved 403, reused 0, downloaded 376, added 0
+2025-12-27T13:02:50.0453469Z Progress: resolved 549, reused 0, downloaded 469, added 0
+2025-12-27T13:02:51.1206744Z  WARN  5 deprecated subdependencies found: @humanwhocodes/config-array@0.13.0, @humanwhocodes/object-schema@2.0.3, glob@7.2.3, inflight@1.0.6, rimraf@3.0.2
+2025-12-27T13:02:51.1379242Z Progress: resolved 715, reused 0, downloaded 670, added 0
+2025-12-27T13:02:51.1579474Z Packages: +672
+2025-12-27T13:02:51.1580388Z ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+2025-12-27T13:02:52.1388764Z Progress: resolved 715, reused 0, downloaded 671, added 671
+2025-12-27T13:02:55.0329432Z Progress: resolved 715, reused 0, downloaded 672, added 671
+2025-12-27T13:02:55.0339157Z Progress: resolved 715, reused 0, downloaded 672, added 672, done
+2025-12-27T13:02:55.1798374Z .../node_modules/vue-demi postinstall$ node -e "try{require('./scripts/postinstall.js')}catch(e){}"
+2025-12-27T13:02:55.2624597Z .../node_modules/vue-demi postinstall: Done
+2025-12-27T13:02:55.2715485Z .../esbuild@0.21.5/node_modules/esbuild postinstall$ node install.js
+2025-12-27T13:02:55.3181625Z .../esbuild@0.21.5/node_modules/esbuild postinstall: Done
+2025-12-27T13:02:55.3461292Z .../cypress@13.17.0/node_modules/cypress postinstall$ node index.js --exec install
+2025-12-27T13:02:55.7168554Z .../cypress@13.17.0/node_modules/cypress postinstall: Installing Cypress (version: 13.17.0)
+2025-12-27T13:02:55.7182095Z .../cypress@13.17.0/node_modules/cypress postinstall: [STARTED] Task without title.
+2025-12-27T13:02:57.6025948Z .../cypress@13.17.0/node_modules/cypress postinstall: [SUCCESS] Task without title.
+2025-12-27T13:02:57.6030151Z .../cypress@13.17.0/node_modules/cypress postinstall: [STARTED] Task without title.
+2025-12-27T13:03:03.9372987Z .../cypress@13.17.0/node_modules/cypress postinstall: [SUCCESS] Task without title.
+2025-12-27T13:03:03.9374131Z .../cypress@13.17.0/node_modules/cypress postinstall: [STARTED] Task without title.
+2025-12-27T13:03:03.9758967Z .../cypress@13.17.0/node_modules/cypress postinstall: [SUCCESS] Task without title.
+2025-12-27T13:03:04.9779283Z .../cypress@13.17.0/node_modules/cypress postinstall: You can now open Cypress by running one of the following, depending on your package manager:
+2025-12-27T13:03:04.9783631Z .../cypress@13.17.0/node_modules/cypress postinstall: - npx cypress open
+2025-12-27T13:03:04.9785255Z .../cypress@13.17.0/node_modules/cypress postinstall: - yarn cypress open
+2025-12-27T13:03:04.9786413Z .../cypress@13.17.0/node_modules/cypress postinstall: - pnpm cypress open
+2025-12-27T13:03:04.9787627Z .../cypress@13.17.0/node_modules/cypress postinstall: https://on.cypress.io/opening-the-app
+2025-12-27T13:03:04.9894177Z .../cypress@13.17.0/node_modules/cypress postinstall: Done
+2025-12-27T13:03:05.8300712Z 
+2025-12-27T13:03:05.8301271Z dependencies:
+2025-12-27T13:03:05.8301826Z + @twa-dev/sdk 7.10.1 (8.0.2 is available)
+2025-12-27T13:03:05.8302299Z + axios 1.13.2
+2025-12-27T13:03:05.8302766Z + pinia 2.3.1 (3.0.4 is available)
+2025-12-27T13:03:05.8303147Z + vue 3.5.26
+2025-12-27T13:03:05.8303943Z + vue-router 4.6.4
+2025-12-27T13:03:05.8304164Z 
+2025-12-27T13:03:05.8304319Z devDependencies:
+2025-12-27T13:03:05.8304781Z + @rushstack/eslint-patch 1.15.0
+2025-12-27T13:03:05.8305291Z + @testing-library/jest-dom 6.9.1
+2025-12-27T13:03:05.8305709Z + @testing-library/vue 8.1.0
+2025-12-27T13:03:05.8306238Z + @types/node 20.19.27 (25.0.3 is available)
+2025-12-27T13:03:05.8306853Z + @vitejs/plugin-vue 5.2.4 (6.0.3 is available)
+2025-12-27T13:03:05.8307598Z + @vitest/coverage-v8 1.6.1 (4.0.16 is available)
+2025-12-27T13:03:05.8308435Z + @vitest/ui 1.6.1 (4.0.16 is available)
+2025-12-27T13:03:05.8309045Z + @vue/eslint-config-prettier 9.0.0 (10.2.0 is available)
+2025-12-27T13:03:05.8309850Z + @vue/eslint-config-typescript 13.0.0 (14.6.0 is available)
+2025-12-27T13:03:05.8310436Z + @vue/test-utils 2.4.6
+2025-12-27T13:03:05.8310840Z + autoprefixer 10.4.23
+2025-12-27T13:03:05.8311313Z + cypress 13.17.0 (15.8.1 is available)
+2025-12-27T13:03:05.8311841Z + daisyui 4.12.24 (5.5.14 is available)
+2025-12-27T13:03:05.8312338Z + eslint 8.57.1 (9.39.2 is available) deprecated
+2025-12-27T13:03:05.8312904Z + eslint-plugin-vue 9.33.0 (10.6.2 is available)
+2025-12-27T13:03:05.8313347Z + jsdom 24.1.3 (27.4.0 is available)
+2025-12-27T13:03:05.8313663Z + postcss 8.5.6
+2025-12-27T13:03:05.8314004Z + prettier 3.7.4
+2025-12-27T13:03:05.8314268Z + stylelint 16.26.1
+2025-12-27T13:03:05.8314692Z + stylelint-config-standard 36.0.1 (39.0.1 is available)
+2025-12-27T13:03:05.8315163Z + stylelint-config-standard-vue 1.0.0
+2025-12-27T13:03:05.8315663Z + stylelint-order 6.0.4 (7.0.0 is available)
+2025-12-27T13:03:05.8316131Z + tailwindcss 3.4.19 (4.1.18 is available)
+2025-12-27T13:03:05.8316623Z + type-fest 4.41.0 (5.3.1 is available)
+2025-12-27T13:03:05.8317024Z + typescript 5.9.3
+2025-12-27T13:03:05.8317425Z + vite 5.4.21 (7.3.0 is available)
+2025-12-27T13:03:05.8317862Z + vitest 1.6.1 (4.0.16 is available)
+2025-12-27T13:03:05.8318515Z + vue-tsc 2.2.12 (3.2.1 is available)
+2025-12-27T13:03:05.8318776Z 
+2025-12-27T13:03:05.8318919Z Done in 20.4s

@@ -16,6 +16,8 @@ export interface GetTaskResponse {
 export interface ListParams {
   view?: string;
   database_id?: string;
+  limit?: number;
+  offset?: number;
 }
 
 export const listTasks = async (params?: ListParams): Promise<TaskDetail[]> => {
@@ -32,6 +34,7 @@ export interface PatchTaskRequest {
   title?: string;
   status?: string;
   due_at?: string | null;
+  description?: string;
 }
 
 export const patchTask = async (

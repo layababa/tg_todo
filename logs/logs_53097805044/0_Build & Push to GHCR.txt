@@ -1,0 +1,1040 @@
+﻿2025-12-27T13:07:02.4523321Z Current runner version: '2.330.0'
+2025-12-27T13:07:02.4556366Z ##[group]Runner Image Provisioner
+2025-12-27T13:07:02.4557661Z Hosted Compute Agent
+2025-12-27T13:07:02.4558566Z Version: 20251211.462
+2025-12-27T13:07:02.4559558Z Commit: 6cbad8c2bb55d58165063d031ccabf57e2d2db61
+2025-12-27T13:07:02.4560936Z Build Date: 2025-12-11T16:28:49Z
+2025-12-27T13:07:02.4562027Z Worker ID: {76316ec0-e342-49bc-9aba-35d1a3a722a1}
+2025-12-27T13:07:02.4563291Z ##[endgroup]
+2025-12-27T13:07:02.4564257Z ##[group]Operating System
+2025-12-27T13:07:02.4565495Z Ubuntu
+2025-12-27T13:07:02.4566305Z 24.04.3
+2025-12-27T13:07:02.4567320Z LTS
+2025-12-27T13:07:02.4568129Z ##[endgroup]
+2025-12-27T13:07:02.4568970Z ##[group]Runner Image
+2025-12-27T13:07:02.4569967Z Image: ubuntu-24.04
+2025-12-27T13:07:02.4570758Z Version: 20251215.174.1
+2025-12-27T13:07:02.4572707Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20251215.174/images/ubuntu/Ubuntu2404-Readme.md
+2025-12-27T13:07:02.4575737Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20251215.174
+2025-12-27T13:07:02.4577705Z ##[endgroup]
+2025-12-27T13:07:02.4579610Z ##[group]GITHUB_TOKEN Permissions
+2025-12-27T13:07:02.4582456Z Contents: read
+2025-12-27T13:07:02.4583473Z Metadata: read
+2025-12-27T13:07:02.4584249Z Packages: write
+2025-12-27T13:07:02.4585415Z ##[endgroup]
+2025-12-27T13:07:02.4588770Z Secret source: Actions
+2025-12-27T13:07:02.4590346Z Prepare workflow directory
+2025-12-27T13:07:02.5145020Z Prepare all required actions
+2025-12-27T13:07:02.5202366Z Getting action download info
+2025-12-27T13:07:02.8772342Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+2025-12-27T13:07:02.9898950Z Download action repository 'docker/login-action@v3' (SHA:5e57cd118135c172c3672efd75eb46360885c0ef)
+2025-12-27T13:07:03.4402114Z Download action repository 'docker/build-push-action@v5' (SHA:ca052bb54ab0790a636c9b5f226502c73d547a25)
+2025-12-27T13:07:03.8967857Z Download action repository 'appleboy/ssh-action@v1.0.3' (SHA:029f5b4aeeeb58fdfe1410a5d17f967dacf36262)
+2025-12-27T13:07:04.3433260Z Complete job name: Build & Push to GHCR
+2025-12-27T13:07:04.3923398Z ##[group]Build container for action use: '/home/runner/work/_actions/appleboy/ssh-action/v1.0.3/Dockerfile'.
+2025-12-27T13:07:04.3979257Z ##[command]/usr/bin/docker build -t acaf36:f5e8208511824d618452062e50777113 -f "/home/runner/work/_actions/appleboy/ssh-action/v1.0.3/Dockerfile" "/home/runner/work/_actions/appleboy/ssh-action/v1.0.3"
+2025-12-27T13:07:05.1475669Z #0 building with "default" instance using docker driver
+2025-12-27T13:07:05.1476073Z 
+2025-12-27T13:07:05.1476355Z #1 [internal] load build definition from Dockerfile
+2025-12-27T13:07:05.1476774Z #1 transferring dockerfile: 149B done
+2025-12-27T13:07:05.1477065Z #1 DONE 0.0s
+2025-12-27T13:07:05.1477218Z 
+2025-12-27T13:07:05.1477472Z #2 [internal] load metadata for ghcr.io/appleboy/drone-ssh:1.7.3
+2025-12-27T13:07:05.3332750Z #2 DONE 0.3s
+2025-12-27T13:07:05.4544170Z 
+2025-12-27T13:07:05.4544963Z #3 [internal] load .dockerignore
+2025-12-27T13:07:05.4548134Z #3 transferring context: 2B done
+2025-12-27T13:07:05.4550377Z #3 DONE 0.0s
+2025-12-27T13:07:05.4550728Z 
+2025-12-27T13:07:05.4550920Z #4 [internal] load build context
+2025-12-27T13:07:05.4551470Z #4 transferring context: 108B done
+2025-12-27T13:07:05.4552433Z #4 DONE 0.0s
+2025-12-27T13:07:05.4552694Z 
+2025-12-27T13:07:05.4553276Z #5 [1/2] FROM ghcr.io/appleboy/drone-ssh:1.7.3@sha256:179cbd253771007f2ebcaf7a3860afe059207351de1f3378efafac93bd310158
+2025-12-27T13:07:05.4554674Z #5 resolve ghcr.io/appleboy/drone-ssh:1.7.3@sha256:179cbd253771007f2ebcaf7a3860afe059207351de1f3378efafac93bd310158 done
+2025-12-27T13:07:05.4556101Z #5 extracting sha256:1207c741d8c9b028d98c4006013f9de959da3c55f85b91ed5e4583438a0112ca
+2025-12-27T13:07:05.4557759Z #5 sha256:1207c741d8c9b028d98c4006013f9de959da3c55f85b91ed5e4583438a0112ca 3.38MB / 3.38MB 0.1s done
+2025-12-27T13:07:05.4558766Z #5 sha256:654aaee5654be60f81172539ecd74485cf8bbe2e9137bab0d429862c31c676f6 284.83kB / 284.83kB 0.1s done
+2025-12-27T13:07:05.4560404Z #5 sha256:7e20f48a19643465f486f59127b8f4e0f4114bedc8bd5260fb4f92d5fda95f1c 1.20kB / 1.20kB 0.1s done
+2025-12-27T13:07:05.4561693Z #5 sha256:066e5b821e26d8313055e0314c056e6c297847bcf963e5df10e7aa03107f2246 125B / 125B 0.1s done
+2025-12-27T13:07:05.4562811Z #5 sha256:47353a6f9201a145b687290e5ae0278ac269faf4bb61bee3e9246c37a8d74277 0B / 2.44MB 0.1s
+2025-12-27T13:07:05.4563964Z #5 sha256:179cbd253771007f2ebcaf7a3860afe059207351de1f3378efafac93bd310158 2.38kB / 2.38kB done
+2025-12-27T13:07:05.4565457Z #5 sha256:1a52f94820e830bc9734623deb03bbafa6a248fba19cdc2e5605c70d90d91441 1.24kB / 1.24kB done
+2025-12-27T13:07:05.4566614Z #5 sha256:c4781b8d012b16b6c7468dc9104fad0a63f2a8815b2af8b7176bb544253ea8c7 3.86kB / 3.86kB done
+2025-12-27T13:07:05.5944238Z #5 extracting sha256:1207c741d8c9b028d98c4006013f9de959da3c55f85b91ed5e4583438a0112ca 0.1s done
+2025-12-27T13:07:05.5946140Z #5 sha256:47353a6f9201a145b687290e5ae0278ac269faf4bb61bee3e9246c37a8d74277 2.44MB / 2.44MB 0.1s done
+2025-12-27T13:07:05.5947882Z #5 extracting sha256:654aaee5654be60f81172539ecd74485cf8bbe2e9137bab0d429862c31c676f6 0.0s done
+2025-12-27T13:07:05.7118303Z #5 extracting sha256:7e20f48a19643465f486f59127b8f4e0f4114bedc8bd5260fb4f92d5fda95f1c done
+2025-12-27T13:07:05.7119531Z #5 extracting sha256:066e5b821e26d8313055e0314c056e6c297847bcf963e5df10e7aa03107f2246 done
+2025-12-27T13:07:05.7120778Z #5 extracting sha256:47353a6f9201a145b687290e5ae0278ac269faf4bb61bee3e9246c37a8d74277 0.0s done
+2025-12-27T13:07:05.8996535Z #5 DONE 0.4s
+2025-12-27T13:07:05.8996900Z 
+2025-12-27T13:07:05.8997216Z #6 [2/2] COPY entrypoint.sh /bin/entrypoint.sh
+2025-12-27T13:07:05.8998036Z #6 DONE 0.0s
+2025-12-27T13:07:05.8998376Z 
+2025-12-27T13:07:05.8998650Z #7 exporting to image
+2025-12-27T13:07:05.8999157Z #7 exporting layers
+2025-12-27T13:07:06.0044735Z #7 exporting layers 0.3s done
+2025-12-27T13:07:06.0255207Z #7 writing image sha256:522da2af8fa5c47706fcb5d9501b3348a0fe61f71c9098c4c9ee30cbd08dbd56 done
+2025-12-27T13:07:06.0256540Z #7 naming to docker.io/library/acaf36:f5e8208511824d618452062e50777113 done
+2025-12-27T13:07:06.0257378Z #7 DONE 0.3s
+2025-12-27T13:07:06.0317318Z ##[endgroup]
+2025-12-27T13:07:06.0593719Z ##[group]Run actions/checkout@v4
+2025-12-27T13:07:06.0594349Z with:
+2025-12-27T13:07:06.0594730Z   repository: layababa/tg_todo
+2025-12-27T13:07:06.0595403Z   token: ***
+2025-12-27T13:07:06.0595695Z   ssh-strict: true
+2025-12-27T13:07:06.0596078Z   ssh-user: git
+2025-12-27T13:07:06.0596326Z   persist-credentials: true
+2025-12-27T13:07:06.0596768Z   clean: true
+2025-12-27T13:07:06.0597067Z   sparse-checkout-cone-mode: true
+2025-12-27T13:07:06.0597409Z   fetch-depth: 1
+2025-12-27T13:07:06.0597645Z   fetch-tags: false
+2025-12-27T13:07:06.0597990Z   show-progress: true
+2025-12-27T13:07:06.0598253Z   lfs: false
+2025-12-27T13:07:06.0598512Z   submodules: false
+2025-12-27T13:07:06.0598817Z   set-safe-directory: true
+2025-12-27T13:07:06.0599388Z env:
+2025-12-27T13:07:06.0599652Z   GO_VERSION: 1.21.x
+2025-12-27T13:07:06.0599958Z   NODE_VERSION: 20.x
+2025-12-27T13:07:06.0600326Z ##[endgroup]
+2025-12-27T13:07:06.1652923Z Syncing repository: layababa/tg_todo
+2025-12-27T13:07:06.1654553Z ##[group]Getting Git version info
+2025-12-27T13:07:06.1654979Z Working directory is '/home/runner/work/tg_todo/tg_todo'
+2025-12-27T13:07:06.1656013Z [command]/usr/bin/git version
+2025-12-27T13:07:06.1673314Z git version 2.52.0
+2025-12-27T13:07:06.1700047Z ##[endgroup]
+2025-12-27T13:07:06.1716484Z Temporarily overriding HOME='/home/runner/work/_temp/025fdd4d-6a1b-42b8-bfa2-e2034171f67f' before making global git config changes
+2025-12-27T13:07:06.1717932Z Adding repository directory to the temporary git global config as a safe directory
+2025-12-27T13:07:06.1729729Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/tg_todo/tg_todo
+2025-12-27T13:07:06.1770985Z Deleting the contents of '/home/runner/work/tg_todo/tg_todo'
+2025-12-27T13:07:06.1774708Z ##[group]Initializing the repository
+2025-12-27T13:07:06.1779418Z [command]/usr/bin/git init /home/runner/work/tg_todo/tg_todo
+2025-12-27T13:07:06.1891024Z hint: Using 'master' as the name for the initial branch. This default branch name
+2025-12-27T13:07:06.1892125Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2025-12-27T13:07:06.1892726Z hint: to use in all of your new repositories, which will suppress this warning,
+2025-12-27T13:07:06.1893227Z hint: call:
+2025-12-27T13:07:06.1893479Z hint:
+2025-12-27T13:07:06.1893838Z hint: 	git config --global init.defaultBranch <name>
+2025-12-27T13:07:06.1894240Z hint:
+2025-12-27T13:07:06.1894889Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2025-12-27T13:07:06.1895947Z hint: 'development'. The just-created branch can be renamed via this command:
+2025-12-27T13:07:06.1896765Z hint:
+2025-12-27T13:07:06.1897141Z hint: 	git branch -m <name>
+2025-12-27T13:07:06.1897457Z hint:
+2025-12-27T13:07:06.1898053Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2025-12-27T13:07:06.1899318Z Initialized empty Git repository in /home/runner/work/tg_todo/tg_todo/.git/
+2025-12-27T13:07:06.1909418Z [command]/usr/bin/git remote add origin https://github.com/layababa/tg_todo
+2025-12-27T13:07:06.1941723Z ##[endgroup]
+2025-12-27T13:07:06.1977791Z ##[group]Disabling automatic garbage collection
+2025-12-27T13:07:06.1979892Z [command]/usr/bin/git config --local gc.auto 0
+2025-12-27T13:07:06.1981194Z ##[endgroup]
+2025-12-27T13:07:06.1981732Z ##[group]Setting up auth
+2025-12-27T13:07:06.1987007Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-12-27T13:07:06.2019520Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-12-27T13:07:06.2361698Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-12-27T13:07:06.2390850Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-12-27T13:07:06.2607498Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2025-12-27T13:07:06.2637335Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2025-12-27T13:07:06.2867578Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2025-12-27T13:07:06.2900599Z ##[endgroup]
+2025-12-27T13:07:06.2901284Z ##[group]Fetching the repository
+2025-12-27T13:07:06.2908880Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +33a4728d4b0dd4d6add6a48a743349de2441aa76:refs/remotes/origin/main
+2025-12-27T13:07:07.0746333Z From https://github.com/layababa/tg_todo
+2025-12-27T13:07:07.0747182Z  * [new ref]         33a4728d4b0dd4d6add6a48a743349de2441aa76 -> origin/main
+2025-12-27T13:07:07.0779469Z ##[endgroup]
+2025-12-27T13:07:07.0779881Z ##[group]Determining the checkout info
+2025-12-27T13:07:07.0782142Z ##[endgroup]
+2025-12-27T13:07:07.0787321Z [command]/usr/bin/git sparse-checkout disable
+2025-12-27T13:07:07.0830303Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2025-12-27T13:07:07.0854816Z ##[group]Checking out the ref
+2025-12-27T13:07:07.0858786Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2025-12-27T13:07:07.2610071Z Switched to a new branch 'main'
+2025-12-27T13:07:07.2611107Z branch 'main' set up to track 'origin/main'.
+2025-12-27T13:07:07.2625572Z ##[endgroup]
+2025-12-27T13:07:07.2664950Z [command]/usr/bin/git log -1 --format=%H
+2025-12-27T13:07:07.2687600Z 33a4728d4b0dd4d6add6a48a743349de2441aa76
+2025-12-27T13:07:07.2864009Z ##[group]Run docker/login-action@v3
+2025-12-27T13:07:07.2864270Z with:
+2025-12-27T13:07:07.2864433Z   registry: ghcr.io
+2025-12-27T13:07:07.2864627Z   username: Dealize
+2025-12-27T13:07:07.2865436Z   password: ***
+2025-12-27T13:07:07.2865626Z   logout: true
+2025-12-27T13:07:07.2865807Z env:
+2025-12-27T13:07:07.2865960Z   GO_VERSION: 1.21.x
+2025-12-27T13:07:07.2866158Z   NODE_VERSION: 20.x
+2025-12-27T13:07:07.2866332Z ##[endgroup]
+2025-12-27T13:07:07.5770451Z Logging into ghcr.io...
+2025-12-27T13:07:07.8295617Z Login Succeeded!
+2025-12-27T13:07:07.8458075Z ##[group]Run docker/build-push-action@v5
+2025-12-27T13:07:07.8458358Z with:
+2025-12-27T13:07:07.8458524Z   context: ./server
+2025-12-27T13:07:07.8458710Z   file: ./server/Dockerfile
+2025-12-27T13:07:07.8458908Z   push: true
+2025-12-27T13:07:07.8459106Z   tags: ghcr.io/layababa/tg_todo_api:latest
+2025-12-27T13:07:07.8459358Z   load: false
+2025-12-27T13:07:07.8459525Z   no-cache: false
+2025-12-27T13:07:07.8459699Z   pull: false
+2025-12-27T13:07:07.8460045Z   github-token: ***
+2025-12-27T13:07:07.8460229Z env:
+2025-12-27T13:07:07.8460385Z   GO_VERSION: 1.21.x
+2025-12-27T13:07:07.8460571Z   NODE_VERSION: 20.x
+2025-12-27T13:07:07.8460757Z ##[endgroup]
+2025-12-27T13:07:08.0798758Z ##[group]GitHub Actions runtime token ACs
+2025-12-27T13:07:08.0810269Z refs/heads/main: read/write
+2025-12-27T13:07:08.0812128Z ##[endgroup]
+2025-12-27T13:07:08.0813242Z ##[group]Docker info
+2025-12-27T13:07:08.0857673Z [command]/usr/bin/docker version
+2025-12-27T13:07:08.1060345Z Client: Docker Engine - Community
+2025-12-27T13:07:08.1067012Z  Version:           28.0.4
+2025-12-27T13:07:08.1067395Z  API version:       1.48
+2025-12-27T13:07:08.1067763Z  Go version:        go1.23.7
+2025-12-27T13:07:08.1068123Z  Git commit:        b8034c0
+2025-12-27T13:07:08.1068498Z  Built:             Tue Mar 25 15:07:16 2025
+2025-12-27T13:07:08.1068903Z  OS/Arch:           linux/amd64
+2025-12-27T13:07:08.1069260Z  Context:           default
+2025-12-27T13:07:08.1069479Z 
+2025-12-27T13:07:08.1069633Z Server: Docker Engine - Community
+2025-12-27T13:07:08.1070011Z  Engine:
+2025-12-27T13:07:08.1070283Z   Version:          28.0.4
+2025-12-27T13:07:08.1070672Z   API version:      1.48 (minimum version 1.24)
+2025-12-27T13:07:08.1071150Z   Go version:       go1.23.7
+2025-12-27T13:07:08.1071513Z   Git commit:       6430e49
+2025-12-27T13:07:08.1071942Z   Built:            Tue Mar 25 15:07:16 2025
+2025-12-27T13:07:08.1072405Z   OS/Arch:          linux/amd64
+2025-12-27T13:07:08.1072779Z   Experimental:     false
+2025-12-27T13:07:08.1073121Z  containerd:
+2025-12-27T13:07:08.1073444Z   Version:          v2.2.0
+2025-12-27T13:07:08.1073886Z   GitCommit:        1c4457e00facac03ce1d75f7b6777a7a851e5c41
+2025-12-27T13:07:08.1074385Z  runc:
+2025-12-27T13:07:08.1074658Z   Version:          1.3.4
+2025-12-27T13:07:08.1075011Z   GitCommit:        v1.3.4-0-gd6d73eb8
+2025-12-27T13:07:08.1075581Z  docker-init:
+2025-12-27T13:07:08.1075889Z   Version:          0.19.0
+2025-12-27T13:07:08.1076253Z   GitCommit:        de40ad0
+2025-12-27T13:07:08.1119256Z [command]/usr/bin/docker info
+2025-12-27T13:07:08.3803572Z Client: Docker Engine - Community
+2025-12-27T13:07:08.3804641Z  Version:    28.0.4
+2025-12-27T13:07:08.3805417Z  Context:    default
+2025-12-27T13:07:08.3805798Z  Debug Mode: false
+2025-12-27T13:07:08.3806151Z  Plugins:
+2025-12-27T13:07:08.3806492Z   buildx: Docker Buildx (Docker Inc.)
+2025-12-27T13:07:08.3806898Z     Version:  v0.30.1
+2025-12-27T13:07:08.3807276Z     Path:     /usr/libexec/docker/cli-plugins/docker-buildx
+2025-12-27T13:07:08.3807794Z   compose: Docker Compose (Docker Inc.)
+2025-12-27T13:07:08.3808158Z     Version:  v2.38.2
+2025-12-27T13:07:08.3808525Z     Path:     /usr/libexec/docker/cli-plugins/docker-compose
+2025-12-27T13:07:08.3808852Z 
+2025-12-27T13:07:08.3808961Z Server:
+2025-12-27T13:07:08.3809196Z  Containers: 0
+2025-12-27T13:07:08.3809455Z   Running: 0
+2025-12-27T13:07:08.3809707Z   Paused: 0
+2025-12-27T13:07:08.3809947Z   Stopped: 0
+2025-12-27T13:07:08.3810128Z  Images: 1
+2025-12-27T13:07:08.3810312Z  Server Version: 28.0.4
+2025-12-27T13:07:08.3810528Z  Storage Driver: overlay2
+2025-12-27T13:07:08.3810755Z   Backing Filesystem: extfs
+2025-12-27T13:07:08.3810983Z   Supports d_type: true
+2025-12-27T13:07:08.3811535Z   Using metacopy: false
+2025-12-27T13:07:08.3811754Z   Native Overlay Diff: false
+2025-12-27T13:07:08.3811973Z   userxattr: false
+2025-12-27T13:07:08.3812177Z  Logging Driver: json-file
+2025-12-27T13:07:08.3812394Z  Cgroup Driver: systemd
+2025-12-27T13:07:08.3812599Z  Cgroup Version: 2
+2025-12-27T13:07:08.3812780Z  Plugins:
+2025-12-27T13:07:08.3813132Z   Volume: local
+2025-12-27T13:07:08.3813364Z   Network: bridge host ipvlan macvlan null overlay
+2025-12-27T13:07:08.3813766Z   Log: awslogs fluentd gcplogs gelf journald json-file local splunk syslog
+2025-12-27T13:07:08.3814127Z  Swarm: inactive
+2025-12-27T13:07:08.3814334Z  Runtimes: io.containerd.runc.v2 runc
+2025-12-27T13:07:08.3814594Z  Default Runtime: runc
+2025-12-27T13:07:08.3814810Z  Init Binary: docker-init
+2025-12-27T13:07:08.3815378Z  containerd version: 1c4457e00facac03ce1d75f7b6777a7a851e5c41
+2025-12-27T13:07:08.3815729Z  runc version: v1.3.4-0-gd6d73eb8
+2025-12-27T13:07:08.3815978Z  init version: de40ad0
+2025-12-27T13:07:08.3816196Z  Security Options:
+2025-12-27T13:07:08.3816388Z   apparmor
+2025-12-27T13:07:08.3816695Z   seccomp
+2025-12-27T13:07:08.3816971Z    Profile: builtin
+2025-12-27T13:07:08.3817176Z   cgroupns
+2025-12-27T13:07:08.3817339Z  Kernel Version: 6.11.0-1018-azure
+2025-12-27T13:07:08.3817573Z  Operating System: Ubuntu 24.04.3 LTS
+2025-12-27T13:07:08.3817799Z  OSType: linux
+2025-12-27T13:07:08.3817973Z  Architecture: x86_64
+2025-12-27T13:07:08.3818144Z  CPUs: 4
+2025-12-27T13:07:08.3818303Z  Total Memory: 15.62GiB
+2025-12-27T13:07:08.3818482Z  Name: runnervmh13bl
+2025-12-27T13:07:08.3818687Z  ID: 0a695d56-123a-42a8-a772-617b83954cb8
+2025-12-27T13:07:08.3818932Z  Docker Root Dir: /var/lib/docker
+2025-12-27T13:07:08.3819145Z  Debug Mode: false
+2025-12-27T13:07:08.3819327Z  Username: githubactions
+2025-12-27T13:07:08.3819520Z  Experimental: false
+2025-12-27T13:07:08.3819708Z  Insecure Registries:
+2025-12-27T13:07:08.3824369Z   ::1/128
+2025-12-27T13:07:08.3824668Z   127.0.0.0/8
+2025-12-27T13:07:08.3824927Z  Live Restore Enabled: false
+2025-12-27T13:07:08.3825352Z 
+2025-12-27T13:07:08.3825845Z ##[endgroup]
+2025-12-27T13:07:08.3826446Z ##[group]Proxy configuration
+2025-12-27T13:07:08.3826824Z No proxy configuration found
+2025-12-27T13:07:08.3827392Z ##[endgroup]
+2025-12-27T13:07:08.4610101Z ##[group]Buildx version
+2025-12-27T13:07:08.4647897Z [command]/usr/bin/docker buildx version
+2025-12-27T13:07:08.5130930Z github.com/docker/buildx v0.30.1 9e66234aa13328a5e75b75aa5574e1ca6d6d9c01
+2025-12-27T13:07:08.5163607Z ##[endgroup]
+2025-12-27T13:07:08.5183283Z ##[group]Builder info
+2025-12-27T13:07:08.5885984Z {
+2025-12-27T13:07:08.5886316Z   "nodes": [
+2025-12-27T13:07:08.5886584Z     {
+2025-12-27T13:07:08.5886843Z       "name": "default",
+2025-12-27T13:07:08.5887185Z       "endpoint": "default",
+2025-12-27T13:07:08.5887522Z       "status": "running",
+2025-12-27T13:07:08.5887869Z       "buildkit": "v0.20.2",
+2025-12-27T13:07:08.5888355Z       "platforms": "linux/amd64,linux/amd64/v2,linux/amd64/v3,linux/386",
+2025-12-27T13:07:08.5888921Z       "features": {
+2025-12-27T13:07:08.5889371Z         "Automatically load images to the Docker Engine image store": true,
+2025-12-27T13:07:08.5889931Z         "Cache export": true,
+2025-12-27T13:07:08.5890281Z         "Direct push": true,
+2025-12-27T13:07:08.5890647Z         "Docker exporter": true,
+2025-12-27T13:07:08.5891026Z         "Multi-platform build": true,
+2025-12-27T13:07:08.5891398Z         "OCI exporter": true
+2025-12-27T13:07:08.5891730Z       },
+2025-12-27T13:07:08.5891979Z       "labels": {
+2025-12-27T13:07:08.5892480Z         "org.mobyproject.buildkit.worker.moby.host-gateway-ip": "172.17.0.1"
+2025-12-27T13:07:08.5892856Z       }
+2025-12-27T13:07:08.5893015Z     }
+2025-12-27T13:07:08.5893162Z   ],
+2025-12-27T13:07:08.5893326Z   "name": "default",
+2025-12-27T13:07:08.5893514Z   "driver": "docker",
+2025-12-27T13:07:08.5893729Z   "lastActivity": "2025-12-27T13:07:04.000Z"
+2025-12-27T13:07:08.5893961Z }
+2025-12-27T13:07:08.5894417Z ##[endgroup]
+2025-12-27T13:07:08.7237912Z [command]/usr/bin/docker buildx build --file ./server/Dockerfile --iidfile /home/runner/work/_temp/docker-actions-toolkit-ikZGah/build-iidfile-d583d70aa7.txt --tag ghcr.io/layababa/tg_todo_api:latest --metadata-file /home/runner/work/_temp/docker-actions-toolkit-ikZGah/build-metadata-ca5ad956b4.json --push ./server
+2025-12-27T13:07:09.0362725Z #0 building with "default" instance using docker driver
+2025-12-27T13:07:09.0363188Z 
+2025-12-27T13:07:09.0363405Z #1 [internal] load build definition from Dockerfile
+2025-12-27T13:07:09.0363730Z #1 transferring dockerfile: 750B done
+2025-12-27T13:07:09.0363967Z #1 DONE 0.0s
+2025-12-27T13:07:09.0364076Z 
+2025-12-27T13:07:09.0364224Z #2 [auth] library/alpine:pull token for registry-1.docker.io
+2025-12-27T13:07:09.0364527Z #2 DONE 0.0s
+2025-12-27T13:07:09.0364624Z 
+2025-12-27T13:07:09.0364757Z #3 [auth] library/golang:pull token for registry-1.docker.io
+2025-12-27T13:07:09.0365194Z #3 DONE 0.0s
+2025-12-27T13:07:09.0365292Z 
+2025-12-27T13:07:09.0365428Z #4 [internal] load metadata for docker.io/library/alpine:3.19
+2025-12-27T13:07:09.2918841Z #4 DONE 0.5s
+2025-12-27T13:07:09.2919077Z 
+2025-12-27T13:07:09.2919367Z #5 [internal] load metadata for docker.io/library/golang:1.24-alpine
+2025-12-27T13:07:09.3928987Z #5 DONE 0.5s
+2025-12-27T13:07:09.3929607Z 
+2025-12-27T13:07:09.3929989Z #6 [internal] load .dockerignore
+2025-12-27T13:07:09.3931536Z #6 transferring context: 2B done
+2025-12-27T13:07:09.3933511Z #6 DONE 0.0s
+2025-12-27T13:07:09.3934196Z 
+2025-12-27T13:07:09.3935231Z #7 [builder 1/7] FROM docker.io/library/golang:1.24-alpine@sha256:ef75fa8822a4c0fb53a390548b3dc1c39639339ec3373c58f5441117e1ff46ae
+2025-12-27T13:07:09.3941102Z #7 resolve docker.io/library/golang:1.24-alpine@sha256:ef75fa8822a4c0fb53a390548b3dc1c39639339ec3373c58f5441117e1ff46ae done
+2025-12-27T13:07:09.3942199Z #7 extracting sha256:1074353eec0db2c1d81d5af2671e56e00cf5738486f5762609ea33d606f88612
+2025-12-27T13:07:09.4970784Z #7 sha256:aa084a39ff8e44765a8f2a8fa09ff69ddef1900b50577883fa8e737a5a828783 2.19kB / 2.19kB done
+2025-12-27T13:07:09.4974644Z #7 sha256:1074353eec0db2c1d81d5af2671e56e00cf5738486f5762609ea33d606f88612 3.86MB / 3.86MB 0.1s done
+2025-12-27T13:07:09.4980883Z #7 sha256:380b1c214bdf8fcd1074254287b6fd5892da19d19bb3b21f8b6d5ebbe325a928 0B / 296.10kB 0.1s
+2025-12-27T13:07:09.4986178Z #7 sha256:94cc3e02e353c0efcfdaf6be736e5d50dbde521e32a7ec4b0a8f8ce54558c2c2 0B / 79.12MB 0.1s
+2025-12-27T13:07:09.4989710Z #7 sha256:ef75fa8822a4c0fb53a390548b3dc1c39639339ec3373c58f5441117e1ff46ae 10.30kB / 10.30kB done
+2025-12-27T13:07:09.4994625Z #7 sha256:1a97fbadb2eb46ba8e4bce6b08f45bc24ef0180d1f3b3192886a080c8268ba71 1.92kB / 1.92kB done
+2025-12-27T13:07:09.5987220Z #7 ...
+2025-12-27T13:07:09.5988555Z 
+2025-12-27T13:07:09.5988717Z #8 [internal] load build context
+2025-12-27T13:07:09.5989149Z #8 transferring context: 44.12MB 0.2s done
+2025-12-27T13:07:09.5989545Z #8 DONE 0.2s
+2025-12-27T13:07:09.5989706Z 
+2025-12-27T13:07:09.5990336Z #7 [builder 1/7] FROM docker.io/library/golang:1.24-alpine@sha256:ef75fa8822a4c0fb53a390548b3dc1c39639339ec3373c58f5441117e1ff46ae
+2025-12-27T13:07:09.5991383Z #7 extracting sha256:1074353eec0db2c1d81d5af2671e56e00cf5738486f5762609ea33d606f88612 0.2s done
+2025-12-27T13:07:09.5992239Z #7 sha256:380b1c214bdf8fcd1074254287b6fd5892da19d19bb3b21f8b6d5ebbe325a928 296.10kB / 296.10kB 0.1s done
+2025-12-27T13:07:09.5992881Z #7 sha256:94cc3e02e353c0efcfdaf6be736e5d50dbde521e32a7ec4b0a8f8ce54558c2c2 11.53MB / 79.12MB 0.2s
+2025-12-27T13:07:09.5993635Z #7 sha256:6e3c40c40c61fd86ebe0adb235cd706932d3fac73e595a513ead68cd5f041b39 125B / 125B 0.2s done
+2025-12-27T13:07:09.5994380Z #7 sha256:4f4fb700ef54461cfa02571ae0db9a0dc1e0cdb5577484a6d75e68dc38e8acc1 0B / 32B 0.2s
+2025-12-27T13:07:09.5995400Z #7 extracting sha256:380b1c214bdf8fcd1074254287b6fd5892da19d19bb3b21f8b6d5ebbe325a928
+2025-12-27T13:07:09.7187169Z #7 ...
+2025-12-27T13:07:09.7187456Z 
+2025-12-27T13:07:09.7188431Z #9 [stage-1 1/5] FROM docker.io/library/alpine:3.19@sha256:6baf43584bcb78f2e5847d1de515f23499913ac9f12bdf834811a3145eb11ca1
+2025-12-27T13:07:09.7190199Z #9 resolve docker.io/library/alpine:3.19@sha256:6baf43584bcb78f2e5847d1de515f23499913ac9f12bdf834811a3145eb11ca1 done
+2025-12-27T13:07:09.7191364Z #9 sha256:17a39c0ba978cc27001e9c56a480f98106e1ab74bd56eb302f9fd4cf758ea43f 3.42MB / 3.42MB 0.2s done
+2025-12-27T13:07:09.7192730Z #9 sha256:6baf43584bcb78f2e5847d1de515f23499913ac9f12bdf834811a3145eb11ca1 8.08kB / 8.08kB done
+2025-12-27T13:07:09.7193892Z #9 sha256:b58899f069c47216f6002a6850143dc6fae0d35eb8b0df9300bbe6327b9c2171 1.02kB / 1.02kB done
+2025-12-27T13:07:09.7194968Z #9 sha256:83b2b6703a620bf2e001ab57f7adc414d891787b3c59859b1b62909e48dd2242 581B / 581B done
+2025-12-27T13:07:09.7196231Z #9 extracting sha256:17a39c0ba978cc27001e9c56a480f98106e1ab74bd56eb302f9fd4cf758ea43f 0.1s done
+2025-12-27T13:07:09.7196974Z #9 DONE 0.3s
+2025-12-27T13:07:09.7197169Z 
+2025-12-27T13:07:09.7197872Z #7 [builder 1/7] FROM docker.io/library/golang:1.24-alpine@sha256:ef75fa8822a4c0fb53a390548b3dc1c39639339ec3373c58f5441117e1ff46ae
+2025-12-27T13:07:09.7199268Z #7 sha256:94cc3e02e353c0efcfdaf6be736e5d50dbde521e32a7ec4b0a8f8ce54558c2c2 47.19MB / 79.12MB 0.4s
+2025-12-27T13:07:09.7200548Z #7 sha256:4f4fb700ef54461cfa02571ae0db9a0dc1e0cdb5577484a6d75e68dc38e8acc1 32B / 32B 0.2s done
+2025-12-27T13:07:09.7201297Z #7 extracting sha256:380b1c214bdf8fcd1074254287b6fd5892da19d19bb3b21f8b6d5ebbe325a928 0.1s done
+2025-12-27T13:07:09.8199100Z #7 ...
+2025-12-27T13:07:09.8199956Z 
+2025-12-27T13:07:09.8200200Z #10 [stage-1 2/5] WORKDIR /app
+2025-12-27T13:07:09.8200584Z #10 DONE 0.1s
+2025-12-27T13:07:09.8200775Z 
+2025-12-27T13:07:09.8204309Z #7 [builder 1/7] FROM docker.io/library/golang:1.24-alpine@sha256:ef75fa8822a4c0fb53a390548b3dc1c39639339ec3373c58f5441117e1ff46ae
+2025-12-27T13:07:09.8205754Z #7 sha256:94cc3e02e353c0efcfdaf6be736e5d50dbde521e32a7ec4b0a8f8ce54558c2c2 79.12MB / 79.12MB 0.5s
+2025-12-27T13:07:09.9527025Z #7 sha256:94cc3e02e353c0efcfdaf6be736e5d50dbde521e32a7ec4b0a8f8ce54558c2c2 79.12MB / 79.12MB 0.5s done
+2025-12-27T13:07:09.9528177Z #7 extracting sha256:94cc3e02e353c0efcfdaf6be736e5d50dbde521e32a7ec4b0a8f8ce54558c2c2 0.1s
+2025-12-27T13:07:10.7778745Z #7 ...
+2025-12-27T13:07:10.7779216Z 
+2025-12-27T13:07:10.7779586Z #11 [stage-1 3/5] RUN apk add --no-cache ca-certificates tzdata
+2025-12-27T13:07:10.7780451Z #11 0.183 fetch https://dl-cdn.alpinelinux.org/alpine/v3.19/main/x86_64/APKINDEX.tar.gz
+2025-12-27T13:07:10.7781465Z #11 0.295 fetch https://dl-cdn.alpinelinux.org/alpine/v3.19/community/x86_64/APKINDEX.tar.gz
+2025-12-27T13:07:10.7782186Z #11 0.599 (1/2) Installing ca-certificates (20250911-r0)
+2025-12-27T13:07:10.7782708Z #11 0.629 (2/2) Installing tzdata (2025b-r0)
+2025-12-27T13:07:10.7783187Z #11 0.780 Executing busybox-1.36.1-r20.trigger
+2025-12-27T13:07:10.7783710Z #11 0.787 Executing ca-certificates-20250911-r0.trigger
+2025-12-27T13:07:10.7784220Z #11 0.853 OK: 11 MiB in 17 packages
+2025-12-27T13:07:10.7784608Z #11 DONE 1.0s
+2025-12-27T13:07:10.7784781Z 
+2025-12-27T13:07:10.7785559Z #7 [builder 1/7] FROM docker.io/library/golang:1.24-alpine@sha256:ef75fa8822a4c0fb53a390548b3dc1c39639339ec3373c58f5441117e1ff46ae
+2025-12-27T13:07:14.4297372Z #7 extracting sha256:94cc3e02e353c0efcfdaf6be736e5d50dbde521e32a7ec4b0a8f8ce54558c2c2 4.4s done
+2025-12-27T13:07:14.6661958Z #7 extracting sha256:6e3c40c40c61fd86ebe0adb235cd706932d3fac73e595a513ead68cd5f041b39
+2025-12-27T13:07:14.8577640Z #7 extracting sha256:6e3c40c40c61fd86ebe0adb235cd706932d3fac73e595a513ead68cd5f041b39 done
+2025-12-27T13:07:14.8579064Z #7 extracting sha256:4f4fb700ef54461cfa02571ae0db9a0dc1e0cdb5577484a6d75e68dc38e8acc1 done
+2025-12-27T13:07:14.8579632Z #7 DONE 5.4s
+2025-12-27T13:07:14.8579787Z 
+2025-12-27T13:07:14.8579902Z #12 [builder 2/7] WORKDIR /app
+2025-12-27T13:07:14.8580202Z #12 DONE 0.0s
+2025-12-27T13:07:14.8580340Z 
+2025-12-27T13:07:14.8580477Z #13 [builder 3/7] RUN apk add --no-cache git
+2025-12-27T13:07:15.1174309Z #13 0.410 ( 1/13) Installing brotli-libs (1.2.0-r0)
+2025-12-27T13:07:15.2485834Z #13 0.422 ( 2/13) Installing c-ares (1.34.6-r0)
+2025-12-27T13:07:15.2486430Z #13 0.426 ( 3/13) Installing libunistring (1.4.1-r0)
+2025-12-27T13:07:15.2487286Z #13 0.438 ( 4/13) Installing libidn2 (2.3.8-r0)
+2025-12-27T13:07:15.2487844Z #13 0.442 ( 5/13) Installing nghttp2-libs (1.68.0-r0)
+2025-12-27T13:07:15.2488409Z #13 0.447 ( 6/13) Installing nghttp3 (1.13.1-r0)
+2025-12-27T13:07:15.2488937Z #13 0.450 ( 7/13) Installing libpsl (0.21.5-r3)
+2025-12-27T13:07:15.2489675Z #13 0.453 ( 8/13) Installing zstd-libs (1.5.7-r2)
+2025-12-27T13:07:15.2490024Z #13 0.461 ( 9/13) Installing libcurl (8.17.0-r1)
+2025-12-27T13:07:15.2490360Z #13 0.469 (10/13) Installing libexpat (2.7.3-r0)
+2025-12-27T13:07:15.2490710Z #13 0.472 (11/13) Installing pcre2 (10.47-r0)
+2025-12-27T13:07:15.2491046Z #13 0.479 (12/13) Installing git (2.52.0-r0)
+2025-12-27T13:07:15.2491409Z #13 0.542 (13/13) Installing git-init-template (2.52.0-r0)
+2025-12-27T13:07:15.4741671Z #13 0.545 Executing busybox-1.37.0-r30.trigger
+2025-12-27T13:07:15.4742197Z #13 0.552 OK: 20.6 MiB in 30 packages
+2025-12-27T13:07:15.4742581Z #13 DONE 0.6s
+2025-12-27T13:07:15.4742781Z 
+2025-12-27T13:07:15.4742930Z #14 [builder 4/7] COPY go.mod go.sum ./
+2025-12-27T13:07:15.4743324Z #14 DONE 0.0s
+2025-12-27T13:07:15.4743493Z 
+2025-12-27T13:07:15.4743588Z #15 [builder 5/7] RUN go mod download
+2025-12-27T13:07:19.2309930Z #15 DONE 3.9s
+2025-12-27T13:07:19.4804812Z 
+2025-12-27T13:07:19.4805333Z #16 [builder 6/7] COPY . .
+2025-12-27T13:07:19.4805747Z #16 DONE 0.1s
+2025-12-27T13:07:19.4805942Z 
+2025-12-27T13:07:19.4806272Z #17 [builder 7/7] RUN CGO_ENABLED=0 GOOS=linux go build -o api ./cmd/api
+2025-12-27T13:07:55.0301033Z #17 DONE 35.7s
+2025-12-27T13:07:55.1399821Z 
+2025-12-27T13:07:55.1400504Z #18 [stage-1 4/5] COPY --from=builder /app/api ./api
+2025-12-27T13:07:55.1401065Z #18 DONE 0.1s
+2025-12-27T13:07:55.3007062Z 
+2025-12-27T13:07:55.3009041Z #19 [stage-1 5/5] COPY --from=builder /app/config ./config
+2025-12-27T13:07:55.3009750Z #19 DONE 0.0s
+2025-12-27T13:07:55.3009933Z 
+2025-12-27T13:07:55.3010061Z #20 exporting to image
+2025-12-27T13:07:55.3010375Z #20 exporting layers
+2025-12-27T13:07:56.0122568Z #20 exporting layers 0.9s done
+2025-12-27T13:07:56.2511563Z #20 writing image sha256:7cea12450aa9c2fa46dfb38ba3319109ebb8ff8abd3e3f4beb875c7b34f64dc3 done
+2025-12-27T13:07:56.2512389Z #20 naming to ghcr.io/layababa/tg_todo_api:latest done
+2025-12-27T13:07:56.2512830Z #20 DONE 0.9s
+2025-12-27T13:07:56.2512993Z 
+2025-12-27T13:07:56.2513180Z #21 resolving provenance for metadata file
+2025-12-27T13:07:56.2513577Z #21 DONE 0.0s
+2025-12-27T13:07:56.2513740Z 
+2025-12-27T13:07:56.2513961Z #22 pushing ghcr.io/layababa/tg_todo_api:latest with docker
+2025-12-27T13:07:56.2514451Z #22 pushing layer 314cedcaee4d
+2025-12-27T13:07:56.2514813Z #22 pushing layer bb6fcfed0cfe
+2025-12-27T13:07:56.2515328Z #22 pushing layer 44433eab954a
+2025-12-27T13:07:56.2515685Z #22 pushing layer 0feb703beafc
+2025-12-27T13:07:56.2516083Z #22 pushing layer 0b44b2151d78
+2025-12-27T13:07:56.4499014Z #22 pushing layer 314cedcaee4d 3.07kB / 292B 0.3s
+2025-12-27T13:07:56.4501717Z #22 pushing layer 44433eab954a 1.17MB / 1.60MB 0.3s
+2025-12-27T13:07:56.6442091Z #22 pushing layer bb6fcfed0cfe 4.92MB / 46.26MB 0.5s
+2025-12-27T13:07:56.6442488Z #22 pushing layer 44433eab954a 2.70MB / 1.60MB 0.4s
+2025-12-27T13:07:56.7455874Z #22 pushing layer bb6fcfed0cfe 7.87MB / 46.26MB 0.6s
+2025-12-27T13:07:56.8595444Z #22 pushing layer bb6fcfed0cfe 10.81MB / 46.26MB 0.8s
+2025-12-27T13:07:56.9601993Z #22 pushing layer bb6fcfed0cfe 13.76MB / 46.26MB 0.9s
+2025-12-27T13:07:57.0743802Z #22 pushing layer bb6fcfed0cfe 16.71MB / 46.26MB 1.0s
+2025-12-27T13:07:57.1753130Z #22 pushing layer bb6fcfed0cfe 19.66MB / 46.26MB 1.1s
+2025-12-27T13:07:57.2781586Z #22 pushing layer bb6fcfed0cfe 24.09MB / 46.26MB 1.2s
+2025-12-27T13:07:57.3915252Z #22 pushing layer bb6fcfed0cfe 27.53MB / 46.26MB 1.3s
+2025-12-27T13:07:57.4953991Z #22 pushing layer 314cedcaee4d 1.4s done
+2025-12-27T13:07:57.4954498Z #22 pushing layer bb6fcfed0cfe 30.48MB / 46.26MB 1.4s
+2025-12-27T13:07:57.5966062Z #22 pushing layer bb6fcfed0cfe 34.41MB / 46.26MB 1.5s
+2025-12-27T13:07:57.5966576Z #22 pushing layer 44433eab954a 1.4s done
+2025-12-27T13:07:57.5967381Z #22 pushing layer 0feb703beafc 1.4s done
+2025-12-27T13:07:57.7059058Z #22 pushing layer bb6fcfed0cfe 38.83MB / 46.26MB 1.6s
+2025-12-27T13:07:57.8113967Z #22 pushing layer bb6fcfed0cfe 42.76MB / 46.26MB 1.7s
+2025-12-27T13:07:57.9161367Z #22 pushing layer bb6fcfed0cfe 46.20MB / 46.26MB 1.8s
+2025-12-27T13:07:59.5354718Z #22 pushing layer bb6fcfed0cfe 3.4s done
+2025-12-27T13:08:01.3362341Z #22 pushing layer 0b44b2151d78 5.2s done
+2025-12-27T13:08:01.4867325Z #22 DONE 5.3s
+2025-12-27T13:08:02.0740109Z ##[group]ImageID
+2025-12-27T13:08:02.0740800Z sha256:7cea12450aa9c2fa46dfb38ba3319109ebb8ff8abd3e3f4beb875c7b34f64dc3
+2025-12-27T13:08:02.0742069Z ##[endgroup]
+2025-12-27T13:08:02.0742561Z ##[group]Digest
+2025-12-27T13:08:02.0743034Z sha256:da966260b186e2ba7b9550f0f9923f343d5a79075a6cc5b908cc43711ff21ea3
+2025-12-27T13:08:02.0743787Z ##[endgroup]
+2025-12-27T13:08:02.0744260Z ##[group]Metadata
+2025-12-27T13:08:02.0744576Z {
+2025-12-27T13:08:02.0744855Z   "buildx.build.provenance": {
+2025-12-27T13:08:02.0745533Z     "builder": {
+2025-12-27T13:08:02.0745805Z       "id": ""
+2025-12-27T13:08:02.0746087Z     },
+2025-12-27T13:08:02.0746461Z     "buildType": "https://mobyproject.org/buildkit@v1",
+2025-12-27T13:08:02.0746926Z     "materials": [
+2025-12-27T13:08:02.0747206Z       {
+2025-12-27T13:08:02.0747562Z         "uri": "pkg:docker/alpine@3.19?platform=linux%2Famd64",
+2025-12-27T13:08:02.0748018Z         "digest": {
+2025-12-27T13:08:02.0748522Z           "sha256": "6baf43584bcb78f2e5847d1de515f23499913ac9f12bdf834811a3145eb11ca1"
+2025-12-27T13:08:02.0748911Z         }
+2025-12-27T13:08:02.0749066Z       },
+2025-12-27T13:08:02.0749223Z       {
+2025-12-27T13:08:02.0749465Z         "uri": "pkg:docker/golang@1.24-alpine?platform=linux%2Famd64",
+2025-12-27T13:08:02.0749777Z         "digest": {
+2025-12-27T13:08:02.0750085Z           "sha256": "ef75fa8822a4c0fb53a390548b3dc1c39639339ec3373c58f5441117e1ff46ae"
+2025-12-27T13:08:02.0750453Z         }
+2025-12-27T13:08:02.0750615Z       }
+2025-12-27T13:08:02.0750763Z     ],
+2025-12-27T13:08:02.0750922Z     "invocation": {
+2025-12-27T13:08:02.0751106Z       "configSource": {
+2025-12-27T13:08:02.0751315Z         "entryPoint": "Dockerfile"
+2025-12-27T13:08:02.0751529Z       },
+2025-12-27T13:08:02.0751695Z       "parameters": {
+2025-12-27T13:08:02.0751895Z         "frontend": "dockerfile.v0",
+2025-12-27T13:08:02.0752132Z         "locals": [
+2025-12-27T13:08:02.0752300Z           {
+2025-12-27T13:08:02.0752470Z             "name": "context"
+2025-12-27T13:08:02.0752664Z           },
+2025-12-27T13:08:02.0752829Z           {
+2025-12-27T13:08:02.0752998Z             "name": "dockerfile"
+2025-12-27T13:08:02.0753199Z           }
+2025-12-27T13:08:02.0753354Z         ]
+2025-12-27T13:08:02.0753501Z       },
+2025-12-27T13:08:02.0753663Z       "environment": {
+2025-12-27T13:08:02.0753868Z         "platform": "linux/amd64"
+2025-12-27T13:08:02.0754087Z       }
+2025-12-27T13:08:02.0754233Z     }
+2025-12-27T13:08:02.0754383Z   },
+2025-12-27T13:08:02.0754628Z   "buildx.build.ref": "default/default/romuj0zc7ohti38lb82f8k8aa",
+2025-12-27T13:08:02.0755422Z   "containerimage.config.digest": "sha256:7cea12450aa9c2fa46dfb38ba3319109ebb8ff8abd3e3f4beb875c7b34f64dc3",
+2025-12-27T13:08:02.0756121Z   "containerimage.digest": "sha256:da966260b186e2ba7b9550f0f9923f343d5a79075a6cc5b908cc43711ff21ea3",
+2025-12-27T13:08:02.0756616Z   "image.name": "ghcr.io/layababa/tg_todo_api:latest"
+2025-12-27T13:08:02.0756887Z }
+2025-12-27T13:08:02.0757368Z ##[endgroup]
+2025-12-27T13:08:02.0897918Z ##[group]Run docker/build-push-action@v5
+2025-12-27T13:08:02.0898195Z with:
+2025-12-27T13:08:02.0898359Z   context: .
+2025-12-27T13:08:02.0898532Z   file: ./web/Dockerfile
+2025-12-27T13:08:02.0898720Z   push: true
+2025-12-27T13:08:02.0898913Z   tags: ghcr.io/layababa/tg_todo_web:latest
+2025-12-27T13:08:02.0899274Z   build-args: VITE_API_BASE_URL=https://ddddapiprod.zcvyzest.xyz
+
+2025-12-27T13:08:02.0899597Z   load: false
+2025-12-27T13:08:02.0899776Z   no-cache: false
+2025-12-27T13:08:02.0900120Z   pull: false
+2025-12-27T13:08:02.0900459Z   github-token: ***
+2025-12-27T13:08:02.0900636Z env:
+2025-12-27T13:08:02.0900871Z   GO_VERSION: 1.21.x
+2025-12-27T13:08:02.0901070Z   NODE_VERSION: 20.x
+2025-12-27T13:08:02.0901247Z ##[endgroup]
+2025-12-27T13:08:02.3195738Z ##[group]GitHub Actions runtime token ACs
+2025-12-27T13:08:02.3206547Z refs/heads/main: read/write
+2025-12-27T13:08:02.3208083Z ##[endgroup]
+2025-12-27T13:08:02.3208692Z ##[group]Docker info
+2025-12-27T13:08:02.3248089Z [command]/usr/bin/docker version
+2025-12-27T13:08:02.3432287Z Client: Docker Engine - Community
+2025-12-27T13:08:02.3437198Z  Version:           28.0.4
+2025-12-27T13:08:02.3438598Z  API version:       1.48
+2025-12-27T13:08:02.3438962Z  Go version:        go1.23.7
+2025-12-27T13:08:02.3439314Z  Git commit:        b8034c0
+2025-12-27T13:08:02.3439665Z  Built:             Tue Mar 25 15:07:16 2025
+2025-12-27T13:08:02.3440047Z  OS/Arch:           linux/amd64
+2025-12-27T13:08:02.3440387Z  Context:           default
+2025-12-27T13:08:02.3440633Z 
+2025-12-27T13:08:02.3440789Z Server: Docker Engine - Community
+2025-12-27T13:08:02.3441151Z  Engine:
+2025-12-27T13:08:02.3441422Z   Version:          28.0.4
+2025-12-27T13:08:02.3441791Z   API version:      1.48 (minimum version 1.24)
+2025-12-27T13:08:02.3442217Z   Go version:       go1.23.7
+2025-12-27T13:08:02.3442554Z   Git commit:       6430e49
+2025-12-27T13:08:02.3442906Z   Built:            Tue Mar 25 15:07:16 2025
+2025-12-27T13:08:02.3443300Z   OS/Arch:          linux/amd64
+2025-12-27T13:08:02.3443671Z   Experimental:     false
+2025-12-27T13:08:02.3444002Z  containerd:
+2025-12-27T13:08:02.3444285Z   Version:          v2.2.0
+2025-12-27T13:08:02.3444720Z   GitCommit:        1c4457e00facac03ce1d75f7b6777a7a851e5c41
+2025-12-27T13:08:02.3445353Z  runc:
+2025-12-27T13:08:02.3445618Z   Version:          1.3.4
+2025-12-27T13:08:02.3446016Z   GitCommit:        v1.3.4-0-gd6d73eb8
+2025-12-27T13:08:02.3446403Z  docker-init:
+2025-12-27T13:08:02.3446683Z   Version:          0.19.0
+2025-12-27T13:08:02.3447023Z   GitCommit:        de40ad0
+2025-12-27T13:08:02.3484265Z [command]/usr/bin/docker info
+2025-12-27T13:08:02.3908227Z Client: Docker Engine - Community
+2025-12-27T13:08:02.3908677Z  Version:    28.0.4
+2025-12-27T13:08:02.3908982Z  Context:    default
+2025-12-27T13:08:02.3909316Z  Debug Mode: false
+2025-12-27T13:08:02.3909603Z  Plugins:
+2025-12-27T13:08:02.3909896Z   buildx: Docker Buildx (Docker Inc.)
+2025-12-27T13:08:02.3910281Z     Version:  v0.30.1
+2025-12-27T13:08:02.3910757Z     Path:     /usr/libexec/docker/cli-plugins/docker-buildx
+2025-12-27T13:08:02.3911263Z   compose: Docker Compose (Docker Inc.)
+2025-12-27T13:08:02.3911688Z     Version:  v2.38.2
+2025-12-27T13:08:02.3912100Z     Path:     /usr/libexec/docker/cli-plugins/docker-compose
+2025-12-27T13:08:02.3912467Z 
+2025-12-27T13:08:02.3912574Z Server:
+2025-12-27T13:08:02.3912835Z  Containers: 0
+2025-12-27T13:08:02.3913109Z   Running: 0
+2025-12-27T13:08:02.3913378Z   Paused: 0
+2025-12-27T13:08:02.3913638Z   Stopped: 0
+2025-12-27T13:08:02.3913902Z  Images: 2
+2025-12-27T13:08:02.3914227Z  Server Version: 28.0.4
+2025-12-27T13:08:02.3914573Z  Storage Driver: overlay2
+2025-12-27T13:08:02.3914920Z   Backing Filesystem: extfs
+2025-12-27T13:08:02.3915463Z   Supports d_type: true
+2025-12-27T13:08:02.3915783Z   Using metacopy: false
+2025-12-27T13:08:02.3916106Z   Native Overlay Diff: false
+2025-12-27T13:08:02.3916447Z   userxattr: false
+2025-12-27T13:08:02.3916754Z  Logging Driver: json-file
+2025-12-27T13:08:02.3917085Z  Cgroup Driver: systemd
+2025-12-27T13:08:02.3917767Z  Cgroup Version: 2
+2025-12-27T13:08:02.3918036Z  Plugins:
+2025-12-27T13:08:02.3918282Z   Volume: local
+2025-12-27T13:08:02.3918598Z   Network: bridge host ipvlan macvlan null overlay
+2025-12-27T13:08:02.3919209Z   Log: awslogs fluentd gcplogs gelf journald json-file local splunk syslog
+2025-12-27T13:08:02.3919763Z  Swarm: inactive
+2025-12-27T13:08:02.3920072Z  Runtimes: io.containerd.runc.v2 runc
+2025-12-27T13:08:02.3920456Z  Default Runtime: runc
+2025-12-27T13:08:02.3920758Z  Init Binary: docker-init
+2025-12-27T13:08:02.3921388Z  containerd version: 1c4457e00facac03ce1d75f7b6777a7a851e5c41
+2025-12-27T13:08:02.3921897Z  runc version: v1.3.4-0-gd6d73eb8
+2025-12-27T13:08:02.3922269Z  init version: de40ad0
+2025-12-27T13:08:02.3922574Z  Security Options:
+2025-12-27T13:08:02.3922863Z   apparmor
+2025-12-27T13:08:02.3923121Z   seccomp
+2025-12-27T13:08:02.3923387Z    Profile: builtin
+2025-12-27T13:08:02.3923672Z   cgroupns
+2025-12-27T13:08:02.3923951Z  Kernel Version: 6.11.0-1018-azure
+2025-12-27T13:08:02.3924351Z  Operating System: Ubuntu 24.04.3 LTS
+2025-12-27T13:08:02.3924731Z  OSType: linux
+2025-12-27T13:08:02.3925249Z  Architecture: x86_64
+2025-12-27T13:08:02.3925558Z  CPUs: 4
+2025-12-27T13:08:02.3925831Z  Total Memory: 15.62GiB
+2025-12-27T13:08:02.3926130Z  Name: runnervmh13bl
+2025-12-27T13:08:02.3926456Z  ID: 0a695d56-123a-42a8-a772-617b83954cb8
+2025-12-27T13:08:02.3926876Z  Docker Root Dir: /var/lib/docker
+2025-12-27T13:08:02.3927199Z  Debug Mode: false
+2025-12-27T13:08:02.3927382Z  Username: githubactions
+2025-12-27T13:08:02.3927591Z  Experimental: false
+2025-12-27T13:08:02.3927922Z  Insecure Registries:
+2025-12-27T13:08:02.3928125Z   ::1/128
+2025-12-27T13:08:02.3928273Z   127.0.0.0/8
+2025-12-27T13:08:02.3928438Z  Live Restore Enabled: false
+2025-12-27T13:08:02.3928571Z 
+2025-12-27T13:08:02.3933357Z ##[endgroup]
+2025-12-27T13:08:02.3933886Z ##[group]Proxy configuration
+2025-12-27T13:08:02.3939390Z No proxy configuration found
+2025-12-27T13:08:02.3939982Z ##[endgroup]
+2025-12-27T13:08:02.4593486Z ##[group]Buildx version
+2025-12-27T13:08:02.4623700Z [command]/usr/bin/docker buildx version
+2025-12-27T13:08:02.5125831Z github.com/docker/buildx v0.30.1 9e66234aa13328a5e75b75aa5574e1ca6d6d9c01
+2025-12-27T13:08:02.5158487Z ##[endgroup]
+2025-12-27T13:08:02.5159169Z ##[group]Builder info
+2025-12-27T13:08:02.5972293Z {
+2025-12-27T13:08:02.5972636Z   "nodes": [
+2025-12-27T13:08:02.5972944Z     {
+2025-12-27T13:08:02.5973218Z       "name": "default",
+2025-12-27T13:08:02.5973599Z       "endpoint": "default",
+2025-12-27T13:08:02.5974001Z       "status": "running",
+2025-12-27T13:08:02.5974375Z       "buildkit": "v0.20.2",
+2025-12-27T13:08:02.5974922Z       "platforms": "linux/amd64,linux/amd64/v2,linux/amd64/v3,linux/386",
+2025-12-27T13:08:02.5975836Z       "features": {
+2025-12-27T13:08:02.5976353Z         "Automatically load images to the Docker Engine image store": true,
+2025-12-27T13:08:02.5976949Z         "Cache export": true,
+2025-12-27T13:08:02.5977292Z         "Direct push": true,
+2025-12-27T13:08:02.5977698Z         "Docker exporter": true,
+2025-12-27T13:08:02.5978109Z         "Multi-platform build": true,
+2025-12-27T13:08:02.5978523Z         "OCI exporter": true
+2025-12-27T13:08:02.5978874Z       },
+2025-12-27T13:08:02.5979141Z       "labels": {
+2025-12-27T13:08:02.5979687Z         "org.mobyproject.buildkit.worker.moby.host-gateway-ip": "172.17.0.1"
+2025-12-27T13:08:02.5980315Z       }
+2025-12-27T13:08:02.5980570Z     }
+2025-12-27T13:08:02.5980830Z   ],
+2025-12-27T13:08:02.5981072Z   "name": "default",
+2025-12-27T13:08:02.5981396Z   "driver": "docker",
+2025-12-27T13:08:02.5981740Z   "lastActivity": "2025-12-27T13:07:08.000Z"
+2025-12-27T13:08:02.5982147Z }
+2025-12-27T13:08:02.5982781Z ##[endgroup]
+2025-12-27T13:08:02.7310995Z [command]/usr/bin/docker buildx build --build-arg VITE_API_BASE_URL=https://ddddapiprod.zcvyzest.xyz --file ./web/Dockerfile --iidfile /home/runner/work/_temp/docker-actions-toolkit-RG4NSh/build-iidfile-639b30e891.txt --tag ghcr.io/layababa/tg_todo_web:latest --metadata-file /home/runner/work/_temp/docker-actions-toolkit-RG4NSh/build-metadata-e0ce5d42d8.json --push .
+2025-12-27T13:08:03.0401676Z #0 building with "default" instance using docker driver
+2025-12-27T13:08:03.0402045Z 
+2025-12-27T13:08:03.0402187Z #1 [internal] load build definition from Dockerfile
+2025-12-27T13:08:03.0402530Z #1 transferring dockerfile: 590B done
+2025-12-27T13:08:03.0402797Z #1 DONE 0.0s
+2025-12-27T13:08:03.0402918Z 
+2025-12-27T13:08:03.0403106Z #2 [auth] docker/dockerfile:pull token for registry-1.docker.io
+2025-12-27T13:08:03.0403711Z #2 DONE 0.0s
+2025-12-27T13:08:03.0403833Z 
+2025-12-27T13:08:03.0404073Z #3 resolve image config for docker-image://docker.io/docker/dockerfile:1.6
+2025-12-27T13:08:03.2506687Z #3 DONE 0.4s
+2025-12-27T13:08:03.3534406Z 
+2025-12-27T13:08:03.3537135Z #4 docker-image://docker.io/docker/dockerfile:1.6@sha256:ac85f380a63b13dfcefa89046420e1781752bab202122f8f50032edf31be0021
+2025-12-27T13:08:03.3538637Z #4 resolve docker.io/docker/dockerfile:1.6@sha256:ac85f380a63b13dfcefa89046420e1781752bab202122f8f50032edf31be0021 done
+2025-12-27T13:08:03.3539832Z #4 extracting sha256:9d9c93f4b00be908ab694a4df732570bced3b8a96b7515d70ff93402179ad232
+2025-12-27T13:08:03.4578280Z #4 extracting sha256:9d9c93f4b00be908ab694a4df732570bced3b8a96b7515d70ff93402179ad232 0.1s done
+2025-12-27T13:08:03.4579376Z #4 sha256:a17ee7fff8f5e97b974f5b48f51647d2cf28d543f2aa6c11aaa0ea431b44bb89 1.27kB / 1.27kB done
+2025-12-27T13:08:03.4580465Z #4 sha256:9d9c93f4b00be908ab694a4df732570bced3b8a96b7515d70ff93402179ad232 11.80MB / 11.80MB 0.1s done
+2025-12-27T13:08:03.4581540Z #4 sha256:ac85f380a63b13dfcefa89046420e1781752bab202122f8f50032edf31be0021 8.40kB / 8.40kB done
+2025-12-27T13:08:03.4582491Z #4 sha256:657fcc512c7369f4cb3d94ea329150f8daf626bc838b1a1e81f1834c73ecc77e 482B / 482B done
+2025-12-27T13:08:03.4583136Z #4 DONE 0.2s
+2025-12-27T13:08:03.5784682Z 
+2025-12-27T13:08:03.5785470Z #5 [auth] library/node:pull token for registry-1.docker.io
+2025-12-27T13:08:03.7307996Z #5 DONE 0.0s
+2025-12-27T13:08:03.7308208Z 
+2025-12-27T13:08:03.7308412Z #6 [auth] library/nginx:pull token for registry-1.docker.io
+2025-12-27T13:08:03.7308733Z #6 DONE 0.0s
+2025-12-27T13:08:03.7308844Z 
+2025-12-27T13:08:03.7309014Z #7 [internal] load metadata for docker.io/library/node:20-alpine
+2025-12-27T13:08:03.8935338Z #7 DONE 0.4s
+2025-12-27T13:08:03.8935588Z 
+2025-12-27T13:08:03.8935908Z #8 [internal] load metadata for docker.io/library/nginx:1.25-alpine
+2025-12-27T13:08:04.0516371Z #8 DONE 0.4s
+2025-12-27T13:08:04.0516784Z 
+2025-12-27T13:08:04.0516939Z #9 [internal] load .dockerignore
+2025-12-27T13:08:04.0517394Z #9 transferring context: 2B done
+2025-12-27T13:08:04.0517770Z #9 DONE 0.0s
+2025-12-27T13:08:04.0517940Z 
+2025-12-27T13:08:04.0518076Z #10 [internal] load build context
+2025-12-27T13:08:04.0518536Z #10 transferring context: 692.98kB 0.0s done
+2025-12-27T13:08:04.0518970Z #10 DONE 0.0s
+2025-12-27T13:08:04.0519142Z 
+2025-12-27T13:08:04.0519833Z #11 [runner 1/2] FROM docker.io/library/nginx:1.25-alpine@sha256:516475cc129da42866742567714ddc681e5eed7b9ee0b9e9c015e464b4221a00
+2025-12-27T13:08:04.0521876Z #11 resolve docker.io/library/nginx:1.25-alpine@sha256:516475cc129da42866742567714ddc681e5eed7b9ee0b9e9c015e464b4221a00 done
+2025-12-27T13:08:04.0523126Z #11 extracting sha256:4abcf20661432fb2d719aaf90656f55c287f8ca915dc1c92ec14ff61e67fbaf8
+2025-12-27T13:08:04.1589741Z #11 extracting sha256:4abcf20661432fb2d719aaf90656f55c287f8ca915dc1c92ec14ff61e67fbaf8 0.1s done
+2025-12-27T13:08:04.1590866Z #11 sha256:fc21a1d387f514f53589abea6d67cd6b329dfd3c9059bc96a552af3b3c97b413 0B / 3.99MB 0.1s
+2025-12-27T13:08:04.1591939Z #11 sha256:e6ef242c157026935bf8a69e6cf19f8f6635e44507c813daf0cc644f2e22396b 0B / 629B 0.1s
+2025-12-27T13:08:04.1592886Z #11 sha256:721fa00bc549df26b3e67cc558ff176112d4ba69847537766f3c28e171d180e7 2.50kB / 2.50kB done
+2025-12-27T13:08:04.1593580Z #11 sha256:501d84f5d06487ff81e506134dc922ed4fd2080d5521eb5b6ee4054fa17d15c4 10.80kB / 10.80kB done
+2025-12-27T13:08:04.1594653Z #11 sha256:4abcf20661432fb2d719aaf90656f55c287f8ca915dc1c92ec14ff61e67fbaf8 3.41MB / 3.41MB 0.1s done
+2025-12-27T13:08:04.1595777Z #11 sha256:516475cc129da42866742567714ddc681e5eed7b9ee0b9e9c015e464b4221a00 9.07kB / 9.07kB done
+2025-12-27T13:08:04.1596570Z #11 sha256:13fcfbc94648785b918ecc1af675ac5187cdfc30f4fdaf9afa8bd2e9dedf548b 0B / 954B 0.1s
+2025-12-27T13:08:04.1597181Z #11 extracting sha256:fc21a1d387f514f53589abea6d67cd6b329dfd3c9059bc96a552af3b3c97b413
+2025-12-27T13:08:04.2611151Z #11 sha256:fc21a1d387f514f53589abea6d67cd6b329dfd3c9059bc96a552af3b3c97b413 3.99MB / 3.99MB 0.1s done
+2025-12-27T13:08:04.2614791Z #11 sha256:e6ef242c157026935bf8a69e6cf19f8f6635e44507c813daf0cc644f2e22396b 629B / 629B 0.1s done
+2025-12-27T13:08:04.2616244Z #11 sha256:13fcfbc94648785b918ecc1af675ac5187cdfc30f4fdaf9afa8bd2e9dedf548b 954B / 954B 0.1s done
+2025-12-27T13:08:04.2617349Z #11 sha256:8a3742a9529dc5c00974dfcf5e465be9f1606ff8a1911527b3928cf86ad57465 1.40kB / 1.40kB 0.2s done
+2025-12-27T13:08:04.2618459Z #11 sha256:d4bca490e609acaaf54ca73363442d31a31fd136a47a20a12370cf2025f0a10b 393B / 393B 0.2s done
+2025-12-27T13:08:04.2619551Z #11 sha256:5406ed7b06d9a94b5bd15843d2a1c7e38796a3ec5dc7f40f16f70cc1d045f453 1.21kB / 1.21kB 0.2s done
+2025-12-27T13:08:04.2620602Z #11 sha256:0d0c16747d2c6b6c26c064652afcb964c15f1b1e596ec052b2aa19b83948ae27 0B / 13.04MB 0.2s
+2025-12-27T13:08:04.3616538Z #11 sha256:0d0c16747d2c6b6c26c064652afcb964c15f1b1e596ec052b2aa19b83948ae27 13.04MB / 13.04MB 0.3s done
+2025-12-27T13:08:04.4640235Z #11 extracting sha256:fc21a1d387f514f53589abea6d67cd6b329dfd3c9059bc96a552af3b3c97b413 0.2s done
+2025-12-27T13:08:04.5671620Z #11 extracting sha256:e6ef242c157026935bf8a69e6cf19f8f6635e44507c813daf0cc644f2e22396b
+2025-12-27T13:08:04.6741638Z #11 extracting sha256:e6ef242c157026935bf8a69e6cf19f8f6635e44507c813daf0cc644f2e22396b done
+2025-12-27T13:08:04.6743011Z #11 extracting sha256:13fcfbc94648785b918ecc1af675ac5187cdfc30f4fdaf9afa8bd2e9dedf548b done
+2025-12-27T13:08:04.6744621Z #11 extracting sha256:d4bca490e609acaaf54ca73363442d31a31fd136a47a20a12370cf2025f0a10b done
+2025-12-27T13:08:04.6745826Z #11 extracting sha256:5406ed7b06d9a94b5bd15843d2a1c7e38796a3ec5dc7f40f16f70cc1d045f453 done
+2025-12-27T13:08:04.6746802Z #11 extracting sha256:8a3742a9529dc5c00974dfcf5e465be9f1606ff8a1911527b3928cf86ad57465 done
+2025-12-27T13:08:04.6747734Z #11 extracting sha256:0d0c16747d2c6b6c26c064652afcb964c15f1b1e596ec052b2aa19b83948ae27
+2025-12-27T13:08:05.0340094Z #11 extracting sha256:0d0c16747d2c6b6c26c064652afcb964c15f1b1e596ec052b2aa19b83948ae27 0.3s done
+2025-12-27T13:08:05.1412279Z #11 DONE 1.2s
+2025-12-27T13:08:05.1412816Z 
+2025-12-27T13:08:05.1413495Z #12 [builder 1/9] FROM docker.io/library/node:20-alpine@sha256:658d0f63e501824d6c23e06d4bb95c71e7d704537c9d9272f488ac03a370d448
+2025-12-27T13:08:05.1414775Z #12 resolve docker.io/library/node:20-alpine@sha256:658d0f63e501824d6c23e06d4bb95c71e7d704537c9d9272f488ac03a370d448 done
+2025-12-27T13:08:05.1416025Z #12 sha256:658d0f63e501824d6c23e06d4bb95c71e7d704537c9d9272f488ac03a370d448 7.67kB / 7.67kB done
+2025-12-27T13:08:05.1416947Z #12 sha256:fcbb8f7d018707c656a4da2eea8a15f2893d2258093fea9ff2ea5ea1cba82112 1.72kB / 1.72kB done
+2025-12-27T13:08:05.1417752Z #12 sha256:e80b0510ba947015cacddea3d23dcdc761e399971c074a1bf32eea7e44510524 6.52kB / 6.52kB done
+2025-12-27T13:08:05.1418655Z #12 sha256:8d06ba6946d1f299d8f962e37906c77006df33d47050430a57f7893ec35af697 42.78MB / 42.78MB 0.4s done
+2025-12-27T13:08:05.1419580Z #12 sha256:cb3325e64457574e24f92246e3da3376946e473d636209e1390eac47b50b26a3 1.26MB / 1.26MB 0.3s done
+2025-12-27T13:08:05.1420361Z #12 sha256:fd1849a5c548bc65ee47a64498951bda5d40e87d08efe9dca69b5c8cdedc7a52 443B / 443B 0.3s done
+2025-12-27T13:08:05.1421206Z #12 extracting sha256:8d06ba6946d1f299d8f962e37906c77006df33d47050430a57f7893ec35af697 0.8s
+2025-12-27T13:08:05.6509599Z #12 extracting sha256:8d06ba6946d1f299d8f962e37906c77006df33d47050430a57f7893ec35af697 1.2s done
+2025-12-27T13:08:05.6510967Z #12 extracting sha256:cb3325e64457574e24f92246e3da3376946e473d636209e1390eac47b50b26a3
+2025-12-27T13:08:05.8684078Z #12 extracting sha256:cb3325e64457574e24f92246e3da3376946e473d636209e1390eac47b50b26a3 0.0s done
+2025-12-27T13:08:05.8684816Z #12 extracting sha256:fd1849a5c548bc65ee47a64498951bda5d40e87d08efe9dca69b5c8cdedc7a52 done
+2025-12-27T13:08:05.8685438Z #12 DONE 1.8s
+2025-12-27T13:08:05.8685545Z 
+2025-12-27T13:08:05.8685631Z #13 [builder 2/9] WORKDIR /app
+2025-12-27T13:08:05.8685852Z #13 DONE 0.0s
+2025-12-27T13:08:05.8685956Z 
+2025-12-27T13:08:05.8686083Z #14 [builder 3/9] RUN npm install -g pnpm
+2025-12-27T13:08:07.0201799Z #14 1.302 
+2025-12-27T13:08:07.0202114Z #14 1.302 added 1 package in 1s
+2025-12-27T13:08:07.2556619Z #14 1.302 
+2025-12-27T13:08:07.2557163Z #14 1.302 1 package is looking for funding
+2025-12-27T13:08:07.2557843Z #14 1.303   run `npm fund` for details
+2025-12-27T13:08:07.2558325Z #14 1.304 npm notice
+2025-12-27T13:08:07.2558797Z #14 1.304 npm notice New major version of npm available! 10.8.2 -> 11.7.0
+2025-12-27T13:08:07.2559535Z #14 1.304 npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.7.0
+2025-12-27T13:08:07.2560237Z #14 1.304 npm notice To update run: npm install -g npm@11.7.0
+2025-12-27T13:08:07.2560681Z #14 1.304 npm notice
+2025-12-27T13:08:07.2560961Z #14 DONE 1.3s
+2025-12-27T13:08:07.2561119Z 
+2025-12-27T13:08:07.2561639Z #15 [builder 4/9] COPY web/package.json web/package-lock.json* ./web/
+2025-12-27T13:08:07.2562243Z #15 DONE 0.0s
+2025-12-27T13:08:07.2562439Z 
+2025-12-27T13:08:07.2562660Z #16 [builder 5/9] COPY daisyUI.template.css ./
+2025-12-27T13:08:07.2563220Z #16 DONE 0.0s
+2025-12-27T13:08:07.2563494Z 
+2025-12-27T13:08:07.2563756Z #17 [builder 6/9] WORKDIR /app/web
+2025-12-27T13:08:07.2564195Z #17 DONE 0.0s
+2025-12-27T13:08:07.2564371Z 
+2025-12-27T13:08:07.2564515Z #18 [builder 7/9] RUN pnpm install
+2025-12-27T13:08:07.8698491Z #18 0.765 Progress: resolved 1, reused 0, downloaded 0, added 0
+2025-12-27T13:08:08.2525407Z #18 1.147  WARN  deprecated eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+2025-12-27T13:08:08.8868630Z #18 1.781 Progress: resolved 33, reused 0, downloaded 31, added 0
+2025-12-27T13:08:09.8868144Z #18 2.781 Progress: resolved 147, reused 0, downloaded 132, added 0
+2025-12-27T13:08:10.8868768Z #18 3.781 Progress: resolved 341, reused 0, downloaded 308, added 0
+2025-12-27T13:08:11.8873388Z #18 4.782 Progress: resolved 443, reused 0, downloaded 408, added 0
+2025-12-27T13:08:12.8874282Z #18 5.782 Progress: resolved 679, reused 0, downloaded 589, added 0
+2025-12-27T13:08:13.3059502Z #18 6.200  WARN  5 deprecated subdependencies found: @humanwhocodes/config-array@0.13.0, @humanwhocodes/object-schema@2.0.3, glob@7.2.3, inflight@1.0.6, rimraf@3.0.2
+2025-12-27T13:08:13.4770131Z #18 6.220 Packages: +672
+2025-12-27T13:08:13.4770989Z #18 6.220 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+2025-12-27T13:08:13.8884741Z #18 6.782 Progress: resolved 715, reused 0, downloaded 672, added 562
+2025-12-27T13:08:14.0807417Z #18 6.825 Progress: resolved 715, reused 0, downloaded 672, added 672, done
+2025-12-27T13:08:14.3628161Z #18 7.257 
+2025-12-27T13:08:14.3628565Z #18 7.257 dependencies:
+2025-12-27T13:08:14.3628985Z #18 7.257 + @twa-dev/sdk 7.10.1 (8.0.2 is available)
+2025-12-27T13:08:14.3629460Z #18 7.257 + axios 1.13.2
+2025-12-27T13:08:14.3629841Z #18 7.257 + pinia 2.3.1 (3.0.4 is available)
+2025-12-27T13:08:14.3630277Z #18 7.257 + vue 3.5.26
+2025-12-27T13:08:14.3630609Z #18 7.257 + vue-router 4.6.4
+2025-12-27T13:08:14.3630957Z #18 7.257 
+2025-12-27T13:08:14.3631245Z #18 7.257 devDependencies:
+2025-12-27T13:08:14.3631637Z #18 7.257 + @rushstack/eslint-patch 1.15.0
+2025-12-27T13:08:14.3632117Z #18 7.257 + @testing-library/jest-dom 6.9.1
+2025-12-27T13:08:14.3632566Z #18 7.257 + @testing-library/vue 8.1.0
+2025-12-27T13:08:14.3633011Z #18 7.257 + @types/node 20.19.27 (25.0.3 is available)
+2025-12-27T13:08:14.3633528Z #18 7.257 + @vitejs/plugin-vue 5.2.4 (6.0.3 is available)
+2025-12-27T13:08:14.3634071Z #18 7.257 + @vitest/coverage-v8 1.6.1 (4.0.16 is available)
+2025-12-27T13:08:14.3634910Z #18 7.257 + @vitest/ui 1.6.1 (4.0.16 is available)
+2025-12-27T13:08:14.3635836Z #18 7.257 + @vue/eslint-config-prettier 9.0.0 (10.2.0 is available)
+2025-12-27T13:08:14.3636480Z #18 7.257 + @vue/eslint-config-typescript 13.0.0 (14.6.0 is available)
+2025-12-27T13:08:14.3637018Z #18 7.257 + @vue/test-utils 2.4.6
+2025-12-27T13:08:14.3637408Z #18 7.257 + autoprefixer 10.4.23
+2025-12-27T13:08:14.3637801Z #18 7.257 + cypress 13.17.0 (15.8.1 is available)
+2025-12-27T13:08:14.3638232Z #18 7.257 + daisyui 4.12.24 (5.5.14 is available)
+2025-12-27T13:08:14.3639002Z #18 7.257 + eslint 8.57.1 (9.39.2 is available) deprecated
+2025-12-27T13:08:14.3639552Z #18 7.257 + eslint-plugin-vue 9.33.0 (10.6.2 is available)
+2025-12-27T13:08:14.3640040Z #18 7.257 + jsdom 24.1.3 (27.4.0 is available)
+2025-12-27T13:08:14.3640450Z #18 7.257 + postcss 8.5.6
+2025-12-27T13:08:14.3640774Z #18 7.257 + prettier 3.7.4
+2025-12-27T13:08:14.3641125Z #18 7.257 + stylelint 16.26.1
+2025-12-27T13:08:14.3641612Z #18 7.257 + stylelint-config-standard 36.0.1 (39.0.1 is available)
+2025-12-27T13:08:14.3642197Z #18 7.257 + stylelint-config-standard-vue 1.0.0
+2025-12-27T13:08:14.3642703Z #18 7.257 + stylelint-order 6.0.4 (7.0.0 is available)
+2025-12-27T13:08:14.3643172Z #18 7.257 + tailwindcss 3.4.19 (4.1.18 is available)
+2025-12-27T13:08:14.3643630Z #18 7.257 + type-fest 4.41.0 (5.3.1 is available)
+2025-12-27T13:08:14.3644051Z #18 7.257 + typescript 5.9.3
+2025-12-27T13:08:14.3644422Z #18 7.257 + vite 5.4.21 (7.3.0 is available)
+2025-12-27T13:08:14.3644846Z #18 7.257 + vitest 1.6.1 (4.0.16 is available)
+2025-12-27T13:08:14.3645494Z #18 7.257 + vue-tsc 2.2.12 (3.2.1 is available)
+2025-12-27T13:08:14.3645902Z #18 7.257 
+2025-12-27T13:08:14.5369864Z #18 7.262 ╭ Warning ─────────────────────────────────────────────────────────────────────╮
+2025-12-27T13:08:14.5371096Z #18 7.262 │                                                                              │
+2025-12-27T13:08:14.5372271Z #18 7.262 │   Ignored build scripts: cypress@13.17.0, esbuild@0.21.5,                    │
+2025-12-27T13:08:14.5373241Z #18 7.262 │   vue-demi@0.14.10.                                                          │
+2025-12-27T13:08:14.5374118Z #18 7.262 │   Run "pnpm approve-builds" to pick which dependencies should be allowed     │
+2025-12-27T13:08:14.5374999Z #18 7.262 │   to run scripts.                                                            │
+2025-12-27T13:08:14.5375882Z #18 7.262 │                                                                              │
+2025-12-27T13:08:14.5376640Z #18 7.262 ╰──────────────────────────────────────────────────────────────────────────────╯
+2025-12-27T13:08:14.5377203Z #18 7.281 Done in 7.1s using pnpm v10.26.2
+2025-12-27T13:08:14.8682373Z #18 DONE 7.8s
+2025-12-27T13:08:15.0381668Z 
+2025-12-27T13:08:15.0382224Z #19 [builder 8/9] COPY web ./
+2025-12-27T13:08:15.0382694Z #19 DONE 0.0s
+2025-12-27T13:08:15.0382844Z 
+2025-12-27T13:08:15.0382963Z #20 [builder 9/9] RUN pnpm run build
+2025-12-27T13:08:15.3931686Z #20 0.505 
+2025-12-27T13:08:15.3932098Z #20 0.505 > tg-miniapp-web@0.1.0 build /app/web
+2025-12-27T13:08:15.3932445Z #20 0.505 > vite build
+2025-12-27T13:08:15.3932682Z #20 0.505 
+2025-12-27T13:08:15.7307596Z #20 0.843 vite v5.4.21 building for production...
+2025-12-27T13:08:15.8551104Z #20 0.967 transforming...
+2025-12-27T13:08:16.8732837Z #20 1.985 
+2025-12-27T13:08:17.0242714Z #20 1.985 🌼   daisyUI 4.12.24
+2025-12-27T13:08:17.1174141Z #20 2.229 ├─ ✔︎ 1 theme added		https://daisyui.com/docs/themes
+2025-12-27T13:08:17.1174968Z #20 2.229 ╰─ ★ Star daisyUI on GitHub	https://github.com/saadeghi/daisyui
+2025-12-27T13:08:17.1180791Z #20 2.229 
+2025-12-27T13:08:19.3714208Z #20 4.483 ✓ 119 modules transformed.
+2025-12-27T13:08:19.5326067Z #20 4.642 rendering chunks...
+2025-12-27T13:08:19.6318883Z #20 4.744 computing gzip size...
+2025-12-27T13:08:19.8503489Z #20 4.759 dist/index.html                                      1.70 kB │ gzip:  0.78 kB
+2025-12-27T13:08:19.8504514Z #20 4.760 dist/assets/TaskDetailPage-0yIuNWXC.css              1.17 kB │ gzip:  0.52 kB
+2025-12-27T13:08:19.8506233Z #20 4.760 dist/assets/OnboardingPage-DQDgKyDZ.css              4.94 kB │ gzip:  1.38 kB
+2025-12-27T13:08:19.8507311Z #20 4.760 dist/assets/index-C3hmJXWP.css                     115.77 kB │ gzip: 18.73 kB
+2025-12-27T13:08:19.8508306Z #20 4.760 dist/assets/_plugin-vue_export-helper-DlAUqK2U.js    0.09 kB │ gzip:  0.10 kB
+2025-12-27T13:08:19.8509292Z #20 4.760 dist/assets/notion-DfOqwy7a.js                       0.12 kB │ gzip:  0.13 kB
+2025-12-27T13:08:19.8510218Z #20 4.760 dist/assets/task-Cbj8-STT.js                         0.41 kB │ gzip:  0.22 kB
+2025-12-27T13:08:19.8511403Z #20 4.760 dist/assets/group-B7nPD5HC.js                        0.42 kB │ gzip:  0.21 kB
+2025-12-27T13:08:19.8512386Z #20 4.760 dist/assets/useSwipeBack-BU0l0BUJ.js                 0.83 kB │ gzip:  0.40 kB
+2025-12-27T13:08:19.8513394Z #20 4.760 dist/assets/OnboardingPage-8KrZLsSC.js               3.13 kB │ gzip:  1.79 kB
+2025-12-27T13:08:19.8514424Z #20 4.760 dist/assets/GroupListPage-C3pU1SCl.js                3.66 kB │ gzip:  1.88 kB
+2025-12-27T13:08:19.8515693Z #20 4.760 dist/assets/GroupBindPage-L4srcfpZ.js                4.65 kB │ gzip:  1.97 kB
+2025-12-27T13:08:19.8516730Z #20 4.760 dist/assets/SettingsPage-BEQNEv2B.js                 7.37 kB │ gzip:  2.84 kB
+2025-12-27T13:08:19.8517732Z #20 4.760 dist/assets/HomePage-JqS4uOPk.js                    11.12 kB │ gzip:  4.20 kB
+2025-12-27T13:08:19.8518745Z #20 4.760 dist/assets/TaskDetailPage-ahpV2Cv2.js              26.27 kB │ gzip:  8.38 kB
+2025-12-27T13:08:19.8519737Z #20 4.760 dist/assets/index-DYIme0uB.js                      187.32 kB │ gzip: 69.06 kB
+2025-12-27T13:08:19.8520444Z #20 4.761 ✓ built in 3.89s
+2025-12-27T13:08:19.8520795Z #20 DONE 4.8s
+2025-12-27T13:08:20.1879346Z 
+2025-12-27T13:08:20.1879979Z #21 [runner 2/2] COPY --from=builder /app/web/dist /usr/share/nginx/html
+2025-12-27T13:08:20.3513975Z #21 DONE 0.0s
+2025-12-27T13:08:20.3514205Z 
+2025-12-27T13:08:20.3514324Z #22 exporting to image
+2025-12-27T13:08:20.3514621Z #22 exporting layers
+2025-12-27T13:08:21.0037379Z #22 exporting layers 0.8s done
+2025-12-27T13:08:21.2387861Z #22 writing image sha256:4ac440db5bae1ebd478565279e1b2a08f806fe4acb5afd88f14b407bcfc16201 done
+2025-12-27T13:08:21.2388788Z #22 naming to ghcr.io/layababa/tg_todo_web:latest done
+2025-12-27T13:08:21.2389279Z #22 DONE 0.8s
+2025-12-27T13:08:21.2389455Z 
+2025-12-27T13:08:21.2389583Z #23 resolving provenance for metadata file
+2025-12-27T13:08:21.2389960Z #23 DONE 0.0s
+2025-12-27T13:08:21.2390130Z 
+2025-12-27T13:08:21.2390368Z #24 pushing ghcr.io/layababa/tg_todo_web:latest with docker
+2025-12-27T13:08:21.2390764Z #24 pushing layer 77fd455cbf80
+2025-12-27T13:08:21.2391013Z #24 pushing layer ce495f7b0b7d
+2025-12-27T13:08:21.2391262Z #24 pushing layer 9c70f446fbe2
+2025-12-27T13:08:21.2391507Z #24 pushing layer 5be225e16e44
+2025-12-27T13:08:21.2391748Z #24 pushing layer 3d04ead9b400
+2025-12-27T13:08:21.2391989Z #24 pushing layer af5598fef05f
+2025-12-27T13:08:21.2392226Z #24 pushing layer 8fbd5a835e5e
+2025-12-27T13:08:21.2392466Z #24 pushing layer 75061be64847
+2025-12-27T13:08:21.2392714Z #24 pushing layer d4fc045c9e3a
+2025-12-27T13:08:21.5244804Z #24 pushing layer 77fd455cbf80 386.05kB / 369.97kB 0.3s
+2025-12-27T13:08:22.4703411Z #24 pushing layer 77fd455cbf80 1.4s done
+2025-12-27T13:08:24.1782593Z #24 pushing layer d4fc045c9e3a 3.1s done
+2025-12-27T13:08:24.3290004Z #24 pushing layer ce495f7b0b7d 3.1s done
+2025-12-27T13:08:24.3290561Z #24 pushing layer 9c70f446fbe2 3.1s done
+2025-12-27T13:08:24.3290924Z #24 pushing layer 5be225e16e44 3.1s done
+2025-12-27T13:08:24.3291219Z #24 pushing layer 3d04ead9b400 3.1s done
+2025-12-27T13:08:24.3291542Z #24 pushing layer af5598fef05f 3.1s done
+2025-12-27T13:08:24.3291827Z #24 pushing layer 8fbd5a835e5e 3.1s done
+2025-12-27T13:08:24.3292112Z #24 pushing layer 75061be64847 3.1s done
+2025-12-27T13:08:24.3292368Z #24 DONE 3.2s
+2025-12-27T13:08:24.9590285Z ##[group]ImageID
+2025-12-27T13:08:24.9590898Z sha256:4ac440db5bae1ebd478565279e1b2a08f806fe4acb5afd88f14b407bcfc16201
+2025-12-27T13:08:24.9591952Z ##[endgroup]
+2025-12-27T13:08:24.9592912Z ##[group]Digest
+2025-12-27T13:08:24.9593451Z sha256:53b367c9abbd2c1c029f7288ebee399b29b273a4b063d86e59caf19fd899e3a3
+2025-12-27T13:08:24.9595931Z ##[endgroup]
+2025-12-27T13:08:24.9596417Z ##[group]Metadata
+2025-12-27T13:08:24.9598258Z {
+2025-12-27T13:08:24.9598561Z   "buildx.build.provenance": {
+2025-12-27T13:08:24.9598949Z     "builder": {
+2025-12-27T13:08:24.9599225Z       "id": ""
+2025-12-27T13:08:24.9599489Z     },
+2025-12-27T13:08:24.9599851Z     "buildType": "https://mobyproject.org/buildkit@v1",
+2025-12-27T13:08:24.9600610Z     "materials": [
+2025-12-27T13:08:24.9600882Z       {
+2025-12-27T13:08:24.9601184Z         "uri": "pkg:docker/docker/dockerfile@1.6",
+2025-12-27T13:08:24.9601597Z         "digest": {
+2025-12-27T13:08:24.9602090Z           "sha256": "ac85f380a63b13dfcefa89046420e1781752bab202122f8f50032edf31be0021"
+2025-12-27T13:08:24.9602676Z         }
+2025-12-27T13:08:24.9602938Z       },
+2025-12-27T13:08:24.9603176Z       {
+2025-12-27T13:08:24.9603634Z         "uri": "pkg:docker/nginx@1.25-alpine?platform=linux%2Famd64",
+2025-12-27T13:08:24.9603981Z         "digest": {
+2025-12-27T13:08:24.9604288Z           "sha256": "516475cc129da42866742567714ddc681e5eed7b9ee0b9e9c015e464b4221a00"
+2025-12-27T13:08:24.9604624Z         }
+2025-12-27T13:08:24.9604780Z       },
+2025-12-27T13:08:24.9604929Z       {
+2025-12-27T13:08:24.9605742Z         "uri": "pkg:docker/node@20-alpine?platform=linux%2Famd64",
+2025-12-27T13:08:24.9606036Z         "digest": {
+2025-12-27T13:08:24.9606323Z           "sha256": "658d0f63e501824d6c23e06d4bb95c71e7d704537c9d9272f488ac03a370d448"
+2025-12-27T13:08:24.9606669Z         }
+2025-12-27T13:08:24.9606812Z       }
+2025-12-27T13:08:24.9606954Z     ],
+2025-12-27T13:08:24.9607099Z     "invocation": {
+2025-12-27T13:08:24.9607273Z       "configSource": {
+2025-12-27T13:08:24.9607465Z         "entryPoint": "Dockerfile"
+2025-12-27T13:08:24.9607670Z       },
+2025-12-27T13:08:24.9607819Z       "parameters": {
+2025-12-27T13:08:24.9608008Z         "frontend": "gateway.v0",
+2025-12-27T13:08:24.9608211Z         "args": {
+2025-12-27T13:08:24.9608480Z           "build-arg:VITE_API_BASE_URL": "https://ddddapiprod.zcvyzest.xyz",
+2025-12-27T13:08:24.9608819Z           "cmdline": "docker/dockerfile:1.6",
+2025-12-27T13:08:24.9609054Z           "source": "docker/dockerfile:1.6"
+2025-12-27T13:08:24.9609274Z         },
+2025-12-27T13:08:24.9609421Z         "locals": [
+2025-12-27T13:08:24.9609585Z           {
+2025-12-27T13:08:24.9609742Z             "name": "context"
+2025-12-27T13:08:24.9609929Z           },
+2025-12-27T13:08:24.9610078Z           {
+2025-12-27T13:08:24.9610238Z             "name": "dockerfile"
+2025-12-27T13:08:24.9610433Z           }
+2025-12-27T13:08:24.9610573Z         ]
+2025-12-27T13:08:24.9610720Z       },
+2025-12-27T13:08:24.9610866Z       "environment": {
+2025-12-27T13:08:24.9611062Z         "platform": "linux/amd64"
+2025-12-27T13:08:24.9611256Z       }
+2025-12-27T13:08:24.9611400Z     }
+2025-12-27T13:08:24.9611536Z   },
+2025-12-27T13:08:24.9611776Z   "buildx.build.ref": "default/default/8wbblogffmwe41nw0p3b5ruhs",
+2025-12-27T13:08:24.9612300Z   "containerimage.config.digest": "sha256:4ac440db5bae1ebd478565279e1b2a08f806fe4acb5afd88f14b407bcfc16201",
+2025-12-27T13:08:24.9612942Z   "containerimage.digest": "sha256:53b367c9abbd2c1c029f7288ebee399b29b273a4b063d86e59caf19fd899e3a3",
+2025-12-27T13:08:24.9613407Z   "image.name": "ghcr.io/layababa/tg_todo_web:latest"
+2025-12-27T13:08:24.9613650Z }
+2025-12-27T13:08:24.9614067Z ##[endgroup]
+2025-12-27T13:08:24.9748532Z ##[group]Run appleboy/ssh-action@v1.0.3
+2025-12-27T13:08:24.9748817Z with:
+2025-12-27T13:08:24.9748987Z   port: 10321
+2025-12-27T13:08:24.9749776Z   script: cd /root/tg_todo
+git pull origin main
+cd infra
+# 使用环境变量替换镜像中的用户名（仅为占位符，由 docker compose 自动填充或在此注入）
+export GITHUB_REPOSITORY_OWNER=layababa
+docker compose -f docker-compose.prod.yml pull
+docker compose -f docker-compose.prod.yml up -d
+docker image prune -f
+
+2025-12-27T13:08:24.9750597Z   timeout: 30s
+2025-12-27T13:08:24.9750769Z   command_timeout: 10m
+2025-12-27T13:08:24.9750951Z   proxy_port: 22
+2025-12-27T13:08:24.9751129Z   proxy_timeout: 30s
+2025-12-27T13:08:24.9751295Z env:
+2025-12-27T13:08:24.9751447Z   GO_VERSION: 1.21.x
+2025-12-27T13:08:24.9751619Z   NODE_VERSION: 20.x
+2025-12-27T13:08:24.9751794Z ##[endgroup]
+2025-12-27T13:08:24.9852474Z ##[command]/usr/bin/docker run --name acaf36f5e8208511824d618452062e50777113_67ed6b --label acaf36 --workdir /github/workspace --rm -e "GO_VERSION" -e "NODE_VERSION" -e "INPUT_HOST" -e "INPUT_USERNAME" -e "INPUT_KEY" -e "INPUT_PORT" -e "INPUT_SCRIPT" -e "INPUT_PASSPHRASE" -e "INPUT_PASSWORD" -e "INPUT_SYNC" -e "INPUT_USE_INSECURE_CIPHER" -e "INPUT_CIPHER" -e "INPUT_TIMEOUT" -e "INPUT_COMMAND_TIMEOUT" -e "INPUT_KEY_PATH" -e "INPUT_FINGERPRINT" -e "INPUT_PROXY_HOST" -e "INPUT_PROXY_PORT" -e "INPUT_PROXY_USERNAME" -e "INPUT_PROXY_PASSWORD" -e "INPUT_PROXY_PASSPHRASE" -e "INPUT_PROXY_TIMEOUT" -e "INPUT_PROXY_KEY" -e "INPUT_PROXY_KEY_PATH" -e "INPUT_PROXY_FINGERPRINT" -e "INPUT_PROXY_CIPHER" -e "INPUT_PROXY_USE_INSECURE_CIPHER" -e "INPUT_SCRIPT_STOP" -e "INPUT_ENVS" -e "INPUT_ENVS_FORMAT" -e "INPUT_DEBUG" -e "INPUT_ALLENVS" -e "INPUT_REQUEST_PTY" -e "HOME" -e "GITHUB_JOB" -e "GITHUB_REF" -e "GITHUB_SHA" -e "GITHUB_REPOSITORY" -e "GITHUB_REPOSITORY_OWNER" -e "GITHUB_REPOSITORY_OWNER_ID" -e "GITHUB_RUN_ID" -e "GITHUB_RUN_NUMBER" -e "GITHUB_RETENTION_DAYS" -e "GITHUB_RUN_ATTEMPT" -e "GITHUB_ACTOR_ID" -e "GITHUB_ACTOR" -e "GITHUB_WORKFLOW" -e "GITHUB_HEAD_REF" -e "GITHUB_BASE_REF" -e "GITHUB_EVENT_NAME" -e "GITHUB_SERVER_URL" -e "GITHUB_API_URL" -e "GITHUB_GRAPHQL_URL" -e "GITHUB_REF_NAME" -e "GITHUB_REF_PROTECTED" -e "GITHUB_REF_TYPE" -e "GITHUB_WORKFLOW_REF" -e "GITHUB_WORKFLOW_SHA" -e "GITHUB_REPOSITORY_ID" -e "GITHUB_TRIGGERING_ACTOR" -e "GITHUB_WORKSPACE" -e "GITHUB_ACTION" -e "GITHUB_EVENT_PATH" -e "GITHUB_ACTION_REPOSITORY" -e "GITHUB_ACTION_REF" -e "GITHUB_PATH" -e "GITHUB_ENV" -e "GITHUB_STEP_SUMMARY" -e "GITHUB_STATE" -e "GITHUB_OUTPUT" -e "RUNNER_OS" -e "RUNNER_ARCH" -e "RUNNER_NAME" -e "RUNNER_ENVIRONMENT" -e "RUNNER_TOOL_CACHE" -e "RUNNER_TEMP" -e "RUNNER_WORKSPACE" -e "ACTIONS_RUNTIME_URL" -e "ACTIONS_RUNTIME_TOKEN" -e "ACTIONS_CACHE_URL" -e "ACTIONS_RESULTS_URL" -e GITHUB_ACTIONS=true -e CI=true -v "/var/run/docker.sock":"/var/run/docker.sock" -v "/home/runner/work/_temp":"/github/runner_temp" -v "/home/runner/work/_temp/_github_home":"/github/home" -v "/home/runner/work/_temp/_github_workflow":"/github/workflow" -v "/home/runner/work/_temp/_runner_file_commands":"/github/file_commands" -v "/home/runner/work/tg_todo/tg_todo":"/github/workspace" acaf36:f5e8208511824d618452062e50777113
+2025-12-27T13:08:25.1539972Z 2025/12/27 13:08:25 Error: missing server host
+2025-12-27T13:08:25.2300140Z Post job cleanup.
+2025-12-27T13:08:25.4547103Z ##[group]Removing temp folder /home/runner/work/_temp/docker-actions-toolkit-RG4NSh
+2025-12-27T13:08:25.4560903Z ##[endgroup]
+2025-12-27T13:08:25.4561794Z ##[group]Post cache
+2025-12-27T13:08:25.4563274Z State not set
+2025-12-27T13:08:25.4564057Z ##[endgroup]
+2025-12-27T13:08:25.4730076Z Post job cleanup.
+2025-12-27T13:08:25.6926777Z ##[group]Removing temp folder /home/runner/work/_temp/docker-actions-toolkit-ikZGah
+2025-12-27T13:08:25.6939867Z ##[endgroup]
+2025-12-27T13:08:25.6940724Z ##[group]Post cache
+2025-12-27T13:08:25.6942814Z State not set
+2025-12-27T13:08:25.6943378Z ##[endgroup]
+2025-12-27T13:08:25.7051645Z Post job cleanup.
+2025-12-27T13:08:26.0032253Z [command]/usr/bin/docker logout ghcr.io
+2025-12-27T13:08:26.0166010Z Removing login credentials for ghcr.io
+2025-12-27T13:08:26.0199438Z ##[group]Post cache
+2025-12-27T13:08:26.0201212Z State not set
+2025-12-27T13:08:26.0202254Z ##[endgroup]
+2025-12-27T13:08:26.0369254Z Post job cleanup.
+2025-12-27T13:08:26.1306120Z [command]/usr/bin/git version
+2025-12-27T13:08:26.1341559Z git version 2.52.0
+2025-12-27T13:08:26.1384357Z Temporarily overriding HOME='/home/runner/work/_temp/e99641fb-40bf-47f2-ae5e-b976e5278e04' before making global git config changes
+2025-12-27T13:08:26.1385468Z Adding repository directory to the temporary git global config as a safe directory
+2025-12-27T13:08:26.1389977Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/tg_todo/tg_todo
+2025-12-27T13:08:26.1424134Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-12-27T13:08:26.1455978Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-12-27T13:08:26.1682810Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-12-27T13:08:26.1702665Z http.https://github.com/.extraheader
+2025-12-27T13:08:26.1714828Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2025-12-27T13:08:26.1745615Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-12-27T13:08:26.1963384Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2025-12-27T13:08:26.1993947Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2025-12-27T13:08:26.2316529Z Cleaning up orphan processes

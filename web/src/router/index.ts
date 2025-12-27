@@ -71,7 +71,7 @@ router.beforeEach((to, from, next) => {
       urlParams.get("startapp");
   }
 
-  if (startParam) {
+  if (startParam && typeof startParam === "string") {
     console.log("[Router] Found start_param:", startParam);
 
     if (startParam.startsWith("task_")) {

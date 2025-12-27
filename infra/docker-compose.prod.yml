@@ -18,7 +18,8 @@ services:
       - .env.prod
     environment:
       SERVER_PORT: 8080
-      POSTGRES_URL: ${POSTGRES_URL:-postgres://tg_todo:change-me@db:5432/tg_todo?sslmode=disable}
+      DATABASE_DSN: ${POSTGRES_URL:-postgres://tg_todo:change-me@db:5432/tg_todo?sslmode=disable}
+      REDIS_ADDR: redis:6379
       DB_MAX_OPEN_CONNS: ${DB_MAX_OPEN_CONNS:-20}
       DB_MAX_IDLE_CONNS: ${DB_MAX_IDLE_CONNS:-10}
       DB_CONN_MAX_LIFETIME: ${DB_CONN_MAX_LIFETIME:-1800}
@@ -29,31 +30,21 @@ services:
       - "8080:8080"
     depends_on:
       - db
+      - redis
 
-  bot:
-    image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/tg_todo_bot:latest
-    container_name: tg_todo_prod_bot
-    command: ["/bin/bot"]
+  redis:
+    image: redis:7-alpine
+    container_name: tg_todo_prod_redis
     restart: unless-stopped
-    env_file:
-      - .env.prod
-    environment:
-      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
-      TELEGRAM_API_URL: ${TELEGRAM_API_URL:-https://api.telegram.org}
-      POSTGRES_URL: ${POSTGRES_URL:-postgres://tg_todo:change-me@db:5432/tg_todo?sslmode=disable}
-      SERVICE_API_TOKEN: ${SERVICE_API_TOKEN:-prod-service-token}
-      DB_MAX_OPEN_CONNS: ${DB_MAX_OPEN_CONNS:-20}
-      DB_MAX_IDLE_CONNS: ${DB_MAX_IDLE_CONNS:-10}
-      DB_CONN_MAX_LIFETIME: ${DB_CONN_MAX_LIFETIME:-1800}
-    depends_on:
-      - db
+    ports:
+      - "6379:6379"
 
   web:
     image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/tg_todo_web:latest
     container_name: tg_todo_prod_web
     restart: unless-stopped
     ports:
-      - "4173:80"
+      - "5173:80"
     depends_on:
       - api
 
