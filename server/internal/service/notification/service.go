@@ -2,6 +2,8 @@ package notification
 
 import (
 	"context"
+	"fmt"
+
 	"github.com/layababa/tg_todo/server/internal/repository"
 	"github.com/layababa/tg_todo/server/internal/service/telegram"
 	"go.uber.org/zap"
@@ -87,8 +89,8 @@ func (s *Service) Notify(ctx context.Context, event EventType, task *repository.
 		}
 
 		markup := BuildTaskMarkup(task.ID, s.botName, s.appShortName)
-		s.logger.Info("sending notification", 
-			zap.Int64("chat_id", user.TgID), 
+		s.logger.Info("sending notification",
+			zap.Int64("chat_id", user.TgID),
 			zap.String("url", markup.InlineKeyboard[0][0].URL))
 
 		if markup.InlineKeyboard != nil {
@@ -159,4 +161,39 @@ func (s *Service) NotifyReminder(ctx context.Context, event EventType, task *rep
 	s.logger.Info("Reminders dispatched",
 		zap.String("event", string(event)),
 		zap.String("task_id", task.ID))
+}
+
+// NotifyAssigneeChange notifies the creator of the assignee change
+func (s *Service) NotifyAssigneeChange(ctx context.Context, task *repository.Task, oldAssignee, newAssignee string) {
+	// Only notify Creator if they exist
+	if task.CreatorID == nil {
+		return
+	}
+
+	creator, err := s.userRepo.FindByID(ctx, *task.CreatorID)
+	if err != nil || creator == nil || creator.TgID == 0 {
+		return
+	}
+
+	// Format "From X to Y"
+	contextInfo := fmt.Sprintf("由 %s 更改为 %s", oldAssignee, newAssignee)
+	if oldAssignee == "" {
+		contextInfo = fmt.Sprintf("指派给 %s", newAssignee)
+	}
+
+	msg := formatMessage(TemplateData{
+		Event:        EventTaskAssigneeChanged,
+		Task:         task,
+		ContextInfo:  contextInfo,
+		BotName:      s.botName,
+		AppShortName: s.appShortName,
+	})
+
+	markup := BuildTaskMarkup(task.ID, s.botName, s.appShortName)
+
+	if markup.InlineKeyboard != nil {
+		_ = s.tgClient.SendMessageWithButtons(creator.TgID, msg, markup)
+	} else {
+		_ = s.tgClient.SendMessage(creator.TgID, msg)
+	}
 }

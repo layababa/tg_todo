@@ -516,25 +516,37 @@ func (s *Service) AssignTask(ctx context.Context, taskID, userID string) error {
 		return errors.New("task not found")
 	}
 
+	// Capture Old Assignee Name
+	oldAssigneeName := "无"
+	if len(task.Assignees) > 0 {
+		oldAssigneeName = task.Assignees[0].Name
+	}
+
 	// 1. Update DB
 	if err := s.repo.AssignTask(ctx, taskID, userID); err != nil {
 		return err
 	}
 
-	// 2. Notify (Task Assigned)
-	// We need to fetch the Full Task again to get the new Assignee details for notification?
-	// Or just trust ID.
-	// Notification event: EventTaskAssigned?
-	// Existing events: EventStatusChanged, EventTaskCreated, EventCommentAdded.
-	// We should add EventTaskAssigned in notification package or reuse something.
-	// For now, let's just log.
-	s.logger.Info("task assigned", zap.String("task_id", taskID), zap.String("user_id", userID))
+	// 2. Fetch New Assignee Name
+	newUser, err := s.userRepo.FindByID(ctx, userID)
+	newAssigneeName := "未知用户"
+	if err == nil && newUser != nil {
+		newAssigneeName = newUser.Name
+	}
 
-	// If synced to Notion, we might need to update Notion assignees.
-	// Notion Sync Logic is complex (User Mapping).
-	// We'll mark as Pending Sync to retry update.
-	// But `UpdateParams` logic resets sync status.
-	// We should explicitly set SyncStatus to Pending.
+	// 3. Notify Creator
+	// Refresh task to ensure latest state (though we pass task object, ID is constant)
+	// We pass the task object we fetched earlier as it contains Title/CreatorID correctly.
+	s.notifier.NotifyAssigneeChange(ctx, task, oldAssigneeName, newAssigneeName)
+
+	// Log
+	s.logger.Info("task assigned",
+		zap.String("task_id", taskID),
+		zap.String("user_id", userID),
+		zap.String("old_assignee", oldAssigneeName),
+		zap.String("new_assignee", newAssigneeName))
+
+	// Sync logic
 	task.SyncStatus = repository.TaskSyncStatusPending
 	s.repo.UpdateStatus(ctx, task)
 

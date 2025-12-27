@@ -12,12 +12,13 @@ import (
 type EventType string
 
 const (
-	EventTaskCreated   EventType = "task_created"
-	EventTaskAssigned  EventType = "task_assigned"
-	EventStatusChanged EventType = "status_changed"
-	EventCommentAdded  EventType = "comment_added"
-	EventReminder1h    EventType = "reminder_1h"
-	EventReminderDue   EventType = "reminder_due"
+	EventTaskCreated         EventType = "task_created"
+	EventTaskAssigned        EventType = "task_assigned"
+	EventStatusChanged       EventType = "status_changed"
+	EventCommentAdded        EventType = "comment_added"
+	EventTaskAssigneeChanged EventType = "assignee_changed" // New Event
+	EventReminder1h          EventType = "reminder_1h"
+	EventReminderDue         EventType = "reminder_due"
 )
 
 type RecipientRole string
@@ -36,6 +37,7 @@ type TemplateData struct {
 	RecipientRole RecipientRole // Role of the person receiving the notification
 	BotName       string        // Telegram Bot Username
 	AppShortName  string        // Mini App Short Name (from BotFather)
+	ContextInfo   string        // Generic info (e.g. "From X to Y")
 }
 
 // formatMessage formats the notification message based on event type (HTML format)
@@ -63,6 +65,13 @@ func formatMessage(data TemplateData) string {
 		sb.WriteString(fmt.Sprintf("<b>任务:</b> %s\n", taskTitle))
 		if actorName != "" {
 			sb.WriteString(fmt.Sprintf("<b>指派人:</b> %s\n", actorName))
+		}
+
+	case EventTaskAssigneeChanged:
+		sb.WriteString("👤 <b>负责人已变更</b>\n\n")
+		sb.WriteString(fmt.Sprintf("<b>任务:</b> %s\n", taskTitle))
+		if data.ContextInfo != "" {
+			sb.WriteString(fmt.Sprintf("<b>变更:</b> %s\n", data.ContextInfo))
 		}
 
 	case EventStatusChanged:

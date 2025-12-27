@@ -57,27 +57,49 @@ router.beforeEach((to, from, next) => {
     return;
   }
 
-  // @ts-ignore
+  // 1. Check Telegram initData (Standard Deep Link)
   const tg = window.Telegram?.WebApp;
-  if (!tg) {
-    next();
-    return;
+  let startParam = tg?.initDataUnsafe?.start_param;
+
+  // 2. Fallback: Check URL Query Params (For WebApp Buttons or Direct URL access)
+  // Telegram might pass it as tgWebAppStartParam or we might use our own param
+  if (!startParam) {
+    const urlParams = new URLSearchParams(window.location.search);
+    startParam =
+      urlParams.get("start_param") ||
+      urlParams.get("tgWebAppStartParam") ||
+      urlParams.get("startapp");
   }
 
-  const startParam = tg.initDataUnsafe?.start_param;
   if (startParam) {
     console.log("[Router] Found start_param:", startParam);
+
     if (startParam.startsWith("task_")) {
       const taskId = startParam.replace("task_", "");
+      // Prevent infinite loop
+      if (to.name === "task-detail" && to.params.id === taskId) {
+        next();
+        return;
+      }
       next({ name: "task-detail", params: { id: taskId } });
       return;
     }
+
     if (startParam.startsWith("bind_")) {
       const groupId = startParam.replace("bind_", "");
+      if (to.name === "bind-group" && to.params.groupID === groupId) {
+        next();
+        return;
+      }
       next({ name: "bind-group", params: { groupID: groupId } });
       return;
     }
+
     if (startParam === "settings") {
+      if (to.name === "settings") {
+        next();
+        return;
+      }
       next({ name: "settings" });
       return;
     }

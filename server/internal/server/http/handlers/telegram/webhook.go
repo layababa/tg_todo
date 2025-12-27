@@ -338,8 +338,10 @@ func (h *Handler) handleInlineQuery(ctx context.Context, iq *InlineQuery) {
 	// Fetch Task
 	t, err := h.taskService.GetTask(ctx, taskID)
 	if err != nil {
+		h.logger.Error("handleInlineQuery: GetTask failed", zap.String("task_id", taskID), zap.Error(err))
 		return // Ignore errors
 	}
+	h.logger.Info("handleInlineQuery: Task found", zap.String("task_id", t.ID), zap.String("title", t.Title))
 
 	// Construct Result
 
@@ -355,9 +357,9 @@ func (h *Handler) handleInlineQuery(ctx context.Context, iq *InlineQuery) {
 	})
 
 	// Row 2: View Details (if WebApp URL available)
-	// format: https://t.me/<bot>?startapp=task_<id>
 	if h.botUsername != "" {
-		appLink := fmt.Sprintf("https://t.me/%s/app?startapp=task_%s", h.botUsername, t.ID)
+		// Use "task" alias as configured by user
+		appLink := fmt.Sprintf("https://t.me/%s/task?startapp=task_%s", h.botUsername, t.ID)
 		rows = append(rows, []telegram.InlineKeyboardButton{
 			{
 				Text: "📋 查看详情",
@@ -442,8 +444,27 @@ func (h *Handler) handleCallbackQuery(ctx context.Context, cq *CallbackQuery) {
 			title = t.Title
 		}
 
-		newText := fmt.Sprintf("<b>Task: %s</b>\n\n✅ Assigned to %s", title, claimantName)
-		h.tgClient.EditMessageText(cq.InlineMessageID, newText, nil) // Remove buttons
+		newText := fmt.Sprintf("📋 <b>Task: %s</b>\n\n✅ Assigned to %s", title, claimantName)
+
+		// Create Success Buttons
+		var rows [][]telegram.InlineKeyboardButton
+		if h.botUsername != "" {
+			// Button 1: View Details
+			// User has configured "task" alias for Direct Link
+			appLink := fmt.Sprintf("https://t.me/%s/task?startapp=task_%s", h.botUsername, t.ID)
+
+			// Button 2: View All Todos (Home)
+			// User has configured "home" alias for Direct Link
+			homeLink := fmt.Sprintf("https://t.me/%s/home", h.botUsername)
+
+			rows = append(rows, []telegram.InlineKeyboardButton{
+				{Text: "📋 查看任务详情", URL: appLink},
+				{Text: "🏠 查看所有待办", URL: homeLink},
+			})
+		}
+
+		successMarkup := &telegram.InlineKeyboardMarkup{InlineKeyboard: rows}
+		h.tgClient.EditMessageText(cq.InlineMessageID, newText, successMarkup)
 		h.tgClient.AnswerCallbackQuery(cq.ID, "✅ You are now the assignee!")
 	}
 }
