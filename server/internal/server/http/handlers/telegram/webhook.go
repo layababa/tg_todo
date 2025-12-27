@@ -29,6 +29,7 @@ type Handler struct {
 	logger       *zap.Logger
 	deduplicator telegram.Deduplicator
 	repo         repository.TelegramUpdateRepository
+	userRepo     repository.UserRepository
 	taskCreator  *task.Creator
 	taskService  *task.Service // Added TaskService
 	groupService *groupsvc.Service
@@ -43,6 +44,7 @@ type Config struct {
 	Logger       *zap.Logger
 	Deduplicator telegram.Deduplicator
 	Repo         repository.TelegramUpdateRepository
+	UserRepo     repository.UserRepository
 	TaskCreator  *task.Creator
 	TaskService  *task.Service // Added TaskService
 	GroupService *groupsvc.Service
@@ -58,6 +60,7 @@ func NewHandler(cfg Config) *Handler {
 		logger:       cfg.Logger,
 		deduplicator: cfg.Deduplicator,
 		repo:         cfg.Repo,
+		userRepo:     cfg.UserRepo,
 		taskCreator:  cfg.TaskCreator,
 		taskService:  cfg.TaskService, // Added TaskService
 		groupService: cfg.GroupService,
@@ -71,8 +74,10 @@ func NewHandler(cfg Config) *Handler {
 type Message struct {
 	MessageID int64 `json:"message_id"`
 	From      struct {
-		ID       int64  `json:"id"`
-		Username string `json:"username"`
+		ID        int64  `json:"id"`
+		Username  string `json:"username"`
+		FirstName string `json:"first_name"`
+		LastName  string `json:"last_name"`
 	} `json:"from"`
 	Chat struct {
 		ID    int64  `json:"id"`
@@ -273,6 +278,9 @@ func (h *Handler) HandleWebhook(c *gin.Context) {
 	// B. Message (Existing logic)
 	if update.Message != nil {
 		msg := update.Message
+
+		// Ensure user exists on first interaction
+		h.ensureUser(ctx, msg)
 
 		// Check for forward first
 		if msg.ForwardDate > 0 || msg.ForwardFrom != nil || msg.ForwardFromChat != nil {
@@ -884,4 +892,43 @@ func (h *Handler) handleForwardedMessage(ctx context.Context, msg *Message) {
 		replyText += "\n(已同步到 Notion)"
 	}
 	h.sendMessage(msg.Chat.ID, replyText, markup)
+}
+
+// ensureUser creates a user record if it doesn't exist when they interact with the bot
+func (h *Handler) ensureUser(ctx context.Context, msg *Message) {
+	if h.userRepo == nil || msg == nil || msg.From.ID == 0 {
+		return
+	}
+
+	// Check if user exists
+	_, err := h.userRepo.FindByTgID(ctx, msg.From.ID)
+	if err == nil {
+		// User exists, nothing to do
+		return
+	}
+
+	// Build user name
+	name := msg.From.FirstName
+	if msg.From.LastName != "" {
+		name += " " + msg.From.LastName
+	}
+	if name == "" {
+		name = msg.From.Username
+	}
+	if name == "" {
+		name = "User"
+	}
+
+	// Create new user
+	newUser := &models.User{
+		TgID:       msg.From.ID,
+		Name:       name,
+		TgUsername: msg.From.Username,
+	}
+
+	if err := h.userRepo.Create(ctx, newUser); err != nil {
+		h.logger.Warn("failed to create user on first interaction", zap.Error(err), zap.Int64("tg_id", msg.From.ID))
+	} else {
+		h.logger.Info("auto-created user on first interaction", zap.Int64("tg_id", msg.From.ID), zap.String("name", name))
+	}
 }

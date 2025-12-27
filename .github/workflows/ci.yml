@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, dev]
   pull_request:
     branches: [main]
 
@@ -14,8 +14,7 @@ jobs:
   backend:
     name: Backend CI
     runs-on: ubuntu-latest
-    # Run on PRs or push to main
-    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
+    # Run on PRs or push to main/dev
     defaults:
       run:
         working-directory: server
@@ -46,7 +45,7 @@ jobs:
   frontend:
     name: Frontend CI
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
+    # Run on PRs or push to main/dev
     defaults:
       run:
         working-directory: web
@@ -81,6 +80,7 @@ jobs:
 
   deploy:
     name: Build & Push to GHCR
+    needs: [backend, frontend] # Wait for CI to pass
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
