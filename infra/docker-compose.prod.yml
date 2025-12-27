@@ -18,7 +18,8 @@ services:
       - .env.prod
     environment:
       SERVER_PORT: 8080
-      POSTGRES_URL: ${POSTGRES_URL:-postgres://tg_todo:change-me@db:5432/tg_todo?sslmode=disable}
+      DATABASE_DSN: ${POSTGRES_URL:-postgres://tg_todo:change-me@db:5432/tg_todo?sslmode=disable}
+      REDIS_ADDR: redis:6379
       DB_MAX_OPEN_CONNS: ${DB_MAX_OPEN_CONNS:-20}
       DB_MAX_IDLE_CONNS: ${DB_MAX_IDLE_CONNS:-10}
       DB_CONN_MAX_LIFETIME: ${DB_CONN_MAX_LIFETIME:-1800}
@@ -29,6 +30,14 @@ services:
       - "8080:8080"
     depends_on:
       - db
+      - redis
+
+  redis:
+    image: redis:7-alpine
+    container_name: tg_todo_prod_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
 
   web:
     image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/tg_todo_web:latest

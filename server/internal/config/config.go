@@ -54,6 +54,7 @@ func Load(path string) (*Config, error) {
 	_ = v.BindEnv("app_env", "APP_ENV")
 	_ = v.BindEnv("http.addr", "HTTP_ADDR")
 	_ = v.BindEnv("postgres.dsn", "DATABASE_DSN")
+	_ = v.BindEnv("postgres.dsn", "POSTGRES_URL")
 	_ = v.BindEnv("redis.addr", "REDIS_ADDR")
 	_ = v.BindEnv("redis.namespace", "REDIS_NAMESPACE")
 	_ = v.BindEnv("build.version", "APP_VERSION")
