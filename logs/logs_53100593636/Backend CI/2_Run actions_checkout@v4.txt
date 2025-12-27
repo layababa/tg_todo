@@ -1,0 +1,75 @@
+﻿2025-12-27T14:58:02.5559087Z ##[group]Run actions/checkout@v4
+2025-12-27T14:58:02.5560016Z with:
+2025-12-27T14:58:02.5560482Z   repository: layababa/tg_todo
+2025-12-27T14:58:02.5561204Z   token: ***
+2025-12-27T14:58:02.5561646Z   ssh-strict: true
+2025-12-27T14:58:02.5562088Z   ssh-user: git
+2025-12-27T14:58:02.5562607Z   persist-credentials: true
+2025-12-27T14:58:02.5563205Z   clean: true
+2025-12-27T14:58:02.5563840Z   sparse-checkout-cone-mode: true
+2025-12-27T14:58:02.5564385Z   fetch-depth: 1
+2025-12-27T14:58:02.5564823Z   fetch-tags: false
+2025-12-27T14:58:02.5565285Z   show-progress: true
+2025-12-27T14:58:02.5565737Z   lfs: false
+2025-12-27T14:58:02.5566163Z   submodules: false
+2025-12-27T14:58:02.5566642Z   set-safe-directory: true
+2025-12-27T14:58:02.5567402Z env:
+2025-12-27T14:58:02.5567836Z   GO_VERSION: 1.21.x
+2025-12-27T14:58:02.5568299Z   NODE_VERSION: 20.x
+2025-12-27T14:58:02.5568744Z ##[endgroup]
+2025-12-27T14:58:02.6669501Z Syncing repository: layababa/tg_todo
+2025-12-27T14:58:02.6672436Z ##[group]Getting Git version info
+2025-12-27T14:58:02.6674150Z Working directory is '/home/runner/work/tg_todo/tg_todo'
+2025-12-27T14:58:02.6676168Z [command]/usr/bin/git version
+2025-12-27T14:58:02.6747762Z git version 2.52.0
+2025-12-27T14:58:02.6774899Z ##[endgroup]
+2025-12-27T14:58:02.6790637Z Temporarily overriding HOME='/home/runner/work/_temp/abb58837-4bff-48ae-86a7-73a499c52939' before making global git config changes
+2025-12-27T14:58:02.6793630Z Adding repository directory to the temporary git global config as a safe directory
+2025-12-27T14:58:02.6804549Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/tg_todo/tg_todo
+2025-12-27T14:58:02.6844078Z Deleting the contents of '/home/runner/work/tg_todo/tg_todo'
+2025-12-27T14:58:02.6848016Z ##[group]Initializing the repository
+2025-12-27T14:58:02.6852782Z [command]/usr/bin/git init /home/runner/work/tg_todo/tg_todo
+2025-12-27T14:58:02.6961679Z hint: Using 'master' as the name for the initial branch. This default branch name
+2025-12-27T14:58:02.6963589Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2025-12-27T14:58:02.6965234Z hint: to use in all of your new repositories, which will suppress this warning,
+2025-12-27T14:58:02.6966610Z hint: call:
+2025-12-27T14:58:02.6967389Z hint:
+2025-12-27T14:58:02.6968353Z hint: 	git config --global init.defaultBranch <name>
+2025-12-27T14:58:02.6969569Z hint:
+2025-12-27T14:58:02.6970712Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2025-12-27T14:58:02.6972595Z hint: 'development'. The just-created branch can be renamed via this command:
+2025-12-27T14:58:02.6974276Z hint:
+2025-12-27T14:58:02.6975014Z hint: 	git branch -m <name>
+2025-12-27T14:58:02.6975881Z hint:
+2025-12-27T14:58:02.6977102Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2025-12-27T14:58:02.6979156Z Initialized empty Git repository in /home/runner/work/tg_todo/tg_todo/.git/
+2025-12-27T14:58:02.6982211Z [command]/usr/bin/git remote add origin https://github.com/layababa/tg_todo
+2025-12-27T14:58:02.7018546Z ##[endgroup]
+2025-12-27T14:58:02.7019929Z ##[group]Disabling automatic garbage collection
+2025-12-27T14:58:02.7023754Z [command]/usr/bin/git config --local gc.auto 0
+2025-12-27T14:58:02.7052708Z ##[endgroup]
+2025-12-27T14:58:02.7054369Z ##[group]Setting up auth
+2025-12-27T14:58:02.7060378Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-12-27T14:58:02.7091215Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-12-27T14:58:02.7434432Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-12-27T14:58:02.7462354Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-12-27T14:58:02.7678847Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2025-12-27T14:58:02.7707787Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2025-12-27T14:58:02.7932863Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2025-12-27T14:58:02.7967149Z ##[endgroup]
+2025-12-27T14:58:02.7968396Z ##[group]Fetching the repository
+2025-12-27T14:58:02.7976007Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +f68300fec687edaca7dd18bfe49007d5a046c2c4:refs/remotes/origin/main
+2025-12-27T14:58:03.8328821Z From https://github.com/layababa/tg_todo
+2025-12-27T14:58:03.8331164Z  * [new ref]         f68300fec687edaca7dd18bfe49007d5a046c2c4 -> origin/main
+2025-12-27T14:58:03.8366914Z ##[endgroup]
+2025-12-27T14:58:03.8369705Z ##[group]Determining the checkout info
+2025-12-27T14:58:03.8372023Z ##[endgroup]
+2025-12-27T14:58:03.8373582Z [command]/usr/bin/git sparse-checkout disable
+2025-12-27T14:58:03.8417566Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2025-12-27T14:58:03.8447067Z ##[group]Checking out the ref
+2025-12-27T14:58:03.8450292Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2025-12-27T14:58:04.0251874Z Switched to a new branch 'main'
+2025-12-27T14:58:04.0253798Z branch 'main' set up to track 'origin/main'.
+2025-12-27T14:58:04.0270109Z ##[endgroup]
+2025-12-27T14:58:04.0308746Z [command]/usr/bin/git log -1 --format=%H
+2025-12-27T14:58:04.0332209Z f68300fec687edaca7dd18bfe49007d5a046c2c4

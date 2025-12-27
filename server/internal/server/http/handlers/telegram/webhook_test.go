@@ -52,7 +52,7 @@ func TestShouldCreateTask(t *testing.T) {
 			expected: true,
 		},
 		{
-			name: "私聊不应该创建任务",
+			name: "私聊应该创建任务",
 			msg: &Message{
 				Chat: struct {
 					ID    int64  `json:"id"`
@@ -64,7 +64,7 @@ func TestShouldCreateTask(t *testing.T) {
 				},
 				Text: "@test_bot 测试",
 			},
-			expected: false,
+			expected: true,
 		},
 		{
 			name: "群聊中普通消息不应该创建任务",

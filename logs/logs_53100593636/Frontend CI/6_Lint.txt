@@ -1,0 +1,12 @@
+﻿2025-12-27T14:58:17.1775650Z ##[group]Run pnpm run lint
+2025-12-27T14:58:17.1775939Z [36;1mpnpm run lint[0m
+2025-12-27T14:58:17.1808820Z shell: /usr/bin/bash -e {0}
+2025-12-27T14:58:17.1809053Z env:
+2025-12-27T14:58:17.1809229Z   GO_VERSION: 1.21.x
+2025-12-27T14:58:17.1809429Z   NODE_VERSION: 20.x
+2025-12-27T14:58:17.1809665Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+2025-12-27T14:58:17.1809964Z ##[endgroup]
+2025-12-27T14:58:17.5801152Z 
+2025-12-27T14:58:17.5802030Z > tg-miniapp-web@0.1.0 lint /home/runner/work/tg_todo/tg_todo/web
+2025-12-27T14:58:17.5802661Z > eslint "src/**/*.{ts,tsx,vue}" --max-warnings=0
+2025-12-27T14:58:17.5802941Z 

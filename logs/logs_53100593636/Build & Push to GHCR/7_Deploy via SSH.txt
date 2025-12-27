@@ -1,0 +1,165 @@
+﻿2025-12-27T14:59:22.0376411Z ##[group]Run appleboy/ssh-action@v1.0.3
+2025-12-27T14:59:22.0376864Z with:
+2025-12-27T14:59:22.0377282Z   host: ***
+2025-12-27T14:59:22.0377622Z   username: ***
+2025-12-27T14:59:22.0392435Z   key: ***
+2025-12-27T14:59:22.0392768Z   port: 10321
+2025-12-27T14:59:22.0393779Z   script: cd /***/tg_todo
+git pull origin main
+cd infra
+# 使用环境变量替换镜像中的用户名（仅为占位符，由 docker compose 自动填充或在此注入）
+export GITHUB_REPOSITORY_OWNER=layababa
+docker compose -f docker-compose.prod.yml pull
+docker compose -f docker-compose.prod.yml up -d
+docker image prune -f
+
+2025-12-27T14:59:22.0395226Z   timeout: 30s
+2025-12-27T14:59:22.0395562Z   command_timeout: 10m
+2025-12-27T14:59:22.0395915Z   proxy_port: 22
+2025-12-27T14:59:22.0396255Z   proxy_timeout: 30s
+2025-12-27T14:59:22.0396598Z env:
+2025-12-27T14:59:22.0396910Z   GO_VERSION: 1.21.x
+2025-12-27T14:59:22.0397252Z   NODE_VERSION: 20.x
+2025-12-27T14:59:22.0397583Z ##[endgroup]
+2025-12-27T14:59:22.0518035Z ##[command]/usr/bin/docker run --name dab9d3874c89ad0243448dadb5c3f8335a55e3_0da793 --label dab9d3 --workdir /github/workspace --rm -e "GO_VERSION" -e "NODE_VERSION" -e "INPUT_HOST" -e "INPUT_USERNAME" -e "INPUT_KEY" -e "INPUT_PORT" -e "INPUT_SCRIPT" -e "INPUT_PASSPHRASE" -e "INPUT_PASSWORD" -e "INPUT_SYNC" -e "INPUT_USE_INSECURE_CIPHER" -e "INPUT_CIPHER" -e "INPUT_TIMEOUT" -e "INPUT_COMMAND_TIMEOUT" -e "INPUT_KEY_PATH" -e "INPUT_FINGERPRINT" -e "INPUT_PROXY_HOST" -e "INPUT_PROXY_PORT" -e "INPUT_PROXY_USERNAME" -e "INPUT_PROXY_PASSWORD" -e "INPUT_PROXY_PASSPHRASE" -e "INPUT_PROXY_TIMEOUT" -e "INPUT_PROXY_KEY" -e "INPUT_PROXY_KEY_PATH" -e "INPUT_PROXY_FINGERPRINT" -e "INPUT_PROXY_CIPHER" -e "INPUT_PROXY_USE_INSECURE_CIPHER" -e "INPUT_SCRIPT_STOP" -e "INPUT_ENVS" -e "INPUT_ENVS_FORMAT" -e "INPUT_DEBUG" -e "INPUT_ALLENVS" -e "INPUT_REQUEST_PTY" -e "HOME" -e "GITHUB_JOB" -e "GITHUB_REF" -e "GITHUB_SHA" -e "GITHUB_REPOSITORY" -e "GITHUB_REPOSITORY_OWNER" -e "GITHUB_REPOSITORY_OWNER_ID" -e "GITHUB_RUN_ID" -e "GITHUB_RUN_NUMBER" -e "GITHUB_RETENTION_DAYS" -e "GITHUB_RUN_ATTEMPT" -e "GITHUB_ACTOR_ID" -e "GITHUB_ACTOR" -e "GITHUB_WORKFLOW" -e "GITHUB_HEAD_REF" -e "GITHUB_BASE_REF" -e "GITHUB_EVENT_NAME" -e "GITHUB_SERVER_URL" -e "GITHUB_API_URL" -e "GITHUB_GRAPHQL_URL" -e "GITHUB_REF_NAME" -e "GITHUB_REF_PROTECTED" -e "GITHUB_REF_TYPE" -e "GITHUB_WORKFLOW_REF" -e "GITHUB_WORKFLOW_SHA" -e "GITHUB_REPOSITORY_ID" -e "GITHUB_TRIGGERING_ACTOR" -e "GITHUB_WORKSPACE" -e "GITHUB_ACTION" -e "GITHUB_EVENT_PATH" -e "GITHUB_ACTION_REPOSITORY" -e "GITHUB_ACTION_REF" -e "GITHUB_PATH" -e "GITHUB_ENV" -e "GITHUB_STEP_SUMMARY" -e "GITHUB_STATE" -e "GITHUB_OUTPUT" -e "RUNNER_OS" -e "RUNNER_ARCH" -e "RUNNER_NAME" -e "RUNNER_ENVIRONMENT" -e "RUNNER_TOOL_CACHE" -e "RUNNER_TEMP" -e "RUNNER_WORKSPACE" -e "ACTIONS_RUNTIME_URL" -e "ACTIONS_RUNTIME_TOKEN" -e "ACTIONS_CACHE_URL" -e "ACTIONS_RESULTS_URL" -e GITHUB_ACTIONS=true -e CI=true -v "/var/run/docker.sock":"/var/run/docker.sock" -v "/home/runner/work/_temp":"/github/runner_temp" -v "/home/runner/work/_temp/_github_home":"/github/home" -v "/home/runner/work/_temp/_github_workflow":"/github/workflow" -v "/home/runner/work/_temp/_runner_file_commands":"/github/file_commands" -v "/home/runner/work/tg_todo/tg_todo":"/github/workspace" dab9d3:874c89ad0243448dadb5c3f8335a55e3
+2025-12-27T14:59:22.2062959Z ======CMD======
+2025-12-27T14:59:22.2063809Z cd /***/tg_todo
+2025-12-27T14:59:22.2064910Z git pull origin main
+2025-12-27T14:59:22.2065483Z cd infra
+2025-12-27T14:59:22.2066276Z # 使用环境变量替换镜像中的用户名（仅为占位符，由 docker compose 自动填充或在此注入）
+2025-12-27T14:59:22.2066772Z export GITHUB_REPOSITORY_OWNER=layababa
+2025-12-27T14:59:22.2067394Z docker compose -f docker-compose.prod.yml pull
+2025-12-27T14:59:22.2067994Z docker compose -f docker-compose.prod.yml up -d
+2025-12-27T14:59:22.2068464Z docker image prune -f
+2025-12-27T14:59:22.2068778Z 
+2025-12-27T14:59:22.2068935Z ======END======
+2025-12-27T14:59:26.3549134Z err: From github.com:layababa/tg_todo
+2025-12-27T14:59:26.3549824Z err:  * branch            main       -> FETCH_HEAD
+2025-12-27T14:59:26.5204852Z out: Already up to date.
+2025-12-27T14:59:26.6484063Z err:  web Pulling 
+2025-12-27T14:59:26.6485153Z err:  redis Pulling 
+2025-12-27T14:59:26.6485918Z err:  db Pulling 
+2025-12-27T14:59:26.6489308Z err:  api Pulling 
+2025-12-27T14:59:28.5611341Z err:  17a39c0ba978 Already exists 
+2025-12-27T14:59:28.5733447Z err:  db Pulled 
+2025-12-27T14:59:28.5800492Z err:  redis Pulled 
+2025-12-27T14:59:28.5801072Z err:  7bce66ed0648 Pulling fs layer 
+2025-12-27T14:59:28.5801617Z err:  477dc9605961 Pulling fs layer 
+2025-12-27T14:59:28.5802139Z err:  e7e5e232d4a4 Pulling fs layer 
+2025-12-27T14:59:28.5802958Z err:  9651e5ed3263 Pulling fs layer 
+2025-12-27T14:59:28.5803469Z err:  9651e5ed3263 Waiting 
+2025-12-27T14:59:28.6015580Z err:  4abcf2066143 Already exists 
+2025-12-27T14:59:28.6141093Z err:  fc21a1d387f5 Already exists 
+2025-12-27T14:59:28.6258449Z err:  e6ef242c1570 Already exists 
+2025-12-27T14:59:28.6375383Z err:  13fcfbc94648 Already exists 
+2025-12-27T14:59:28.6497705Z err:  d4bca490e609 Already exists 
+2025-12-27T14:59:28.6602862Z err:  5406ed7b06d9 Already exists 
+2025-12-27T14:59:28.6716733Z err:  8a3742a9529d Already exists 
+2025-12-27T14:59:28.7137423Z err:  0d0c16747d2c Already exists 
+2025-12-27T14:59:28.7138041Z err:  03599372f059 Pulling fs layer 
+2025-12-27T14:59:28.7138574Z err:  44587519b3f7 Pulling fs layer 
+2025-12-27T14:59:28.7139101Z err:  03599372f059 Waiting 
+2025-12-27T14:59:28.7139567Z err:  44587519b3f7 Waiting 
+2025-12-27T14:59:29.2971153Z err:  477dc9605961 Downloading [>                                                  ]   6.89kB/614.1kB
+2025-12-27T14:59:29.3024908Z err:  7bce66ed0648 Downloading [==================================================>]      92B/92B
+2025-12-27T14:59:29.3025727Z err:  7bce66ed0648 Verifying Checksum 
+2025-12-27T14:59:29.3026171Z err:  7bce66ed0648 Download complete 
+2025-12-27T14:59:29.3026690Z err:  7bce66ed0648 Extracting [==================================================>]      92B/92B
+2025-12-27T14:59:29.3030297Z err:  7bce66ed0648 Extracting [==================================================>]      92B/92B
+2025-12-27T14:59:29.3526069Z err:  7bce66ed0648 Pull complete 
+2025-12-27T14:59:29.3969147Z err:  e7e5e232d4a4 Downloading [>                                                  ]  228.2kB/22.18MB
+2025-12-27T14:59:29.4004726Z err:  477dc9605961 Downloading [=============================>                     ]  359.2kB/614.1kB
+2025-12-27T14:59:29.4805194Z err:  477dc9605961 Downloading [==================================================>]  614.1kB/614.1kB
+2025-12-27T14:59:29.4806274Z err:  477dc9605961 Verifying Checksum 
+2025-12-27T14:59:29.4806878Z err:  477dc9605961 Download complete 
+2025-12-27T14:59:29.4807564Z err:  477dc9605961 Extracting [==>                                                ]  32.77kB/614.1kB
+2025-12-27T14:59:29.5185919Z err:  e7e5e232d4a4 Downloading [=>                                                 ]  686.9kB/22.18MB
+2025-12-27T14:59:29.6000884Z err:  477dc9605961 Extracting [========================================>          ]  491.5kB/614.1kB
+2025-12-27T14:59:29.6340760Z err:  e7e5e232d4a4 Downloading [===>                                               ]  1.375MB/22.18MB
+2025-12-27T14:59:29.7313468Z err:  477dc9605961 Extracting [==================================================>]  614.1kB/614.1kB
+2025-12-27T14:59:29.7506359Z err:  e7e5e232d4a4 Downloading [====>                                              ]  2.063MB/22.18MB
+2025-12-27T14:59:29.7789163Z err:  477dc9605961 Extracting [==================================================>]  614.1kB/614.1kB
+2025-12-27T14:59:29.8670578Z err:  e7e5e232d4a4 Downloading [======>                                            ]  2.751MB/22.18MB
+2025-12-27T14:59:29.9711283Z err:  9651e5ed3263 Download complete 
+2025-12-27T14:59:29.9738616Z err:  477dc9605961 Pull complete 
+2025-12-27T14:59:29.9838196Z err:  e7e5e232d4a4 Downloading [=======>                                           ]  3.439MB/22.18MB
+2025-12-27T14:59:30.1002190Z err:  e7e5e232d4a4 Downloading [=========>                                         ]  4.128MB/22.18MB
+2025-12-27T14:59:30.1741554Z err:  03599372f059 Downloading [>                                                  ]  1.378kB/109.9kB
+2025-12-27T14:59:30.2306129Z err:  e7e5e232d4a4 Downloading [==========>                                        ]  4.816MB/22.18MB
+2025-12-27T14:59:30.2405591Z err:  03599372f059 Downloading [==================================================>]  109.9kB/109.9kB
+2025-12-27T14:59:30.2406393Z err:  03599372f059 Verifying Checksum 
+2025-12-27T14:59:30.2406955Z err:  03599372f059 Download complete 
+2025-12-27T14:59:30.2407927Z err:  03599372f059 Extracting [==============>                                    ]  32.77kB/109.9kB
+2025-12-27T14:59:30.2420103Z err:  03599372f059 Extracting [==================================================>]  109.9kB/109.9kB
+2025-12-27T14:59:30.2980541Z err:  03599372f059 Pull complete 
+2025-12-27T14:59:30.3518462Z err:  e7e5e232d4a4 Downloading [============>                                      ]  5.511MB/22.18MB
+2025-12-27T14:59:30.4675789Z err:  e7e5e232d4a4 Downloading [=============>                                     ]  6.199MB/22.18MB
+2025-12-27T14:59:30.5948449Z err:  e7e5e232d4a4 Downloading [===============>                                   ]  6.888MB/22.18MB
+2025-12-27T14:59:30.7117828Z err:  e7e5e232d4a4 Downloading [=================>                                 ]  7.576MB/22.18MB
+2025-12-27T14:59:30.7966563Z err:  44587519b3f7 Downloading [==================================================>]     341B/341B
+2025-12-27T14:59:30.7967417Z err:  44587519b3f7 Verifying Checksum 
+2025-12-27T14:59:30.7968099Z err:  44587519b3f7 Download complete 
+2025-12-27T14:59:30.7968906Z err:  44587519b3f7 Extracting [==================================================>]     341B/341B
+2025-12-27T14:59:30.7973388Z err:  44587519b3f7 Extracting [==================================================>]     341B/341B
+2025-12-27T14:59:30.8273225Z err:  e7e5e232d4a4 Downloading [==================>                                ]  8.264MB/22.18MB
+2025-12-27T14:59:30.8515080Z err:  44587519b3f7 Pull complete 
+2025-12-27T14:59:30.9055772Z err:  web Pulled 
+2025-12-27T14:59:30.9428867Z err:  e7e5e232d4a4 Downloading [====================>                              ]  8.948MB/22.18MB
+2025-12-27T14:59:31.0584094Z err:  e7e5e232d4a4 Downloading [=====================>                             ]  9.634MB/22.18MB
+2025-12-27T14:59:31.1739592Z err:  e7e5e232d4a4 Downloading [=======================>                           ]  10.32MB/22.18MB
+2025-12-27T14:59:31.3379502Z err:  e7e5e232d4a4 Downloading [========================>                          ]  10.78MB/22.18MB
+2025-12-27T14:59:31.4797344Z err:  e7e5e232d4a4 Downloading [=========================>                         ]  11.24MB/22.18MB
+2025-12-27T14:59:31.6250068Z err:  e7e5e232d4a4 Downloading [==========================>                        ]  11.93MB/22.18MB
+2025-12-27T14:59:31.7411227Z err:  e7e5e232d4a4 Downloading [============================>                      ]  12.62MB/22.18MB
+2025-12-27T14:59:31.8562974Z err:  e7e5e232d4a4 Downloading [=============================>                     ]  13.31MB/22.18MB
+2025-12-27T14:59:31.9713950Z err:  e7e5e232d4a4 Downloading [===============================>                   ]     14MB/22.18MB
+2025-12-27T14:59:32.0863938Z err:  e7e5e232d4a4 Downloading [=================================>                 ]  14.69MB/22.18MB
+2025-12-27T14:59:32.2697461Z err:  e7e5e232d4a4 Downloading [==================================>                ]  15.37MB/22.18MB
+2025-12-27T14:59:32.3863317Z err:  e7e5e232d4a4 Downloading [===================================>               ]   15.6MB/22.18MB
+2025-12-27T14:59:32.4916880Z err:  e7e5e232d4a4 Downloading [====================================>              ]  16.06MB/22.18MB
+2025-12-27T14:59:32.6074891Z err:  e7e5e232d4a4 Downloading [=====================================>             ]  16.74MB/22.18MB
+2025-12-27T14:59:32.7534633Z err:  e7e5e232d4a4 Downloading [=======================================>           ]  17.43MB/22.18MB
+2025-12-27T14:59:32.9093446Z err:  e7e5e232d4a4 Downloading [========================================>          ]  17.89MB/22.18MB
+2025-12-27T14:59:33.0174765Z err:  e7e5e232d4a4 Downloading [=========================================>         ]  18.35MB/22.18MB
+2025-12-27T14:59:33.1317059Z err:  e7e5e232d4a4 Downloading [==========================================>        ]  19.04MB/22.18MB
+2025-12-27T14:59:33.2878150Z err:  e7e5e232d4a4 Downloading [============================================>      ]  19.72MB/22.18MB
+2025-12-27T14:59:33.4037158Z err:  e7e5e232d4a4 Downloading [=============================================>     ]  20.18MB/22.18MB
+2025-12-27T14:59:33.5571864Z err:  e7e5e232d4a4 Downloading [==============================================>    ]  20.64MB/22.18MB
+2025-12-27T14:59:33.6805665Z err:  e7e5e232d4a4 Downloading [================================================>  ]  21.33MB/22.18MB
+2025-12-27T14:59:33.7947582Z err:  e7e5e232d4a4 Downloading [=================================================> ]  22.01MB/22.18MB
+2025-12-27T14:59:33.8247992Z err:  e7e5e232d4a4 Verifying Checksum 
+2025-12-27T14:59:33.8248612Z err:  e7e5e232d4a4 Download complete 
+2025-12-27T14:59:33.8278124Z err:  e7e5e232d4a4 Extracting [>                                                  ]  229.4kB/22.18MB
+2025-12-27T14:59:33.9293188Z err:  e7e5e232d4a4 Extracting [==========>                                        ]  4.817MB/22.18MB
+2025-12-27T14:59:34.0341110Z err:  e7e5e232d4a4 Extracting [=======================>                           ]  10.32MB/22.18MB
+2025-12-27T14:59:34.1250174Z err:  e7e5e232d4a4 Extracting [==================================================>]  22.18MB/22.18MB
+2025-12-27T14:59:34.1588828Z err:  e7e5e232d4a4 Pull complete 
+2025-12-27T14:59:34.1812314Z err:  9651e5ed3263 Extracting [==================================================>]     346B/346B
+2025-12-27T14:59:34.1814031Z err:  9651e5ed3263 Extracting [==================================================>]     346B/346B
+2025-12-27T14:59:34.2299608Z err:  9651e5ed3263 Pull complete 
+2025-12-27T14:59:34.2794003Z err:  api Pulled 
+2025-12-27T14:59:34.4164908Z err:  Container tg_todo_prod_redis  Running
+2025-12-27T14:59:34.4165574Z err:  Container tg_todo_prod_db  Running
+2025-12-27T14:59:34.4166169Z err:  Container tg_todo_prod_api  Recreate
+2025-12-27T14:59:35.0312570Z err:  Container tg_todo_prod_api  Recreated
+2025-12-27T14:59:35.0313265Z err:  Container tg_todo_prod_web  Recreate
+2025-12-27T14:59:35.5172425Z err:  Container tg_todo_prod_web  Recreated
+2025-12-27T14:59:35.5201731Z err:  Container tg_todo_prod_api  Starting
+2025-12-27T14:59:35.8167726Z err:  Container tg_todo_prod_api  Started
+2025-12-27T14:59:35.8168388Z err:  Container tg_todo_prod_web  Starting
+2025-12-27T14:59:36.1141743Z err:  Container tg_todo_prod_web  Started
+2025-12-27T14:59:36.2329831Z out: Deleted Images:
+2025-12-27T14:59:36.2330736Z out: untagged: ghcr.io/layababa/tg_todo_web@sha256:a0a1dabeb9dc984b890ff08153f23154553278d401cc2012995f04dd15b88bff
+2025-12-27T14:59:36.2331825Z out: deleted: sha256:6bc307db15c161c754df0859871618d1cc65655255c98fc2b76a05b9db192ea8
+2025-12-27T14:59:36.2332740Z out: deleted: sha256:061e5315185c7c785c5ec581545186168b608322201a09f570e6ebcd1c22a75a
+2025-12-27T14:59:36.2333649Z out: deleted: sha256:42a5ed77c76ec48c38fec002c7c14fabb22a8328d106ac9199ec32b1ba2e04f5
+2025-12-27T14:59:36.2335070Z out: untagged: ghcr.io/layababa/tg_todo_api@sha256:79fc48d528e97c81228e3e7b9b4f90f19f3584113461e278d6f324139d80603c
+2025-12-27T14:59:36.2336153Z out: deleted: sha256:8c3df2305d00a8f4f849ca5dc0c84758f79647ae0341b14f5ec5899c6adc9498
+2025-12-27T14:59:36.2337079Z out: deleted: sha256:058b936d98b0433831a51476e97b0b0a4a103916ab507112a5a41e5bc142a82d
+2025-12-27T14:59:36.2337819Z out: deleted: sha256:04518bfd5a03a10e6bb9e1a12811c63a5aba236b019a4a1407fdb3d08901eda5
+2025-12-27T14:59:36.2338499Z out: deleted: sha256:cda508d3f61fad8767017624ff3ce0befab210c512ff4e6f6fe0624eb78ce593
+2025-12-27T14:59:36.2339170Z out: deleted: sha256:627f68675e419e1d97d5b0e7ce32c06d30cf0d629c0292bf95f9c97a4de7b854
+2025-12-27T14:59:36.2339910Z out: Total reclaimed space: 48.25MB
+2025-12-27T14:59:36.2351372Z ==============================================
+2025-12-27T14:59:36.2352585Z ✅ Successfully executed commands to all host.
+2025-12-27T14:59:36.2353140Z ==============================================

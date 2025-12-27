@@ -1,0 +1,321 @@
+﻿2025-12-27T14:58:00.5070148Z Current runner version: '2.330.0'
+2025-12-27T14:58:00.5095034Z ##[group]Runner Image Provisioner
+2025-12-27T14:58:00.5095975Z Hosted Compute Agent
+2025-12-27T14:58:00.5096518Z Version: 20251211.462
+2025-12-27T14:58:00.5097070Z Commit: 6cbad8c2bb55d58165063d031ccabf57e2d2db61
+2025-12-27T14:58:00.5097874Z Build Date: 2025-12-11T16:28:49Z
+2025-12-27T14:58:00.5098489Z Worker ID: {636a57f5-01df-4bf4-a488-1a7fa5942af8}
+2025-12-27T14:58:00.5099142Z ##[endgroup]
+2025-12-27T14:58:00.5099695Z ##[group]Operating System
+2025-12-27T14:58:00.5100258Z Ubuntu
+2025-12-27T14:58:00.5100690Z 24.04.3
+2025-12-27T14:58:00.5101233Z LTS
+2025-12-27T14:58:00.5101694Z ##[endgroup]
+2025-12-27T14:58:00.5102144Z ##[group]Runner Image
+2025-12-27T14:58:00.5102740Z Image: ubuntu-24.04
+2025-12-27T14:58:00.5103493Z Version: 20251215.174.1
+2025-12-27T14:58:00.5104588Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20251215.174/images/ubuntu/Ubuntu2404-Readme.md
+2025-12-27T14:58:00.5106233Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20251215.174
+2025-12-27T14:58:00.5107237Z ##[endgroup]
+2025-12-27T14:58:00.5108336Z ##[group]GITHUB_TOKEN Permissions
+2025-12-27T14:58:00.5110207Z Contents: read
+2025-12-27T14:58:00.5110811Z Metadata: read
+2025-12-27T14:58:00.5111327Z Packages: read
+2025-12-27T14:58:00.5111819Z ##[endgroup]
+2025-12-27T14:58:00.5114515Z Secret source: Actions
+2025-12-27T14:58:00.5115521Z Prepare workflow directory
+2025-12-27T14:58:00.5532183Z Prepare all required actions
+2025-12-27T14:58:00.5573027Z Getting action download info
+2025-12-27T14:58:00.9126547Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+2025-12-27T14:58:01.1153312Z Download action repository 'pnpm/action-setup@v3' (SHA:a3252b78c470c02df07e9d59298aecedc3ccdd6d)
+2025-12-27T14:58:02.0073764Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+2025-12-27T14:58:02.2663734Z Complete job name: Frontend CI
+2025-12-27T14:58:02.3547894Z ##[group]Run actions/checkout@v4
+2025-12-27T14:58:02.3549198Z with:
+2025-12-27T14:58:02.3549996Z   repository: layababa/tg_todo
+2025-12-27T14:58:02.3551272Z   token: ***
+2025-12-27T14:58:02.3551997Z   ssh-strict: true
+2025-12-27T14:58:02.3552766Z   ssh-user: git
+2025-12-27T14:58:02.3553717Z   persist-credentials: true
+2025-12-27T14:58:02.3554583Z   clean: true
+2025-12-27T14:58:02.3555392Z   sparse-checkout-cone-mode: true
+2025-12-27T14:58:02.3556328Z   fetch-depth: 1
+2025-12-27T14:58:02.3557103Z   fetch-tags: false
+2025-12-27T14:58:02.3557896Z   show-progress: true
+2025-12-27T14:58:02.3558685Z   lfs: false
+2025-12-27T14:58:02.3559428Z   submodules: false
+2025-12-27T14:58:02.3560235Z   set-safe-directory: true
+2025-12-27T14:58:02.3561352Z env:
+2025-12-27T14:58:02.3562055Z   GO_VERSION: 1.21.x
+2025-12-27T14:58:02.3562847Z   NODE_VERSION: 20.x
+2025-12-27T14:58:02.3563764Z ##[endgroup]
+2025-12-27T14:58:02.4686288Z Syncing repository: layababa/tg_todo
+2025-12-27T14:58:02.4689242Z ##[group]Getting Git version info
+2025-12-27T14:58:02.4690566Z Working directory is '/home/runner/work/tg_todo/tg_todo'
+2025-12-27T14:58:02.4692439Z [command]/usr/bin/git version
+2025-12-27T14:58:02.4750218Z git version 2.52.0
+2025-12-27T14:58:02.4777907Z ##[endgroup]
+2025-12-27T14:58:02.4806918Z Temporarily overriding HOME='/home/runner/work/_temp/15850e47-b23a-4ee8-819e-121317f898cf' before making global git config changes
+2025-12-27T14:58:02.4811595Z Adding repository directory to the temporary git global config as a safe directory
+2025-12-27T14:58:02.4815435Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/tg_todo/tg_todo
+2025-12-27T14:58:02.4860291Z Deleting the contents of '/home/runner/work/tg_todo/tg_todo'
+2025-12-27T14:58:02.4865089Z ##[group]Initializing the repository
+2025-12-27T14:58:02.4870572Z [command]/usr/bin/git init /home/runner/work/tg_todo/tg_todo
+2025-12-27T14:58:02.4978850Z hint: Using 'master' as the name for the initial branch. This default branch name
+2025-12-27T14:58:02.4981665Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2025-12-27T14:58:02.4984258Z hint: to use in all of your new repositories, which will suppress this warning,
+2025-12-27T14:58:02.4985656Z hint: call:
+2025-12-27T14:58:02.4986350Z hint:
+2025-12-27T14:58:02.4987269Z hint: 	git config --global init.defaultBranch <name>
+2025-12-27T14:58:02.4988611Z hint:
+2025-12-27T14:58:02.4989726Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2025-12-27T14:58:02.4991499Z hint: 'development'. The just-created branch can be renamed via this command:
+2025-12-27T14:58:02.4992883Z hint:
+2025-12-27T14:58:02.4993885Z hint: 	git branch -m <name>
+2025-12-27T14:58:02.4994817Z hint:
+2025-12-27T14:58:02.4996270Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2025-12-27T14:58:02.4998228Z Initialized empty Git repository in /home/runner/work/tg_todo/tg_todo/.git/
+2025-12-27T14:58:02.5001419Z [command]/usr/bin/git remote add origin https://github.com/layababa/tg_todo
+2025-12-27T14:58:02.5035387Z ##[endgroup]
+2025-12-27T14:58:02.5036744Z ##[group]Disabling automatic garbage collection
+2025-12-27T14:58:02.5039469Z [command]/usr/bin/git config --local gc.auto 0
+2025-12-27T14:58:02.5073631Z ##[endgroup]
+2025-12-27T14:58:02.5075945Z ##[group]Setting up auth
+2025-12-27T14:58:02.5081830Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-12-27T14:58:02.5117742Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-12-27T14:58:02.5496446Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-12-27T14:58:02.5535850Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-12-27T14:58:02.5795557Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2025-12-27T14:58:02.5834537Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2025-12-27T14:58:02.6073653Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2025-12-27T14:58:02.6110880Z ##[endgroup]
+2025-12-27T14:58:02.6112276Z ##[group]Fetching the repository
+2025-12-27T14:58:02.6121472Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +f68300fec687edaca7dd18bfe49007d5a046c2c4:refs/remotes/origin/main
+2025-12-27T14:58:03.4980965Z From https://github.com/layababa/tg_todo
+2025-12-27T14:58:03.4981809Z  * [new ref]         f68300fec687edaca7dd18bfe49007d5a046c2c4 -> origin/main
+2025-12-27T14:58:03.5018077Z ##[endgroup]
+2025-12-27T14:58:03.5018631Z ##[group]Determining the checkout info
+2025-12-27T14:58:03.5020758Z ##[endgroup]
+2025-12-27T14:58:03.5025849Z [command]/usr/bin/git sparse-checkout disable
+2025-12-27T14:58:03.5065872Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2025-12-27T14:58:03.5090464Z ##[group]Checking out the ref
+2025-12-27T14:58:03.5094461Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2025-12-27T14:58:03.6909043Z Switched to a new branch 'main'
+2025-12-27T14:58:03.6910008Z branch 'main' set up to track 'origin/main'.
+2025-12-27T14:58:03.6924986Z ##[endgroup]
+2025-12-27T14:58:03.6963479Z [command]/usr/bin/git log -1 --format=%H
+2025-12-27T14:58:03.6987134Z f68300fec687edaca7dd18bfe49007d5a046c2c4
+2025-12-27T14:58:03.7178454Z ##[group]Run pnpm/action-setup@v3
+2025-12-27T14:58:03.7178762Z with:
+2025-12-27T14:58:03.7178932Z   version: 8
+2025-12-27T14:58:03.7179105Z   dest: ~/setup-pnpm
+2025-12-27T14:58:03.7179301Z   run_install: null
+2025-12-27T14:58:03.7179500Z   package_json_file: package.json
+2025-12-27T14:58:03.7179726Z   standalone: false
+2025-12-27T14:58:03.7180131Z env:
+2025-12-27T14:58:03.7180296Z   GO_VERSION: 1.21.x
+2025-12-27T14:58:03.7180487Z   NODE_VERSION: 20.x
+2025-12-27T14:58:03.7180663Z ##[endgroup]
+2025-12-27T14:58:03.8051481Z ##[group]Running self-installer...
+2025-12-27T14:58:04.4229654Z Progress: resolved 1, reused 0, downloaded 0, added 0
+2025-12-27T14:58:04.4362963Z Packages: +1
+2025-12-27T14:58:04.4374077Z +
+2025-12-27T14:58:04.8154622Z Progress: resolved 1, reused 0, downloaded 1, added 1, done
+2025-12-27T14:58:04.8406438Z 
+2025-12-27T14:58:04.8406863Z dependencies:
+2025-12-27T14:58:04.8407267Z + pnpm 8.15.9 (10.26.2 is available)
+2025-12-27T14:58:04.8407502Z 
+2025-12-27T14:58:04.8434071Z Done in 863ms
+2025-12-27T14:58:04.8608330Z ##[endgroup]
+2025-12-27T14:58:04.8612259Z Installation Completed!
+2025-12-27T14:58:04.8751829Z ##[group]Run actions/setup-node@v4
+2025-12-27T14:58:04.8752082Z with:
+2025-12-27T14:58:04.8752251Z   node-version: 20.x
+2025-12-27T14:58:04.8752430Z   cache: pnpm
+2025-12-27T14:58:04.8752644Z   cache-dependency-path: web/package-lock.json
+2025-12-27T14:58:04.8752912Z   always-auth: false
+2025-12-27T14:58:04.8753098Z   check-latest: false
+2025-12-27T14:58:04.8753702Z   token: ***
+2025-12-27T14:58:04.8753867Z env:
+2025-12-27T14:58:04.8754027Z   GO_VERSION: 1.21.x
+2025-12-27T14:58:04.8754206Z   NODE_VERSION: 20.x
+2025-12-27T14:58:04.8754455Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+2025-12-27T14:58:04.8754723Z ##[endgroup]
+2025-12-27T14:58:05.0749143Z Found in cache @ /opt/hostedtoolcache/node/20.19.6/x64
+2025-12-27T14:58:05.0756431Z ##[group]Environment details
+2025-12-27T14:58:08.5215007Z node: v20.19.6
+2025-12-27T14:58:08.5215736Z npm: 10.8.2
+2025-12-27T14:58:08.5219138Z yarn: 1.22.22
+2025-12-27T14:58:08.5220385Z ##[endgroup]
+2025-12-27T14:58:08.5244910Z [command]/home/runner/setup-pnpm/node_modules/.bin/pnpm store path --silent
+2025-12-27T14:58:09.0122752Z /home/runner/setup-pnpm/node_modules/.bin/store/v3
+2025-12-27T14:58:09.2620252Z Cache hit for: node-cache-Linux-x64-pnpm-61f7b5c2c4a86378e1f147606eed6635a3ad0895e20f9f1ebf1e3dc45c9b7b0f
+2025-12-27T14:58:10.1346202Z Received 46722637 of 46722637 (100.0%), 62.8 MBs/sec
+2025-12-27T14:58:10.1347020Z Cache Size: ~45 MB (46722637 B)
+2025-12-27T14:58:10.1379841Z [command]/usr/bin/tar -xf /home/runner/work/_temp/f2003038-f669-4117-abfa-4aa023e99a0f/cache.tzst -P -C /home/runner/work/tg_todo/tg_todo --use-compress-program unzstd
+2025-12-27T14:58:11.1123548Z Cache restored successfully
+2025-12-27T14:58:11.1219901Z Cache restored from key: node-cache-Linux-x64-pnpm-61f7b5c2c4a86378e1f147606eed6635a3ad0895e20f9f1ebf1e3dc45c9b7b0f
+2025-12-27T14:58:11.1365733Z ##[group]Run pnpm install
+2025-12-27T14:58:11.1366049Z [36;1mpnpm install[0m
+2025-12-27T14:58:11.1407720Z shell: /usr/bin/bash -e {0}
+2025-12-27T14:58:11.1407958Z env:
+2025-12-27T14:58:11.1408132Z   GO_VERSION: 1.21.x
+2025-12-27T14:58:11.1408327Z   NODE_VERSION: 20.x
+2025-12-27T14:58:11.1408577Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+2025-12-27T14:58:11.1408860Z ##[endgroup]
+2025-12-27T14:58:11.5956960Z  WARN  Ignoring not compatible lockfile at /home/runner/work/tg_todo/tg_todo/web/pnpm-lock.yaml
+2025-12-27T14:58:11.8448642Z Progress: resolved 1, reused 0, downloaded 0, added 0
+2025-12-27T14:58:12.1075708Z  WARN  deprecated eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+2025-12-27T14:58:12.8610657Z Progress: resolved 111, reused 110, downloaded 0, added 0
+2025-12-27T14:58:13.8608387Z Progress: resolved 375, reused 374, downloaded 0, added 0
+2025-12-27T14:58:14.8641925Z Progress: resolved 618, reused 574, downloaded 0, added 0
+2025-12-27T14:58:15.6437450Z  WARN  5 deprecated subdependencies found: @humanwhocodes/config-array@0.13.0, @humanwhocodes/object-schema@2.0.3, glob@7.2.3, inflight@1.0.6, rimraf@3.0.2
+2025-12-27T14:58:15.6697642Z Packages: +672
+2025-12-27T14:58:15.6698199Z ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+2025-12-27T14:58:15.8660560Z Progress: resolved 715, reused 672, downloaded 0, added 198
+2025-12-27T14:58:16.1619760Z Progress: resolved 715, reused 672, downloaded 0, added 672, done
+2025-12-27T14:58:16.3006487Z .../esbuild@0.21.5/node_modules/esbuild postinstall$ node install.js
+2025-12-27T14:58:16.3477297Z .../esbuild@0.21.5/node_modules/esbuild postinstall: Done
+2025-12-27T14:58:17.1174718Z 
+2025-12-27T14:58:17.1175303Z dependencies:
+2025-12-27T14:58:17.1175919Z + @twa-dev/sdk 7.10.1 (8.0.2 is available)
+2025-12-27T14:58:17.1176440Z + axios 1.13.2
+2025-12-27T14:58:17.1176841Z + pinia 2.3.1 (3.0.4 is available)
+2025-12-27T14:58:17.1177329Z + vue 3.5.26
+2025-12-27T14:58:17.1177715Z + vue-router 4.6.4
+2025-12-27T14:58:17.1177932Z 
+2025-12-27T14:58:17.1178101Z devDependencies:
+2025-12-27T14:58:17.1178545Z + @rushstack/eslint-patch 1.15.0
+2025-12-27T14:58:17.1179047Z + @testing-library/jest-dom 6.9.1
+2025-12-27T14:58:17.1179478Z + @testing-library/vue 8.1.0
+2025-12-27T14:58:17.1180020Z + @types/node 20.19.27 (25.0.3 is available)
+2025-12-27T14:58:17.1180616Z + @vitejs/plugin-vue 5.2.4 (6.0.3 is available)
+2025-12-27T14:58:17.1181290Z + @vitest/coverage-v8 1.6.1 (4.0.16 is available)
+2025-12-27T14:58:17.1181968Z + @vitest/ui 1.6.1 (4.0.16 is available)
+2025-12-27T14:58:17.1182581Z + @vue/eslint-config-prettier 9.0.0 (10.2.0 is available)
+2025-12-27T14:58:17.1183712Z + @vue/eslint-config-typescript 13.0.0 (14.6.0 is available)
+2025-12-27T14:58:17.1184277Z + @vue/test-utils 2.4.6
+2025-12-27T14:58:17.1184757Z + autoprefixer 10.4.23
+2025-12-27T14:58:17.1185311Z + cypress 13.17.0 (15.8.1 is available)
+2025-12-27T14:58:17.1185881Z + daisyui 4.12.24 (5.5.14 is available)
+2025-12-27T14:58:17.1186515Z + eslint 8.57.1 (9.39.2 is available) deprecated
+2025-12-27T14:58:17.1187170Z + eslint-plugin-vue 9.33.0 (10.6.2 is available)
+2025-12-27T14:58:17.1187704Z + jsdom 24.1.3 (27.4.0 is available)
+2025-12-27T14:58:17.1188110Z + postcss 8.5.6
+2025-12-27T14:58:17.1188429Z + prettier 3.7.4
+2025-12-27T14:58:17.1188785Z + stylelint 16.26.1
+2025-12-27T14:58:17.1189350Z + stylelint-config-standard 36.0.1 (39.0.1 is available)
+2025-12-27T14:58:17.1189986Z + stylelint-config-standard-vue 1.0.0
+2025-12-27T14:58:17.1190494Z + stylelint-order 6.0.4 (7.0.0 is available)
+2025-12-27T14:58:17.1190980Z + tailwindcss 3.4.19 (4.1.18 is available)
+2025-12-27T14:58:17.1191464Z + type-fest 4.41.0 (5.3.1 is available)
+2025-12-27T14:58:17.1191861Z + typescript 5.9.3
+2025-12-27T14:58:17.1192235Z + vite 5.4.21 (7.3.0 is available)
+2025-12-27T14:58:17.1192644Z + vitest 1.6.1 (4.0.16 is available)
+2025-12-27T14:58:17.1193087Z + vue-tsc 2.2.12 (3.2.1 is available)
+2025-12-27T14:58:17.1193598Z 
+2025-12-27T14:58:17.1194125Z Done in 5.9s
+2025-12-27T14:58:17.1775662Z ##[group]Run pnpm run lint
+2025-12-27T14:58:17.1775941Z [36;1mpnpm run lint[0m
+2025-12-27T14:58:17.1808828Z shell: /usr/bin/bash -e {0}
+2025-12-27T14:58:17.1809056Z env:
+2025-12-27T14:58:17.1809231Z   GO_VERSION: 1.21.x
+2025-12-27T14:58:17.1809431Z   NODE_VERSION: 20.x
+2025-12-27T14:58:17.1809676Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+2025-12-27T14:58:17.1809966Z ##[endgroup]
+2025-12-27T14:58:17.5801208Z 
+2025-12-27T14:58:17.5802036Z > tg-miniapp-web@0.1.0 lint /home/runner/work/tg_todo/tg_todo/web
+2025-12-27T14:58:17.5802664Z > eslint "src/**/*.{ts,tsx,vue}" --max-warnings=0
+2025-12-27T14:58:17.5802943Z 
+2025-12-27T14:58:19.4128621Z ##[group]Run pnpm run type-check
+2025-12-27T14:58:19.4129091Z [36;1mpnpm run type-check[0m
+2025-12-27T14:58:19.4166110Z shell: /usr/bin/bash -e {0}
+2025-12-27T14:58:19.4166336Z env:
+2025-12-27T14:58:19.4166600Z   GO_VERSION: 1.21.x
+2025-12-27T14:58:19.4166887Z   NODE_VERSION: 20.x
+2025-12-27T14:58:19.4167132Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+2025-12-27T14:58:19.4167408Z ##[endgroup]
+2025-12-27T14:58:19.8195358Z 
+2025-12-27T14:58:19.8196255Z > tg-miniapp-web@0.1.0 type-check /home/runner/work/tg_todo/tg_todo/web
+2025-12-27T14:58:19.8197022Z > vue-tsc --noEmit
+2025-12-27T14:58:19.8197264Z 
+2025-12-27T14:58:27.3160463Z ##[group]Run pnpm run test || echo "No test files found, skipping tests"
+2025-12-27T14:58:27.3161148Z [36;1mpnpm run test || echo "No test files found, skipping tests"[0m
+2025-12-27T14:58:27.3193776Z shell: /usr/bin/bash -e {0}
+2025-12-27T14:58:27.3194010Z env:
+2025-12-27T14:58:27.3194176Z   GO_VERSION: 1.21.x
+2025-12-27T14:58:27.3194367Z   NODE_VERSION: 20.x
+2025-12-27T14:58:27.3194607Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+2025-12-27T14:58:27.3194884Z ##[endgroup]
+2025-12-27T14:58:27.7155650Z 
+2025-12-27T14:58:27.7156457Z > tg-miniapp-web@0.1.0 test /home/runner/work/tg_todo/tg_todo/web
+2025-12-27T14:58:27.7157104Z > vitest run
+2025-12-27T14:58:27.7157299Z 
+2025-12-27T14:58:28.2594282Z 
+2025-12-27T14:58:28.2595931Z [7m[1m[36m RUN [39m[22m[27m [36mv1.6.1[39m [90m/home/runner/work/tg_todo/tg_todo/web[39m
+2025-12-27T14:58:28.2596544Z 
+2025-12-27T14:58:28.2722052Z [2minclude: [22m[33m**/*.{test,spec}.?(c|m)[jt]s?(x)[39m
+2025-12-27T14:58:28.2724627Z [2mexclude:  [22m[33m**/node_modules/**[2m, [22m**/dist/**[2m, [22m**/cypress/**[2m, [22m**/.{idea,git,cache,output,temp}/**[2m, [22m**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*[39m
+2025-12-27T14:58:28.2726576Z [2mwatch exclude:  [22m[33m**/node_modules/**[2m, [22m**/dist/**[39m
+2025-12-27T14:58:28.2727286Z [31m
+2025-12-27T14:58:28.2727897Z No test files found, exiting with code 1[39m
+2025-12-27T14:58:28.2820413Z  ELIFECYCLE  Test failed. See above for more details.
+2025-12-27T14:58:28.3015848Z No test files found, skipping tests
+2025-12-27T14:58:28.3041901Z ##[group]Run pnpm run build
+2025-12-27T14:58:28.3042172Z [36;1mpnpm run build[0m
+2025-12-27T14:58:28.3076030Z shell: /usr/bin/bash -e {0}
+2025-12-27T14:58:28.3076269Z env:
+2025-12-27T14:58:28.3076444Z   GO_VERSION: 1.21.x
+2025-12-27T14:58:28.3076642Z   NODE_VERSION: 20.x
+2025-12-27T14:58:28.3076895Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+2025-12-27T14:58:28.3077174Z ##[endgroup]
+2025-12-27T14:58:28.7052386Z 
+2025-12-27T14:58:28.7053432Z > tg-miniapp-web@0.1.0 build /home/runner/work/tg_todo/tg_todo/web
+2025-12-27T14:58:28.7054159Z > vite build
+2025-12-27T14:58:28.7054360Z 
+2025-12-27T14:58:29.1509189Z [36mvite v5.4.21 [32mbuilding for production...[36m[39m
+2025-12-27T14:58:29.4685496Z transforming...
+2025-12-27T14:58:29.8410362Z 
+2025-12-27T14:58:29.8412329Z 🌼   [35mdaisyUI[39m [2m4.12.24[22m
+2025-12-27T14:58:30.0004921Z ├─ [32m✔︎[39m 1 theme added[2m		https://daisyui.com/docs/themes[22m
+2025-12-27T14:58:30.0006239Z ╰─ [32m★[39m [0mStar daisyUI on GitHub[0m	[2mhttps://github.com/saadeghi/daisyui[22m
+2025-12-27T14:58:30.0006774Z 
+2025-12-27T14:58:31.7292361Z [32m✓[39m 119 modules transformed.
+2025-12-27T14:58:31.8460576Z rendering chunks...
+2025-12-27T14:58:31.9283411Z computing gzip size...
+2025-12-27T14:58:31.9661258Z [2mdist/[22m[32mindex.html                                    [39m[1m[2m  1.70 kB[22m[1m[22m[2m │ gzip:  0.78 kB[22m
+2025-12-27T14:58:31.9663660Z [2mdist/[22m[2massets/[22m[35mTaskDetailPage-Cjb1jxkk.css            [39m[1m[2m  1.17 kB[22m[1m[22m[2m │ gzip:  0.52 kB[22m
+2025-12-27T14:58:31.9665977Z [2mdist/[22m[2massets/[22m[35mOnboardingPage-DQDgKyDZ.css            [39m[1m[2m  4.94 kB[22m[1m[22m[2m │ gzip:  1.38 kB[22m
+2025-12-27T14:58:31.9668215Z [2mdist/[22m[2massets/[22m[35mindex-C3hmJXWP.css                     [39m[1m[2m115.77 kB[22m[1m[22m[2m │ gzip: 18.73 kB[22m
+2025-12-27T14:58:31.9670062Z [2mdist/[22m[2massets/[22m[36m_plugin-vue_export-helper-DlAUqK2U.js  [39m[1m[2m  0.09 kB[22m[1m[22m[2m │ gzip:  0.10 kB[22m
+2025-12-27T14:58:31.9672675Z [2mdist/[22m[2massets/[22m[36mnotion-D5q0RPbx.js                     [39m[1m[2m  0.12 kB[22m[1m[22m[2m │ gzip:  0.13 kB[22m
+2025-12-27T14:58:31.9674387Z [2mdist/[22m[2massets/[22m[36mtask-CiAUkodO.js                       [39m[1m[2m  0.41 kB[22m[1m[22m[2m │ gzip:  0.22 kB[22m
+2025-12-27T14:58:31.9675750Z [2mdist/[22m[2massets/[22m[36mgroup-CqSxbFjR.js                      [39m[1m[2m  0.42 kB[22m[1m[22m[2m │ gzip:  0.21 kB[22m
+2025-12-27T14:58:31.9677493Z [2mdist/[22m[2massets/[22m[36museSwipeBack-D8a8N1Os.js               [39m[1m[2m  0.83 kB[22m[1m[22m[2m │ gzip:  0.40 kB[22m
+2025-12-27T14:58:31.9678904Z [2mdist/[22m[2massets/[22m[36mOnboardingPage-COeSqHcP.js             [39m[1m[2m  3.13 kB[22m[1m[22m[2m │ gzip:  1.79 kB[22m
+2025-12-27T14:58:31.9680352Z [2mdist/[22m[2massets/[22m[36mGroupListPage-xl4Iq_YC.js              [39m[1m[2m  3.66 kB[22m[1m[22m[2m │ gzip:  1.88 kB[22m
+2025-12-27T14:58:31.9681764Z [2mdist/[22m[2massets/[22m[36mGroupBindPage-C6HMYFBP.js              [39m[1m[2m  4.65 kB[22m[1m[22m[2m │ gzip:  1.97 kB[22m
+2025-12-27T14:58:31.9683403Z [2mdist/[22m[2massets/[22m[36mSettingsPage-B19FT3eR.js               [39m[1m[2m  7.37 kB[22m[1m[22m[2m │ gzip:  2.84 kB[22m
+2025-12-27T14:58:31.9684843Z [2mdist/[22m[2massets/[22m[36mHomePage-CAj2-68G.js                   [39m[1m[2m 11.14 kB[22m[1m[22m[2m │ gzip:  4.21 kB[22m
+2025-12-27T14:58:31.9686237Z [2mdist/[22m[2massets/[22m[36mTaskDetailPage-DYM1Aqlj.js             [39m[1m[2m 26.31 kB[22m[1m[22m[2m │ gzip:  8.39 kB[22m
+2025-12-27T14:58:31.9687690Z [2mdist/[22m[2massets/[22m[36mindex-7WmyJnRD.js                      [39m[1m[2m187.26 kB[22m[1m[22m[2m │ gzip: 69.04 kB[22m
+2025-12-27T14:58:31.9688488Z [32m✓ built in 2.79s[39m
+2025-12-27T14:58:32.0124009Z Post job cleanup.
+2025-12-27T14:58:32.1638643Z Cache hit occurred on the primary key node-cache-Linux-x64-pnpm-61f7b5c2c4a86378e1f147606eed6635a3ad0895e20f9f1ebf1e3dc45c9b7b0f, not saving cache.
+2025-12-27T14:58:32.1719106Z Post job cleanup.
+2025-12-27T14:58:32.2626311Z Pruning is unnecessary.
+2025-12-27T14:58:32.2681932Z Post job cleanup.
+2025-12-27T14:58:32.3624997Z [command]/usr/bin/git version
+2025-12-27T14:58:32.3661892Z git version 2.52.0
+2025-12-27T14:58:32.3704955Z Temporarily overriding HOME='/home/runner/work/_temp/82acbfe8-76be-4e79-91ef-fbee6dd5ffdb' before making global git config changes
+2025-12-27T14:58:32.3706277Z Adding repository directory to the temporary git global config as a safe directory
+2025-12-27T14:58:32.3717383Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/tg_todo/tg_todo
+2025-12-27T14:58:32.3750860Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-12-27T14:58:32.3783441Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-12-27T14:58:32.4016695Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-12-27T14:58:32.4039433Z http.https://github.com/.extraheader
+2025-12-27T14:58:32.4052556Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2025-12-27T14:58:32.4084561Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-12-27T14:58:32.4310936Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2025-12-27T14:58:32.4343981Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2025-12-27T14:58:32.4677306Z Cleaning up orphan processes

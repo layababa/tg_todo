@@ -1,0 +1,60 @@
+﻿2025-12-27T14:58:11.1365719Z ##[group]Run pnpm install
+2025-12-27T14:58:11.1366047Z [36;1mpnpm install[0m
+2025-12-27T14:58:11.1407708Z shell: /usr/bin/bash -e {0}
+2025-12-27T14:58:11.1407956Z env:
+2025-12-27T14:58:11.1408129Z   GO_VERSION: 1.21.x
+2025-12-27T14:58:11.1408325Z   NODE_VERSION: 20.x
+2025-12-27T14:58:11.1408570Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+2025-12-27T14:58:11.1408858Z ##[endgroup]
+2025-12-27T14:58:11.5956906Z  WARN  Ignoring not compatible lockfile at /home/runner/work/tg_todo/tg_todo/web/pnpm-lock.yaml
+2025-12-27T14:58:11.8448592Z Progress: resolved 1, reused 0, downloaded 0, added 0
+2025-12-27T14:58:12.1075660Z  WARN  deprecated eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+2025-12-27T14:58:12.8610608Z Progress: resolved 111, reused 110, downloaded 0, added 0
+2025-12-27T14:58:13.8608331Z Progress: resolved 375, reused 374, downloaded 0, added 0
+2025-12-27T14:58:14.8641775Z Progress: resolved 618, reused 574, downloaded 0, added 0
+2025-12-27T14:58:15.6437404Z  WARN  5 deprecated subdependencies found: @humanwhocodes/config-array@0.13.0, @humanwhocodes/object-schema@2.0.3, glob@7.2.3, inflight@1.0.6, rimraf@3.0.2
+2025-12-27T14:58:15.6697596Z Packages: +672
+2025-12-27T14:58:15.6698195Z ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+2025-12-27T14:58:15.8660516Z Progress: resolved 715, reused 672, downloaded 0, added 198
+2025-12-27T14:58:16.1619716Z Progress: resolved 715, reused 672, downloaded 0, added 672, done
+2025-12-27T14:58:16.3006443Z .../esbuild@0.21.5/node_modules/esbuild postinstall$ node install.js
+2025-12-27T14:58:16.3477255Z .../esbuild@0.21.5/node_modules/esbuild postinstall: Done
+2025-12-27T14:58:17.1174669Z 
+2025-12-27T14:58:17.1175294Z dependencies:
+2025-12-27T14:58:17.1175910Z + @twa-dev/sdk 7.10.1 (8.0.2 is available)
+2025-12-27T14:58:17.1176422Z + axios 1.13.2
+2025-12-27T14:58:17.1176835Z + pinia 2.3.1 (3.0.4 is available)
+2025-12-27T14:58:17.1177277Z + vue 3.5.26
+2025-12-27T14:58:17.1177706Z + vue-router 4.6.4
+2025-12-27T14:58:17.1177927Z 
+2025-12-27T14:58:17.1178095Z devDependencies:
+2025-12-27T14:58:17.1178539Z + @rushstack/eslint-patch 1.15.0
+2025-12-27T14:58:17.1179043Z + @testing-library/jest-dom 6.9.1
+2025-12-27T14:58:17.1179473Z + @testing-library/vue 8.1.0
+2025-12-27T14:58:17.1180015Z + @types/node 20.19.27 (25.0.3 is available)
+2025-12-27T14:58:17.1180607Z + @vitejs/plugin-vue 5.2.4 (6.0.3 is available)
+2025-12-27T14:58:17.1181282Z + @vitest/coverage-v8 1.6.1 (4.0.16 is available)
+2025-12-27T14:58:17.1181959Z + @vitest/ui 1.6.1 (4.0.16 is available)
+2025-12-27T14:58:17.1182571Z + @vue/eslint-config-prettier 9.0.0 (10.2.0 is available)
+2025-12-27T14:58:17.1183691Z + @vue/eslint-config-typescript 13.0.0 (14.6.0 is available)
+2025-12-27T14:58:17.1184270Z + @vue/test-utils 2.4.6
+2025-12-27T14:58:17.1184750Z + autoprefixer 10.4.23
+2025-12-27T14:58:17.1185298Z + cypress 13.17.0 (15.8.1 is available)
+2025-12-27T14:58:17.1185849Z + daisyui 4.12.24 (5.5.14 is available)
+2025-12-27T14:58:17.1186508Z + eslint 8.57.1 (9.39.2 is available) deprecated
+2025-12-27T14:58:17.1187162Z + eslint-plugin-vue 9.33.0 (10.6.2 is available)
+2025-12-27T14:58:17.1187698Z + jsdom 24.1.3 (27.4.0 is available)
+2025-12-27T14:58:17.1188103Z + postcss 8.5.6
+2025-12-27T14:58:17.1188424Z + prettier 3.7.4
+2025-12-27T14:58:17.1188779Z + stylelint 16.26.1
+2025-12-27T14:58:17.1189339Z + stylelint-config-standard 36.0.1 (39.0.1 is available)
+2025-12-27T14:58:17.1189979Z + stylelint-config-standard-vue 1.0.0
+2025-12-27T14:58:17.1190489Z + stylelint-order 6.0.4 (7.0.0 is available)
+2025-12-27T14:58:17.1190975Z + tailwindcss 3.4.19 (4.1.18 is available)
+2025-12-27T14:58:17.1191460Z + type-fest 4.41.0 (5.3.1 is available)
+2025-12-27T14:58:17.1191856Z + typescript 5.9.3
+2025-12-27T14:58:17.1192231Z + vite 5.4.21 (7.3.0 is available)
+2025-12-27T14:58:17.1192640Z + vitest 1.6.1 (4.0.16 is available)
+2025-12-27T14:58:17.1193083Z + vue-tsc 2.2.12 (3.2.1 is available)
+2025-12-27T14:58:17.1193590Z 
+2025-12-27T14:58:17.1193749Z Done in 5.9s

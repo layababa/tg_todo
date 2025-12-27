@@ -1,0 +1,337 @@
+﻿2025-12-27T14:58:20.0341554Z ##[group]Run go test -v ./...
+2025-12-27T14:58:20.0342010Z [36;1mgo test -v ./...[0m
+2025-12-27T14:58:20.0378276Z shell: /usr/bin/bash -e {0}
+2025-12-27T14:58:20.0378538Z env:
+2025-12-27T14:58:20.0378712Z   GO_VERSION: 1.21.x
+2025-12-27T14:58:20.0378932Z   NODE_VERSION: 20.x
+2025-12-27T14:58:20.0379128Z ##[endgroup]
+2025-12-27T14:58:20.8991498Z ?   	github.com/layababa/tg_todo/server/cmd/api	[no test files]
+2025-12-27T14:58:20.8992493Z ?   	github.com/layababa/tg_todo/server/cmd/encrypt_token	[no test files]
+2025-12-27T14:58:20.9161304Z === RUN   TestLoadConfigFallsBackToEnv
+2025-12-27T14:58:20.9175088Z --- PASS: TestLoadConfigFallsBackToEnv (0.00s)
+2025-12-27T14:58:20.9189422Z PASS
+2025-12-27T14:58:20.9189933Z ok  	github.com/layababa/tg_todo/server/internal/config	0.008s
+2025-12-27T14:58:20.9190670Z ?   	github.com/layababa/tg_todo/server/internal/models	[no test files]
+2025-12-27T14:58:20.9641258Z === RUN   TestListByUserFiltersViews
+2025-12-27T14:58:20.9643238Z --- PASS: TestListByUserFiltersViews (0.00s)
+2025-12-27T14:58:20.9645366Z === RUN   TestSoftDeleteRemovesTask
+2025-12-27T14:58:20.9647488Z --- PASS: TestSoftDeleteRemovesTask (0.00s)
+2025-12-27T14:58:20.9649131Z PASS
+2025-12-27T14:58:20.9650823Z ok  	github.com/layababa/tg_todo/server/internal/repository	(cached)
+2025-12-27T14:58:21.0326443Z === RUN   TestGetStatusReturnsUserProfile
+2025-12-27T14:58:21.0327076Z --- PASS: TestGetStatusReturnsUserProfile (0.00s)
+2025-12-27T14:58:21.0327682Z === RUN   TestGetNotionAuthURLReturnsSignedState
+2025-12-27T14:58:21.0328299Z --- PASS: TestGetNotionAuthURLReturnsSignedState (0.00s)
+2025-12-27T14:58:21.0328893Z === RUN   TestNotionCallbackPersistsToken
+2025-12-27T14:58:21.0329443Z --- PASS: TestNotionCallbackPersistsToken (0.00s)
+2025-12-27T14:58:21.0329966Z === RUN   TestNotionCallbackInvalidState
+2025-12-27T14:58:21.0330495Z --- PASS: TestNotionCallbackInvalidState (0.00s)
+2025-12-27T14:58:21.0331036Z === RUN   TestHMACStateCodecRoundTrip
+2025-12-27T14:58:21.0331561Z --- PASS: TestHMACStateCodecRoundTrip (0.00s)
+2025-12-27T14:58:21.0332125Z === RUN   TestHMACStateCodecRejectsTamperedState
+2025-12-27T14:58:21.0332734Z --- PASS: TestHMACStateCodecRejectsTamperedState (0.00s)
+2025-12-27T14:58:21.0333455Z === RUN   TestAuthIntegration_OnboardingFlow
+2025-12-27T14:58:21.0334183Z 2025/12/27 13:08:37 github.com/testcontainers/testcontainers-go - Connected to docker: 
+2025-12-27T14:58:21.0334899Z   Server Version: 28.0.4
+2025-12-27T14:58:21.0335277Z   API Version: 1.48
+2025-12-27T14:58:21.0335732Z   Operating System: Ubuntu 24.04.3 LTS
+2025-12-27T14:58:21.0336180Z   Total Memory: 15995 MB
+2025-12-27T14:58:21.0336618Z   Testcontainers for Go Version: v0.40.0
+2025-12-27T14:58:21.0337179Z   Resolved Docker Host: unix:///var/run/docker.sock
+2025-12-27T14:58:21.0337786Z   Resolved Docker Socket Path: /var/run/docker.sock
+2025-12-27T14:58:21.0338594Z   Test SessionID: 9c636e26503154d956c7a8439e01b28dd39396b4a94f8572b177c786031f3f02
+2025-12-27T14:58:21.0339674Z   Test ProcessID: 2eeb68f5-8d89-4009-8d20-de0c17a90423
+2025-12-27T14:58:21.0340656Z 2025/12/27 13:08:41 🐳 Creating container for image postgres:16-alpine
+2025-12-27T14:58:21.0341535Z 2025/12/27 13:08:42 🐳 Creating container for image testcontainers/ryuk:0.13.0
+2025-12-27T14:58:21.0342292Z 2025/12/27 13:08:42 ✅ Container created: 7ec0afdd0eab
+2025-12-27T14:58:21.0342940Z 2025/12/27 13:08:42 🐳 Starting container: 7ec0afdd0eab
+2025-12-27T14:58:21.0373922Z 2025/12/27 13:08:42 ✅ Container started: 7ec0afdd0eab
+2025-12-27T14:58:21.0375244Z 2025/12/27 13:08:42 ⏳ Waiting for container id 7ec0afdd0eab image: testcontainers/ryuk:0.13.0. Waiting for: port 8080/tcp to be listening
+2025-12-27T14:58:21.0376258Z 2025/12/27 13:08:42 Shell not found in container
+2025-12-27T14:58:21.0376933Z 2025/12/27 13:08:42 🔔 Container is ready: 7ec0afdd0eab
+2025-12-27T14:58:21.0377596Z 2025/12/27 13:08:42 ✅ Container created: 748c4e14904a
+2025-12-27T14:58:21.0378259Z 2025/12/27 13:08:42 🐳 Starting container: 748c4e14904a
+2025-12-27T14:58:21.0378964Z 2025/12/27 13:08:42 ✅ Container started: 748c4e14904a
+2025-12-27T14:58:21.0380425Z 2025/12/27 13:08:42 ⏳ Waiting for container id 748c4e14904a image: postgres:16-alpine. Waiting for: port 5432/tcp to be listening
+2025-12-27T14:58:21.0381484Z 2025/12/27 13:08:44 🔔 Container is ready: 748c4e14904a
+2025-12-27T14:58:21.0382110Z 
+2025-12-27T14:58:21.0383142Z 2025/12/27 13:08:44 [31;1m/home/runner/work/tg_todo/tg_todo/server/internal/repository/user_repository.go:36 [35;1mrecord not found
+2025-12-27T14:58:21.0384975Z [0m[33m[2.975ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE tg_id = 68123456 AND "users"."deleted_at" IS NULL ORDER BY "users"."id" LIMIT 1
+2025-12-27T14:58:21.0386027Z 2025/12/27 13:08:44 🐳 Stopping container: 748c4e14904a
+2025-12-27T14:58:21.0386756Z 2025/12/27 13:08:44 ✅ Container stopped: 748c4e14904a
+2025-12-27T14:58:21.0387472Z 2025/12/27 13:08:44 🐳 Terminating container: 748c4e14904a
+2025-12-27T14:58:21.0388251Z 2025/12/27 13:08:44 🚫 Container terminated: 748c4e14904a
+2025-12-27T14:58:21.0388848Z --- PASS: TestAuthIntegration_OnboardingFlow (6.94s)
+2025-12-27T14:58:21.0389345Z PASS
+2025-12-27T14:58:21.0389919Z ok  	github.com/layababa/tg_todo/server/internal/server/http/handlers/auth	(cached)
+2025-12-27T14:58:21.0390620Z === RUN   TestListGroupsHandler
+2025-12-27T14:58:21.0391072Z --- PASS: TestListGroupsHandler (0.00s)
+2025-12-27T14:58:21.0391554Z === RUN   TestBindGroupForbidden
+2025-12-27T14:58:21.0392005Z --- PASS: TestBindGroupForbidden (0.00s)
+2025-12-27T14:58:21.0392443Z PASS
+2025-12-27T14:58:21.0393019Z ok  	github.com/layababa/tg_todo/server/internal/server/http/handlers/group	(cached)
+2025-12-27T14:58:21.0394011Z === RUN   TestHandlerReturnsVersionAndGitHash
+2025-12-27T14:58:21.0394753Z [GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+2025-12-27T14:58:21.0395478Z  - using env:	export GIN_MODE=release
+2025-12-27T14:58:21.0395985Z  - using code:	gin.SetMode(gin.ReleaseMode)
+2025-12-27T14:58:21.0396302Z 
+2025-12-27T14:58:21.0397103Z [GIN-debug] GET    /healthz                  --> github.com/layababa/tg_todo/server/internal/server/http/handlers/healthz.(*Handler).Handle-fm (1 handlers)
+2025-12-27T14:58:21.0398269Z --- PASS: TestHandlerReturnsVersionAndGitHash (0.00s)
+2025-12-27T14:58:21.0398826Z PASS
+2025-12-27T14:58:21.0399481Z ok  	github.com/layababa/tg_todo/server/internal/server/http/handlers/healthz	(cached)
+2025-12-27T14:58:21.0400246Z === RUN   TestListDatabasesHandler
+2025-12-27T14:58:21.0400722Z --- PASS: TestListDatabasesHandler (0.00s)
+2025-12-27T14:58:21.0401233Z === RUN   TestValidateDatabaseHandler
+2025-12-27T14:58:21.0401733Z --- PASS: TestValidateDatabaseHandler (0.00s)
+2025-12-27T14:58:21.0402189Z PASS
+2025-12-27T14:58:21.0402773Z ok  	github.com/layababa/tg_todo/server/internal/server/http/handlers/notion	(cached)
+2025-12-27T14:58:21.0899038Z === RUN   TestListTasksHandler
+2025-12-27T14:58:21.0899890Z --- PASS: TestListTasksHandler (0.00s)
+2025-12-27T14:58:21.0900368Z === RUN   TestGetTaskNotFound
+2025-12-27T14:58:21.0901215Z --- PASS: TestGetTaskNotFound (0.00s)
+2025-12-27T14:58:21.0902699Z === RUN   TestDeleteTaskFailure
+2025-12-27T14:58:21.0904635Z --- PASS: TestDeleteTaskFailure (0.00s)
+2025-12-27T14:58:21.0906091Z PASS
+2025-12-27T14:58:21.0907679Z ok  	github.com/layababa/tg_todo/server/internal/server/http/handlers/task	(cached)
+2025-12-27T14:58:21.7477507Z === RUN   TestHandleWebhook_MyChatMember_Added
+2025-12-27T14:58:21.7478331Z [GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+2025-12-27T14:58:21.7479031Z  - using env:	export GIN_MODE=release
+2025-12-27T14:58:21.7479425Z  - using code:	gin.SetMode(gin.ReleaseMode)
+2025-12-27T14:58:21.7479625Z 
+2025-12-27T14:58:21.7480601Z     logger.go:146: 2025-12-27T14:58:21.739Z	DEBUG	buildWebAppMarkup called	{"webAppURL": "", "buttonText": "⚙️ 高级设置", "startParam": "bind_200", "generatedURL": ""}
+2025-12-27T14:58:21.7481486Z     logger.go:146: 2025-12-27T14:58:21.739Z	WARN	buildWebAppMarkup returning nil because URL is empty
+2025-12-27T14:58:21.7482191Z     logger.go:146: 2025-12-27T14:58:21.739Z	DEBUG	sendMessage called	{"chatID": 200, "hasMarkup": true}
+2025-12-27T14:58:21.7484058Z [DEBUG] Telegram API sendMessage request: {"chat_id":200,"text":"👋 欢迎使用 Telegram To-Do 助手！\n\n📝 **如何创建任务**\n• 在群内 @ + 文本\n• 回复消息 + @\n• 使用 @ 提及成员可指派任务\n\n💡 输入 /help 查看更多功能","parse_mode":"HTML","reply_markup":null}
+2025-12-27T14:58:21.7484753Z --- PASS: TestHandleWebhook_MyChatMember_Added (0.00s)
+2025-12-27T14:58:21.7485224Z === RUN   TestHandleWebhook_Command_Start
+2025-12-27T14:58:21.7485913Z [GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+2025-12-27T14:58:21.7486595Z  - using env:	export GIN_MODE=release
+2025-12-27T14:58:21.7487064Z  - using code:	gin.SetMode(gin.ReleaseMode)
+2025-12-27T14:58:21.7487391Z 
+2025-12-27T14:58:21.7488735Z     logger.go:146: 2025-12-27T14:58:21.740Z	DEBUG	buildWebAppMarkup called	{"webAppURL": "", "buttonText": "打开 Mini App", "startParam": "", "generatedURL": ""}
+2025-12-27T14:58:21.7490241Z     logger.go:146: 2025-12-27T14:58:21.740Z	WARN	buildWebAppMarkup returning nil because URL is empty
+2025-12-27T14:58:21.7491500Z     logger.go:146: 2025-12-27T14:58:21.740Z	DEBUG	sendMessage called	{"chatID": 300, "hasMarkup": true}
+2025-12-27T14:58:21.7494079Z [DEBUG] Telegram API sendMessage request: {"chat_id":300,"text":"👋 欢迎使用 Telegram To-Do 助手！\n\n• 直接输入 /todo 或引用消息即可把任务保存到内置数据库\n• 随时打开 Mini App 管理我的待办、群组与设置\n• 需要同步 Notion 时再进入设置绑定即可\n• 输入 /help 查看所有指令与操作示例","parse_mode":"HTML","reply_markup":null}
+2025-12-27T14:58:21.7501598Z     logger.go:146: 2025-12-27T14:58:21.741Z	DEBUG	sendMessage called	{"chatID": 300, "hasMarkup": true}
+2025-12-27T14:58:21.7504874Z [DEBUG] Telegram API sendMessage request: {"chat_id":300,"text":"⚡️ 快捷操作：\n• 点 /todo 直接创建任务\n• 点 /settings 设置默认数据库\n• 点 /help 查看全部指令","parse_mode":"HTML","reply_markup":{"keyboard":[[{"text":"/todo"},{"text":"/settings"}],[{"text":"/help"},{"text":"/close"}]],"resize_keyboard":true,"one_time_keyboard":false}}
+2025-12-27T14:58:21.7506887Z --- PASS: TestHandleWebhook_Command_Start (0.00s)
+2025-12-27T14:58:21.7507461Z === RUN   TestShouldCreateTask
+2025-12-27T14:58:21.7508069Z === RUN   TestShouldCreateTask/群聊中_@Bot_应该创建任务
+2025-12-27T14:58:21.7508710Z === RUN   TestShouldCreateTask/群聊中回复消息且包含@应该创建任务
+2025-12-27T14:58:21.7509306Z === RUN   TestShouldCreateTask/私聊不应该创建任务
+2025-12-27T14:58:21.7509872Z     webhook_test.go:104: 
+2025-12-27T14:58:21.7511234Z         	Error Trace:	/home/runner/work/tg_todo/tg_todo/server/internal/server/http/handlers/telegram/webhook_test.go:104
+2025-12-27T14:58:21.7512221Z         	Error:      	Not equal: 
+2025-12-27T14:58:21.7512869Z         	            	expected: false
+2025-12-27T14:58:21.7513684Z         	            	actual  : true
+2025-12-27T14:58:21.7514499Z         	Test:       	TestShouldCreateTask/私聊不应该创建任务
+2025-12-27T14:58:21.7515149Z === RUN   TestShouldCreateTask/群聊中普通消息不应该创建任务
+2025-12-27T14:58:21.7515747Z === RUN   TestShouldCreateTask/空消息不应该创建任务
+2025-12-27T14:58:21.7516229Z --- FAIL: TestShouldCreateTask (0.00s)
+2025-12-27T14:58:21.7517250Z     --- PASS: TestShouldCreateTask/群聊中_@Bot_应该创建任务 (0.00s)
+2025-12-27T14:58:21.7518103Z     --- PASS: TestShouldCreateTask/群聊中回复消息且包含@应该创建任务 (0.00s)
+2025-12-27T14:58:21.7518862Z     --- FAIL: TestShouldCreateTask/私聊不应该创建任务 (0.00s)
+2025-12-27T14:58:21.7519628Z     --- PASS: TestShouldCreateTask/群聊中普通消息不应该创建任务 (0.00s)
+2025-12-27T14:58:21.7520432Z     --- PASS: TestShouldCreateTask/空消息不应该创建任务 (0.00s)
+2025-12-27T14:58:21.7520917Z FAIL
+2025-12-27T14:58:21.7521598Z FAIL	github.com/layababa/tg_todo/server/internal/server/http/handlers/telegram	0.009s
+2025-12-27T14:58:21.7522612Z ?   	github.com/layababa/tg_todo/server/internal/server/http/handlers/user	[no test files]
+2025-12-27T14:58:21.7523618Z === RUN   TestTelegramAuth_ValidInitData_NewUser
+2025-12-27T14:58:21.7524549Z     auth_test.go:101: Requires valid Telegram signature - covered in integration tests
+2025-12-27T14:58:21.7525333Z --- SKIP: TestTelegramAuth_ValidInitData_NewUser (0.00s)
+2025-12-27T14:58:21.7525938Z === RUN   TestTelegramAuth_MissingInitData
+2025-12-27T14:58:21.7526474Z --- PASS: TestTelegramAuth_MissingInitData (0.00s)
+2025-12-27T14:58:21.7527221Z === RUN   TestTelegramAuth_ExistingUser
+2025-12-27T14:58:21.7527736Z --- PASS: TestTelegramAuth_ExistingUser (0.00s)
+2025-12-27T14:58:21.7528223Z === RUN   TestBuildUserName
+2025-12-27T14:58:21.7528651Z === RUN   TestBuildUserName/First_and_Last_name
+2025-12-27T14:58:21.7529141Z === RUN   TestBuildUserName/First_name_only
+2025-12-27T14:58:21.7529633Z === RUN   TestBuildUserName/Username_only
+2025-12-27T14:58:21.7530128Z === RUN   TestBuildUserName/Fallback_to_User
+2025-12-27T14:58:21.7530610Z --- PASS: TestBuildUserName (0.00s)
+2025-12-27T14:58:21.7531247Z     --- PASS: TestBuildUserName/First_and_Last_name (0.00s)
+2025-12-27T14:58:21.7531946Z     --- PASS: TestBuildUserName/First_name_only (0.00s)
+2025-12-27T14:58:21.7532602Z     --- PASS: TestBuildUserName/Username_only (0.00s)
+2025-12-27T14:58:21.7533252Z     --- PASS: TestBuildUserName/Fallback_to_User (0.00s)
+2025-12-27T14:58:21.7533986Z === RUN   TestGetUserFromContext
+2025-12-27T14:58:21.7534505Z === RUN   TestGetUserFromContext/user_exists_in_context
+2025-12-27T14:58:21.7535146Z === RUN   TestGetUserFromContext/user_does_not_exist_in_context
+2025-12-27T14:58:21.7535797Z === RUN   TestGetUserFromContext/wrong_type_in_context
+2025-12-27T14:58:21.7536348Z --- PASS: TestGetUserFromContext (0.00s)
+2025-12-27T14:58:21.7537075Z     --- PASS: TestGetUserFromContext/user_exists_in_context (0.00s)
+2025-12-27T14:58:21.7538036Z     --- PASS: TestGetUserFromContext/user_does_not_exist_in_context (0.00s)
+2025-12-27T14:58:21.7538935Z     --- PASS: TestGetUserFromContext/wrong_type_in_context (0.00s)
+2025-12-27T14:58:21.7539549Z === RUN   TestTelegramAuth_DatabaseError
+2025-12-27T14:58:21.7540063Z --- PASS: TestTelegramAuth_DatabaseError (0.00s)
+2025-12-27T14:58:21.7540608Z === RUN   TestTelegramAuth_UserCreationError
+2025-12-27T14:58:21.7541158Z --- PASS: TestTelegramAuth_UserCreationError (0.00s)
+2025-12-27T14:58:21.7541742Z === RUN   TestRecoveryMiddlewareReturnsJSONError
+2025-12-27T14:58:21.7559563Z     logger.go:146: 2025-12-27T13:08:39.579Z	ERROR	Panic recovered	{"error": "boom", "request_id": "req-123", "stack": "github.com/layababa/tg_todo/server/internal/server/http/middleware_test.TestRecoveryMiddlewareReturnsJSONError.Recovery.func3.1\n\t/home/runner/work/tg_todo/tg_todo/server/internal/server/http/middleware/recovery.go:22\nruntime.gopanic\n\t/home/runner/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.24.10.linux-amd64/src/runtime/panic.go:792\ngithub.com/layababa/tg_todo/server/internal/server/http/middleware_test.TestRecoveryMiddlewareReturnsJSONError.func1\n\t/home/runner/work/tg_todo/tg_todo/server/internal/server/http/middleware/recovery_test.go:24\ngithub.com/gin-gonic/gin.(*Context).Next\n\t/home/runner/go/pkg/mod/github.com/gin-gonic/gin@v1.10.0/context.go:185\ngithub.com/layababa/tg_todo/server/internal/server/http/middleware_test.TestRecoveryMiddlewareReturnsJSONError.Recovery.func3\n\t/home/runner/work/tg_todo/tg_todo/server/internal/server/http/middleware/recovery.go:43\ngithub.com/gin-gonic/gin.(*Context).Next\n\t/home/runner/go/pkg/mod/github.com/gin-gonic/gin@v1.10.0/context.go:185\ngithub.com/layababa/tg_todo/server/internal/server/http/middleware_test.TestRecoveryMiddlewareReturnsJSONError.RequestID.func2\n\t/home/runner/work/tg_todo/tg_todo/server/internal/server/http/middleware/request_id.go:18\ngithub.com/gin-gonic/gin.(*Context).Next\n\t/home/runner/go/pkg/mod/github.com/gin-gonic/gin@v1.10.0/context.go:185\ngithub.com/gin-gonic/gin.(*Engine).handleHTTPRequest\n\t/home/runner/go/pkg/mod/github.com/gin-gonic/gin@v1.10.0/gin.go:633\ngithub.com/gin-gonic/gin.(*Engine).ServeHTTP\n\t/home/runner/go/pkg/mod/github.com/gin-gonic/gin@v1.10.0/gin.go:589\ngithub.com/layababa/tg_todo/server/internal/server/http/middleware_test.TestRecoveryMiddlewareReturnsJSONError\n\t/home/runner/work/tg_todo/tg_todo/server/internal/server/http/middleware/recovery_test.go:31\ntesting.tRunner\n\t/home/runner/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.24.10.linux-amd64/src/testing/testing.go:1792"}
+2025-12-27T14:58:21.7573756Z --- PASS: TestRecoveryMiddlewareReturnsJSONError (0.00s)
+2025-12-27T14:58:21.7574289Z PASS
+2025-12-27T14:58:21.7574831Z ok  	github.com/layababa/tg_todo/server/internal/server/http/middleware	(cached)
+2025-12-27T14:58:21.7575525Z === RUN   TestBindDatabase_Success
+2025-12-27T14:58:21.7575996Z --- PASS: TestBindDatabase_Success (0.00s)
+2025-12-27T14:58:21.7576484Z === RUN   TestBindDatabase_NotAdmin
+2025-12-27T14:58:21.7576943Z --- PASS: TestBindDatabase_NotAdmin (0.00s)
+2025-12-27T14:58:21.7577431Z === RUN   TestListGroups_ReturnsSummaries
+2025-12-27T14:58:21.7578005Z --- PASS: TestListGroups_ReturnsSummaries (0.00s)
+2025-12-27T14:58:21.7578551Z === RUN   TestValidateDatabase_ChecksAdmin
+2025-12-27T14:58:21.7579082Z --- PASS: TestValidateDatabase_ChecksAdmin (0.00s)
+2025-12-27T14:58:21.7579597Z === RUN   TestInitDatabase_RequiresAdmin
+2025-12-27T14:58:21.7580086Z --- PASS: TestInitDatabase_RequiresAdmin (0.00s)
+2025-12-27T14:58:21.7580543Z PASS
+2025-12-27T14:58:21.7581038Z ok  	github.com/layababa/tg_todo/server/internal/service/group	(cached)
+2025-12-27T14:58:21.7581944Z ?   	github.com/layababa/tg_todo/server/internal/service/notification	[no test files]
+2025-12-27T14:58:21.7650877Z === RUN   TestListDatabases
+2025-12-27T14:58:21.7651684Z --- PASS: TestListDatabases (0.00s)
+2025-12-27T14:58:21.7652518Z === RUN   TestValidateDatabase_Valid
+2025-12-27T14:58:21.7653028Z --- PASS: TestValidateDatabase_Valid (0.00s)
+2025-12-27T14:58:21.7653720Z === RUN   TestValidateDatabase_Invalid
+2025-12-27T14:58:21.7654241Z --- PASS: TestValidateDatabase_Invalid (0.00s)
+2025-12-27T14:58:21.7654743Z === RUN   TestInitializeDatabase_NoMissing
+2025-12-27T14:58:21.7655263Z --- PASS: TestInitializeDatabase_NoMissing (0.00s)
+2025-12-27T14:58:21.7655811Z === RUN   TestInitializeDatabase_CreatesMissing
+2025-12-27T14:58:21.7656395Z --- PASS: TestInitializeDatabase_CreatesMissing (0.00s)
+2025-12-27T14:58:21.7656885Z PASS
+2025-12-27T14:58:21.7657409Z ok  	github.com/layababa/tg_todo/server/internal/service/notion	(cached)
+2025-12-27T14:58:21.7658222Z ?   	github.com/layababa/tg_todo/server/internal/service/poller	[no test files]
+2025-12-27T14:58:21.7659106Z ?   	github.com/layababa/tg_todo/server/internal/service/scheduler	[no test files]
+2025-12-27T14:58:21.7903635Z === RUN   TestCreatorCreateTaskAddsCreatorAndMentions
+2025-12-27T14:58:21.7904431Z === PAUSE TestCreatorCreateTaskAddsCreatorAndMentions
+2025-12-27T14:58:21.7904974Z === RUN   TestCreatorCreateTaskIgnoresUnknownMentions
+2025-12-27T14:58:21.7905636Z === PAUSE TestCreatorCreateTaskIgnoresUnknownMentions
+2025-12-27T14:58:21.7906441Z === RUN   TestCreatorCreateTaskFailsWhenCreatorLookupFails
+2025-12-27T14:58:21.7907187Z === PAUSE TestCreatorCreateTaskFailsWhenCreatorLookupFails
+2025-12-27T14:58:21.7907904Z === RUN   TestParseCommandRemovesTodoPrefixAndMentions
+2025-12-27T14:58:21.7908641Z === PAUSE TestParseCommandRemovesTodoPrefixAndMentions
+2025-12-27T14:58:21.7909251Z === RUN   TestListTasksDelegatesToRepository
+2025-12-27T14:58:21.7910060Z --- PASS: TestListTasksDelegatesToRepository (0.00s)
+2025-12-27T14:58:21.7910610Z === RUN   TestGetTaskUsesRepository
+2025-12-27T14:58:21.7911099Z --- PASS: TestGetTaskUsesRepository (0.00s)
+2025-12-27T14:58:21.7911577Z === RUN   TestDeleteTaskChecksExistence
+2025-12-27T14:58:21.7912081Z --- PASS: TestDeleteTaskChecksExistence (0.00s)
+2025-12-27T14:58:21.7912576Z === RUN   TestDeleteTaskWhenMissing
+2025-12-27T14:58:21.7913049Z --- PASS: TestDeleteTaskWhenMissing (0.00s)
+2025-12-27T14:58:21.7913712Z === RUN   TestSyncToNotion_Create
+2025-12-27T14:58:21.7914165Z --- PASS: TestSyncToNotion_Create (0.00s)
+2025-12-27T14:58:21.7914639Z === RUN   TestSyncToNotion_Update
+2025-12-27T14:58:21.7915092Z --- PASS: TestSyncToNotion_Update (0.00s)
+2025-12-27T14:58:21.7915643Z === RUN   TestSyncTaskFromNotion_DeletesArchived
+2025-12-27T14:58:21.7916266Z --- PASS: TestSyncTaskFromNotion_DeletesArchived (0.00s)
+2025-12-27T14:58:21.7916877Z === RUN   TestSyncTaskFromNotion_IgnoresUnknownArchived
+2025-12-27T14:58:21.7917526Z --- PASS: TestSyncTaskFromNotion_IgnoresUnknownArchived (0.00s)
+2025-12-27T14:58:21.7918465Z === CONT  TestCreatorCreateTaskAddsCreatorAndMentions
+2025-12-27T14:58:21.7919159Z === CONT  TestCreatorCreateTaskFailsWhenCreatorLookupFails
+2025-12-27T14:58:21.7919936Z --- PASS: TestCreatorCreateTaskFailsWhenCreatorLookupFails (0.00s)
+2025-12-27T14:58:21.7920678Z === CONT  TestParseCommandRemovesTodoPrefixAndMentions
+2025-12-27T14:58:21.7921383Z --- PASS: TestParseCommandRemovesTodoPrefixAndMentions (0.00s)
+2025-12-27T14:58:21.7922055Z === CONT  TestCreatorCreateTaskIgnoresUnknownMentions
+2025-12-27T14:58:21.7922762Z --- PASS: TestCreatorCreateTaskIgnoresUnknownMentions (0.00s)
+2025-12-27T14:58:21.7923667Z --- PASS: TestCreatorCreateTaskAddsCreatorAndMentions (0.00s)
+2025-12-27T14:58:21.7924199Z PASS
+2025-12-27T14:58:21.7924684Z ok  	github.com/layababa/tg_todo/server/internal/service/task	(cached)
+2025-12-27T14:58:21.7925493Z ?   	github.com/layababa/tg_todo/server/internal/service/telegram	[no test files]
+2025-12-27T14:58:21.7926182Z === RUN   TestRunReturnsErrorWhenDBNil
+2025-12-27T14:58:21.7926695Z --- PASS: TestRunReturnsErrorWhenDBNil (0.00s)
+2025-12-27T14:58:21.7927208Z === RUN   TestEmbeddedFilesAvailable
+2025-12-27T14:58:21.7927707Z --- PASS: TestEmbeddedFilesAvailable (0.00s)
+2025-12-27T14:58:21.7928135Z PASS
+2025-12-27T14:58:21.7928545Z ok  	github.com/layababa/tg_todo/server/migrations	(cached)
+2025-12-27T14:58:21.7929070Z === RUN   TestEncryptDecrypt
+2025-12-27T14:58:21.7929490Z === RUN   TestEncryptDecrypt/simple_text
+2025-12-27T14:58:21.7929965Z === RUN   TestEncryptDecrypt/notion_token
+2025-12-27T14:58:21.7930426Z === RUN   TestEncryptDecrypt/long_text
+2025-12-27T14:58:21.7930887Z === RUN   TestEncryptDecrypt/unicode_text
+2025-12-27T14:58:21.7931364Z === RUN   TestEncryptDecrypt/empty_string
+2025-12-27T14:58:21.7931822Z --- PASS: TestEncryptDecrypt (0.00s)
+2025-12-27T14:58:21.7932409Z     --- PASS: TestEncryptDecrypt/simple_text (0.00s)
+2025-12-27T14:58:21.7933088Z     --- PASS: TestEncryptDecrypt/notion_token (0.00s)
+2025-12-27T14:58:21.7933920Z     --- PASS: TestEncryptDecrypt/long_text (0.00s)
+2025-12-27T14:58:21.7934578Z     --- PASS: TestEncryptDecrypt/unicode_text (0.00s)
+2025-12-27T14:58:21.7935230Z     --- PASS: TestEncryptDecrypt/empty_string (0.00s)
+2025-12-27T14:58:21.7935739Z === RUN   TestEncrypt_DifferentKeys
+2025-12-27T14:58:21.7936205Z --- PASS: TestEncrypt_DifferentKeys (0.00s)
+2025-12-27T14:58:21.7936682Z === RUN   TestEncrypt_InvalidKey
+2025-12-27T14:58:21.7937139Z === RUN   TestEncrypt_InvalidKey/too_short_key
+2025-12-27T14:58:21.7937637Z === RUN   TestEncrypt_InvalidKey/too_long_key
+2025-12-27T14:58:21.7938158Z === RUN   TestEncrypt_InvalidKey/invalid_base64
+2025-12-27T14:58:21.7938661Z --- PASS: TestEncrypt_InvalidKey (0.00s)
+2025-12-27T14:58:21.7939385Z     --- PASS: TestEncrypt_InvalidKey/too_short_key (0.00s)
+2025-12-27T14:58:21.7940073Z     --- PASS: TestEncrypt_InvalidKey/too_long_key (0.00s)
+2025-12-27T14:58:21.7940956Z     --- PASS: TestEncrypt_InvalidKey/invalid_base64 (0.00s)
+2025-12-27T14:58:21.7941507Z === RUN   TestDecrypt_InvalidCiphertext
+2025-12-27T14:58:21.7942029Z === RUN   TestDecrypt_InvalidCiphertext/invalid_base64
+2025-12-27T14:58:21.7942663Z === RUN   TestDecrypt_InvalidCiphertext/too_short_ciphertext
+2025-12-27T14:58:21.7943485Z === RUN   TestDecrypt_InvalidCiphertext/corrupted_ciphertext
+2025-12-27T14:58:21.7944111Z === RUN   TestDecrypt_InvalidCiphertext/empty_string
+2025-12-27T14:58:21.7944656Z --- PASS: TestDecrypt_InvalidCiphertext (0.00s)
+2025-12-27T14:58:21.7945371Z     --- PASS: TestDecrypt_InvalidCiphertext/invalid_base64 (0.00s)
+2025-12-27T14:58:21.7946215Z     --- PASS: TestDecrypt_InvalidCiphertext/too_short_ciphertext (0.00s)
+2025-12-27T14:58:21.7947093Z     --- PASS: TestDecrypt_InvalidCiphertext/corrupted_ciphertext (0.00s)
+2025-12-27T14:58:21.7947910Z     --- PASS: TestDecrypt_InvalidCiphertext/empty_string (0.00s)
+2025-12-27T14:58:21.7948462Z === RUN   TestEncrypt_Determinism
+2025-12-27T14:58:21.7948917Z --- PASS: TestEncrypt_Determinism (0.00s)
+2025-12-27T14:58:21.7949566Z === RUN   TestGenerateKey
+2025-12-27T14:58:21.7949946Z --- PASS: TestGenerateKey (0.00s)
+2025-12-27T14:58:21.7950320Z PASS
+2025-12-27T14:58:21.7950743Z ok  	github.com/layababa/tg_todo/server/pkg/crypto	(cached)
+2025-12-27T14:58:21.7994068Z ?   	github.com/layababa/tg_todo/server/pkg/db	[no test files]
+2025-12-27T14:58:21.8197404Z === RUN   TestGenerateAuthURL
+2025-12-27T14:58:21.8197947Z --- PASS: TestGenerateAuthURL (0.00s)
+2025-12-27T14:58:21.8198412Z === RUN   TestExchangeCode_Success
+2025-12-27T14:58:21.8198850Z --- PASS: TestExchangeCode_Success (0.16s)
+2025-12-27T14:58:21.8199333Z === RUN   TestExchangeCode_ParseResponse
+2025-12-27T14:58:21.8199841Z --- PASS: TestExchangeCode_ParseResponse (0.00s)
+2025-12-27T14:58:21.8200306Z === RUN   TestOAuthConfig
+2025-12-27T14:58:21.8200679Z --- PASS: TestOAuthConfig (0.00s)
+2025-12-27T14:58:21.8201047Z PASS
+2025-12-27T14:58:21.8201464Z ok  	github.com/layababa/tg_todo/server/pkg/notion	(cached)
+2025-12-27T14:58:21.8202175Z ?   	github.com/layababa/tg_todo/server/pkg/redis	[no test files]
+2025-12-27T14:58:21.8202907Z ?   	github.com/layababa/tg_todo/server/pkg/security	[no test files]
+2025-12-27T14:58:21.8203716Z === RUN   TestParseInitData
+2025-12-27T14:58:21.8204172Z === RUN   TestParseInitData/valid_init_data_with_user
+2025-12-27T14:58:21.8204761Z === RUN   TestParseInitData/valid_init_data_with_start_param
+2025-12-27T14:58:21.8205331Z === RUN   TestParseInitData/invalid_URL_encoding
+2025-12-27T14:58:21.8205842Z === RUN   TestParseInitData/invalid_auth_date
+2025-12-27T14:58:21.8206327Z === RUN   TestParseInitData/invalid_user_JSON
+2025-12-27T14:58:21.8206802Z --- PASS: TestParseInitData (0.00s)
+2025-12-27T14:58:21.8207466Z     --- PASS: TestParseInitData/valid_init_data_with_user (0.00s)
+2025-12-27T14:58:21.8208293Z     --- PASS: TestParseInitData/valid_init_data_with_start_param (0.00s)
+2025-12-27T14:58:21.8209086Z     --- PASS: TestParseInitData/invalid_URL_encoding (0.00s)
+2025-12-27T14:58:21.8209786Z     --- PASS: TestParseInitData/invalid_auth_date (0.00s)
+2025-12-27T14:58:21.8210444Z     --- PASS: TestParseInitData/invalid_user_JSON (0.00s)
+2025-12-27T14:58:21.8210943Z === RUN   TestInitData_Validate
+2025-12-27T14:58:21.8211388Z === RUN   TestInitData_Validate/missing_hash
+2025-12-27T14:58:21.8211880Z === RUN   TestInitData_Validate/invalid_signature
+2025-12-27T14:58:21.8212378Z === RUN   TestInitData_Validate/valid_signature
+2025-12-27T14:58:21.8212861Z --- PASS: TestInitData_Validate (0.00s)
+2025-12-27T14:58:21.8213677Z     --- PASS: TestInitData_Validate/missing_hash (0.00s)
+2025-12-27T14:58:21.8214372Z     --- PASS: TestInitData_Validate/invalid_signature (0.00s)
+2025-12-27T14:58:21.8215073Z     --- PASS: TestInitData_Validate/valid_signature (0.00s)
+2025-12-27T14:58:21.8215592Z === RUN   TestInitData_IsExpired
+2025-12-27T14:58:21.8216071Z === RUN   TestInitData_IsExpired/not_expired_-_recent
+2025-12-27T14:58:21.8216594Z === RUN   TestInitData_IsExpired/expired_-_old
+2025-12-27T14:58:21.8217425Z === RUN   TestInitData_IsExpired/expired_-_zero_auth_date
+2025-12-27T14:58:21.8218090Z === RUN   TestInitData_IsExpired/not_expired_-_just_under_threshold
+2025-12-27T14:58:21.8218694Z --- PASS: TestInitData_IsExpired (0.00s)
+2025-12-27T14:58:21.8219397Z     --- PASS: TestInitData_IsExpired/not_expired_-_recent (0.00s)
+2025-12-27T14:58:21.8220143Z     --- PASS: TestInitData_IsExpired/expired_-_old (0.00s)
+2025-12-27T14:58:21.8220914Z     --- PASS: TestInitData_IsExpired/expired_-_zero_auth_date (0.00s)
+2025-12-27T14:58:21.8221834Z     --- PASS: TestInitData_IsExpired/not_expired_-_just_under_threshold (0.00s)
+2025-12-27T14:58:21.8222488Z === RUN   TestBuildDataCheckString
+2025-12-27T14:58:21.8222969Z === RUN   TestBuildDataCheckString/simple_sorted
+2025-12-27T14:58:21.8223708Z === RUN   TestBuildDataCheckString/hash_is_excluded
+2025-12-27T14:58:21.8224277Z === RUN   TestBuildDataCheckString/single_parameter
+2025-12-27T14:58:21.8224807Z --- PASS: TestBuildDataCheckString (0.00s)
+2025-12-27T14:58:21.8225557Z     --- PASS: TestBuildDataCheckString/simple_sorted (0.00s)
+2025-12-27T14:58:21.8226541Z     --- PASS: TestBuildDataCheckString/hash_is_excluded (0.00s)
+2025-12-27T14:58:21.8227304Z     --- PASS: TestBuildDataCheckString/single_parameter (0.00s)
+2025-12-27T14:58:21.8227853Z === RUN   TestComputeSecretKey
+2025-12-27T14:58:21.8228279Z --- PASS: TestComputeSecretKey (0.00s)
+2025-12-27T14:58:21.8228723Z === RUN   TestComputeHash
+2025-12-27T14:58:21.8229112Z --- PASS: TestComputeHash (0.00s)
+2025-12-27T14:58:21.8229484Z PASS
+2025-12-27T14:58:21.8229931Z ok  	github.com/layababa/tg_todo/server/pkg/telegramauth	(cached)
+2025-12-27T14:58:21.8230452Z FAIL
+2025-12-27T14:58:21.8456615Z ##[error]Process completed with exit code 1.
