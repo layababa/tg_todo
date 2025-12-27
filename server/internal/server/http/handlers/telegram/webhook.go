@@ -811,17 +811,10 @@ func (h *Handler) shouldCreateTask(msg *Message) bool {
 		botMentioned = strings.Contains(text, "@"+h.botUsername)
 	}
 
-	// Case 1: @Bot + text (direct mention)
-	if botMentioned {
-		return true
-	}
-
-	// Case 2: Reply + @ (any mention in reply)
-	if msg.ReplyToMessage != nil && strings.Contains(text, "@") {
-		return true
-	}
-
-	return false
+	// For group chats, bot must be explicitly mentioned either in the message itself
+	// or specifically requested in a reply.
+	// PRD Story S1/S2 requires @Bot mention.
+	return botMentioned
 }
 
 func extractCommand(text string) (string, []string) {

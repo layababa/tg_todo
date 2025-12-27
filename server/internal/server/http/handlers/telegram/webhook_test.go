@@ -32,7 +32,7 @@ func TestShouldCreateTask(t *testing.T) {
 			expected: true,
 		},
 		{
-			name: "群聊中回复消息且包含@应该创建任务",
+			name: "群聊中回复消息且不包含当前Bot提及不应该创建任务",
 			msg: &Message{
 				Chat: struct {
 					ID    int64  `json:"id"`
@@ -43,6 +43,26 @@ func TestShouldCreateTask(t *testing.T) {
 					Type: "group",
 				},
 				Text: "@user 处理这个",
+				ReplyToMessage: &struct {
+					MessageID int64 `json:"message_id"`
+				}{
+					MessageID: 999,
+				},
+			},
+			expected: false,
+		},
+		{
+			name: "群聊中回复消息且包含当前Bot提及应该创建任务",
+			msg: &Message{
+				Chat: struct {
+					ID    int64  `json:"id"`
+					Type  string `json:"type"`
+					Title string `json:"title"`
+				}{
+					ID:   -123456,
+					Type: "group",
+				},
+				Text: "@test_bot @user 处理这个",
 				ReplyToMessage: &struct {
 					MessageID int64 `json:"message_id"`
 				}{
