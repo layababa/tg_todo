@@ -80,17 +80,23 @@ const (
 )
 
 type sendMessageReq struct {
-	ChatID      int64       `json:"chat_id"`
-	Text        string      `json:"text"`
-	ParseMode   string      `json:"parse_mode,omitempty"`
-	ReplyMarkup interface{} `json:"reply_markup,omitempty"`
+	ChatID           int64       `json:"chat_id"`
+	Text             string      `json:"text"`
+	ParseMode        string      `json:"parse_mode,omitempty"`
+	ReplyMarkup      interface{} `json:"reply_markup,omitempty"`
+	ReplyToMessageID int64       `json:"reply_to_message_id,omitempty"`
 }
 
 func (c *Client) SendMessage(chatID int64, text string) error {
+	return c.SendMessageWithReply(chatID, text, 0)
+}
+
+func (c *Client) SendMessageWithReply(chatID int64, text string, replyToID int64) error {
 	return c.sendJSON("sendMessage", sendMessageReq{
-		ChatID:    chatID,
-		Text:      text,
-		ParseMode: "HTML",
+		ChatID:           chatID,
+		Text:             text,
+		ParseMode:        "HTML",
+		ReplyToMessageID: replyToID,
 	})
 }
 
@@ -105,11 +111,16 @@ func (c *Client) SendMessageWithButtons(chatID int64, text string, markup Inline
 }
 
 func (c *Client) SendMessageWithMarkup(chatID int64, text string, markup interface{}) error {
+	return c.SendMessageWithMarkupAndReply(chatID, text, markup, 0)
+}
+
+func (c *Client) SendMessageWithMarkupAndReply(chatID int64, text string, markup interface{}, replyToID int64) error {
 	return c.sendJSON("sendMessage", sendMessageReq{
-		ChatID:      chatID,
-		Text:        text,
-		ParseMode:   "HTML",
-		ReplyMarkup: markup,
+		ChatID:           chatID,
+		Text:             text,
+		ParseMode:        "HTML",
+		ReplyMarkup:      markup,
+		ReplyToMessageID: replyToID,
 	})
 }
 
@@ -219,6 +230,9 @@ func (c *Client) sendJSON(method string, payload interface{}) error {
 	defer resp.Body.Close()
 
 	respBody, _ := io.ReadAll(resp.Body)
+	// Debug: log the response
+	fmt.Printf("[DEBUG] Telegram API %s response (Status %d): %s\n", method, resp.StatusCode, string(respBody))
+
 	if resp.StatusCode != http.StatusOK {
 		bodyPreview := strings.TrimSpace(string(respBody))
 		if len(bodyPreview) > 200 {
