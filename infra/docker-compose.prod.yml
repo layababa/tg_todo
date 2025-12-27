@@ -44,7 +44,7 @@ services:
     container_name: tg_todo_prod_web
     restart: unless-stopped
     ports:
-      - "4173:80"
+      - "5173:80"
     depends_on:
       - api
 
