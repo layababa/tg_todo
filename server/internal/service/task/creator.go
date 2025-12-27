@@ -22,6 +22,7 @@ type Creator struct {
 	updateRepo  repository.TelegramUpdateRepository
 	userRepo    repository.UserRepository
 	groupRepo   repository.GroupRepository
+	pendingRepo repository.PendingAssignmentRepository
 }
 
 // CreatorConfig holds configuration for Creator
@@ -32,6 +33,7 @@ type CreatorConfig struct {
 	UpdateRepo  repository.TelegramUpdateRepository
 	UserRepo    repository.UserRepository
 	GroupRepo   repository.GroupRepository
+	PendingRepo repository.PendingAssignmentRepository
 }
 
 // NewCreator creates a new task creator
@@ -43,6 +45,7 @@ func NewCreator(cfg CreatorConfig) *Creator {
 		updateRepo:  cfg.UpdateRepo,
 		userRepo:    cfg.UserRepo,
 		groupRepo:   cfg.GroupRepo,
+		pendingRepo: cfg.PendingRepo,
 	}
 }
 
@@ -57,11 +60,11 @@ type CreateInput struct {
 }
 
 // CreateTask creates a task from telegram input
-func (c *Creator) CreateTask(ctx context.Context, input CreateInput) (*repository.Task, error) {
+func (c *Creator) CreateTask(ctx context.Context, input CreateInput) (*repository.Task, []string, error) {
 	// 1. Find or Create Creator User
 	creator, err := c.userRepo.FindByTgID(ctx, input.CreatorID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get creator: %w", err)
+		return nil, nil, fmt.Errorf("failed to get creator: %w", err)
 	}
 
 	// 2. Parse Text (Title & Assignees)
@@ -69,8 +72,7 @@ func (c *Creator) CreateTask(ctx context.Context, input CreateInput) (*repositor
 
 	// 3. Resolve Assignees
 	var assignees []models.User
-	// Always assign to creator
-	assignees = append(assignees, *creator)
+	var pendingAssignees []string
 
 	for _, name := range assigneeNames {
 		// Remove @ prefix
@@ -78,11 +80,17 @@ func (c *Creator) CreateTask(ctx context.Context, input CreateInput) (*repositor
 		user, err := c.userRepo.GetByUsername(ctx, username)
 		if err != nil {
 			c.logger.Warn("failed to find assignee", zap.String("username", username), zap.Error(err))
+			pendingAssignees = append(pendingAssignees, name)
 			continue
 		}
-		if user != nil && user.ID != creator.ID {
+		if user != nil {
 			assignees = append(assignees, *user)
 		}
+	}
+
+	// 78. Fallback: If no assignees (and no pending), assign to creator
+	if len(assignees) == 0 && len(pendingAssignees) == 0 {
+		assignees = append(assignees, *creator)
 	}
 
 	// 4. Capture Context (Last 10 messages)
@@ -159,7 +167,7 @@ func (c *Creator) CreateTask(ctx context.Context, input CreateInput) (*repositor
 	}
 
 	if err := c.taskRepo.Create(ctx, task); err != nil {
-		return nil, fmt.Errorf("failed to create task: %w", err)
+		return nil, nil, fmt.Errorf("failed to create task: %w", err)
 	}
 
 	// 7. Sync to Notion
@@ -176,7 +184,22 @@ func (c *Creator) CreateTask(ctx context.Context, input CreateInput) (*repositor
 			zap.Any("database_id", databaseID))
 	}
 
-	return task, nil
+	// 7. Store Pending Assignments
+	if len(pendingAssignees) > 0 && c.pendingRepo != nil {
+		for _, name := range pendingAssignees {
+			username := strings.TrimPrefix(name, "@")
+			pa := &models.PendingAssignment{
+				TaskID:     task.ID,
+				TgUsername: username,
+			}
+			if err := c.pendingRepo.Create(ctx, pa); err != nil {
+				c.logger.Error("failed to create pending assignment", zap.String("username", username), zap.Error(err))
+				// We don't fail the task creation, just log error
+			}
+		}
+	}
+
+	return task, pendingAssignees, nil
 }
 
 func (c *Creator) generateJumpURL(chatID int64, messageID int64) string {

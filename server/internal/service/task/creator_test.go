@@ -17,7 +17,7 @@ import (
 	pkgnotion "github.com/layababa/tg_todo/server/pkg/notion"
 )
 
-func TestCreatorCreateTaskAddsCreatorAndMentions(t *testing.T) {
+func TestCreatorCreateTaskAssignsToMentionedUserOnly(t *testing.T) {
 	t.Parallel()
 
 	mockTaskRepo := &mockTaskRepo{}
@@ -53,7 +53,7 @@ func TestCreatorCreateTaskAddsCreatorAndMentions(t *testing.T) {
 		Text:      "/todo 修复Webhook @alice",
 	}
 
-	taskEntity, err := creator.CreateTask(context.Background(), taskInput)
+	taskEntity, _, err := creator.CreateTask(context.Background(), taskInput)
 	require.NoError(t, err)
 	require.NotNil(t, taskEntity)
 	require.Len(t, mockTaskRepo.createdTasks, 1)
@@ -64,9 +64,9 @@ func TestCreatorCreateTaskAddsCreatorAndMentions(t *testing.T) {
 	assert.Equal(t, repository.TaskSyncStatusPending, created.SyncStatus)
 	require.NotNil(t, created.CreatorID)
 	assert.Equal(t, "creator-uuid", *created.CreatorID)
-	assert.Len(t, created.Assignees, 2)
-	assert.Equal(t, "creator-uuid", created.Assignees[0].ID)
-	assert.Equal(t, "alice-uuid", created.Assignees[1].ID)
+	// ONLY Alice should be assigned
+	assert.Len(t, created.Assignees, 1)
+	assert.Equal(t, "alice-uuid", created.Assignees[0].ID)
 	assert.Empty(t, created.Snapshots)
 }
 
@@ -96,18 +96,18 @@ func TestCreatorCreateTaskIgnoresUnknownMentions(t *testing.T) {
 		GroupRepo:   &mockGroupRepo{},
 	})
 
-	_, err := creator.CreateTask(context.Background(), CreateInput{
+	_, missing, err := creator.CreateTask(context.Background(), CreateInput{
 		ChatID:    -1001,
 		CreatorID: 111,
 		Text:      "记录bug @missing",
 	})
 	require.NoError(t, err)
+	assert.Contains(t, missing, "@missing")
 
 	require.Len(t, mockTaskRepo.createdTasks, 1)
 	created := mockTaskRepo.createdTasks[0]
 	assert.Equal(t, "记录bug", created.Title)
-	require.Len(t, created.Assignees, 1)
-	assert.Equal(t, "creator-uuid", created.Assignees[0].ID)
+	require.Len(t, created.Assignees, 0) // No assignees, only pending
 }
 
 func TestCreatorCreateTaskFailsWhenCreatorLookupFails(t *testing.T) {
@@ -127,7 +127,7 @@ func TestCreatorCreateTaskFailsWhenCreatorLookupFails(t *testing.T) {
 		GroupRepo:   &mockGroupRepo{},
 	})
 
-	_, err := creator.CreateTask(context.Background(), CreateInput{
+	_, _, err := creator.CreateTask(context.Background(), CreateInput{
 		ChatID:    1,
 		CreatorID: 999,
 		Text:      "/todo nothing",

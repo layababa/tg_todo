@@ -212,10 +212,12 @@ func main() {
 	notificationService := notification.NewService(logger, taskRepo, userRepo, tgClient, cfg.Telegram.BotName, cfg.Telegram.AppShortName)
 
 	// -- Task Service (Injects Notification Service)
+	pendingRepo := repository.NewPendingAssignmentRepository(gormDB)
 	taskService := task.NewService(task.ServiceConfig{
 		Logger:        logger,
 		Repo:          taskRepo,
 		UserRepo:      userRepo,
+		PendingRepo:   pendingRepo,
 		Notifier:      notificationService,
 		EncryptionKey: cfg.Encryption.Key,
 	})
@@ -272,6 +274,7 @@ func main() {
 		UpdateRepo:  tgUpdateRepo,
 		UserRepo:    userRepo,
 		GroupRepo:   groupRepo,
+		PendingRepo: pendingRepo,
 	})
 	deduplicator := telegram.NewDeduplicator(rdb)
 

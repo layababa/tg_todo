@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"regexp"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -293,7 +294,18 @@ func (h *Handler) HandleWebhook(c *gin.Context) {
 			return
 		}
 
-		cmd, args := extractCommand(msg.Text)
+		cmd, target, args := extractCommand(msg.Text)
+
+		// Check target (if command targeting is used)
+		if target != "" && h.botUsername != "" {
+			if !strings.EqualFold(target, h.botUsername) {
+				// Command meant for another bot
+				h.logger.Debug("ignoring command for another bot", zap.String("cmd", cmd), zap.String("target", target))
+				c.Status(http.StatusOK)
+				return
+			}
+		}
+
 		switch cmd {
 		case "/start":
 			h.handleStart(ctx, msg.Chat.ID, msg.MessageThreadID, args)
@@ -307,6 +319,7 @@ func (h *Handler) HandleWebhook(c *gin.Context) {
 			h.handleTaskCommand(ctx, msg)
 		case "/menu":
 			h.handleMenu(msg.Chat.ID, msg.MessageThreadID)
+
 		case "/close", "/hide":
 			h.handleHideKeyboard(msg.Chat.ID, msg.MessageThreadID)
 		default:
@@ -339,19 +352,40 @@ type Update struct {
 func (h *Handler) handleInlineQuery(ctx context.Context, iq *InlineQuery) {
 	query := strings.TrimSpace(iq.Query)
 	// format: assign <TaskID>
-	if !strings.HasPrefix(query, "assign ") {
+	// format: assign <TaskID>
+	if strings.HasPrefix(query, "assign ") {
+		taskID := strings.TrimPrefix(query, "assign ")
+		if taskID == "" {
+			return
+		}
+		h.handleInlineAssignQuery(ctx, iq, taskID)
 		return
 	}
-	taskID := strings.TrimPrefix(query, "assign ")
-	if taskID == "" {
-		return
+
+	// Default: Create Task Preview
+	if query != "" {
+		h.handleInlineCreateTaskQuery(ctx, iq, query)
 	}
+}
+
+func (h *Handler) handleInlineAssignQuery(ctx context.Context, iq *InlineQuery, taskID string) {
 
 	// Fetch Task
 	t, err := h.taskService.GetTask(ctx, taskID)
 	if err != nil {
 		h.logger.Error("handleInlineQuery: GetTask failed", zap.String("task_id", taskID), zap.Error(err))
-		return // Ignore errors
+		// Return error article so user knows what happened
+		errorArticle := telegram.InlineQueryResultArticle{
+			Type:        "article",
+			ID:          "error",
+			Title:       "Error: Task Not Found",
+			Description: fmt.Sprintf("Could not find task with ID: %s", taskID),
+			InputMessageContent: telegram.InputMessageContent{
+				MessageText: fmt.Sprintf("/todo Task %s not found", taskID),
+			},
+		}
+		h.tgClient.AnswerInlineQuery(iq.ID, []telegram.InlineQueryResultArticle{errorArticle})
+		return
 	}
 	h.logger.Info("handleInlineQuery: Task found", zap.String("task_id", t.ID), zap.String("title", t.Title))
 
@@ -419,6 +453,28 @@ func (h *Handler) handleInlineQuery(ctx context.Context, iq *InlineQuery) {
 
 	if err := h.tgClient.AnswerInlineQuery(iq.ID, []telegram.InlineQueryResultArticle{article}); err != nil {
 		h.logger.Error("failed to answer inline query", zap.Error(err))
+	}
+}
+
+func (h *Handler) handleInlineCreateTaskQuery(ctx context.Context, iq *InlineQuery, query string) {
+	// Create Task Option
+	title := query
+	if len(title) > 50 {
+		title = title[:47] + "..."
+	}
+
+	article := telegram.InlineQueryResultArticle{
+		Type:        "article",
+		ID:          "create_task",
+		Title:       fmt.Sprintf("创建任务: %s", title),
+		Description: "点击发送任务指令",
+		InputMessageContent: telegram.InputMessageContent{
+			MessageText: fmt.Sprintf("/todo %s", query),
+		},
+	}
+
+	if err := h.tgClient.AnswerInlineQuery(iq.ID, []telegram.InlineQueryResultArticle{article}); err != nil {
+		h.logger.Error("failed to answer inline query (create task)", zap.Error(err))
 	}
 }
 
@@ -548,17 +604,34 @@ func (h *Handler) handleTaskCommand(ctx context.Context, msg *Message) {
 	if h.taskCreator == nil || msg == nil {
 		return
 	}
+
+	// Clean text: remove bot username if present to avoid assigning bot
+	text := msg.Text
+	if h.botUsername != "" {
+		// Replace @BotUsername with empty string, case insensitive
+		re, err := regexp.Compile(`(?i)@` + regexp.QuoteMeta(h.botUsername) + `\b`)
+		if err == nil {
+			text = re.ReplaceAllString(text, "")
+		}
+	}
+	text = strings.TrimSpace(text)
+
 	input := task.CreateInput{
 		ChatID:    msg.Chat.ID,
 		CreatorID: msg.From.ID,
-		Text:      msg.Text,
+		Text:      text,
 		ChatTitle: msg.Chat.Title,
 		ChatType:  msg.Chat.Type,
 	}
 	if msg.ReplyToMessage != nil {
 		input.ReplyToID = msg.ReplyToMessage.MessageID
 	}
-	createdTask, err := h.taskCreator.CreateTask(ctx, input)
+	if input.Text == "" {
+		h.sendMessage(msg.Chat.ID, "⚠️ 任务内容不能为空", nil, msg.MessageID, msg.MessageThreadID)
+		return
+	}
+
+	createdTask, missingAssignees, err := h.taskCreator.CreateTask(ctx, input)
 	if err != nil {
 		h.logger.Error("failed to create task", zap.Error(err))
 		h.sendMessage(msg.Chat.ID, "❌ 创建任务失败，请稍后再试。", nil, msg.MessageID, msg.MessageThreadID)
@@ -584,13 +657,19 @@ func (h *Handler) handleTaskCommand(ctx context.Context, msg *Message) {
 
 	if isGroupChat {
 		// In group chats: @ assignees and provide task URL
-		if assigneeCount > 0 {
+		// Check both real and pending assignees
+		if assigneeCount > 0 || len(missingAssignees) > 0 {
 			// @ all assignees
 			var mentions []string
 			for _, assignee := range createdTask.Assignees {
 				if assignee.TgUsername != "" {
 					mentions = append(mentions, "@"+assignee.TgUsername)
 				}
+			}
+			// Merge pending assignees into mentions for display
+			// User wants them to look like normal assignments
+			if len(missingAssignees) > 0 {
+				mentions = append(mentions, missingAssignees...)
 			}
 
 			if len(mentions) > 0 {
@@ -635,6 +714,11 @@ func (h *Handler) handleTaskCommand(ctx context.Context, msg *Message) {
 			markup = h.buildWebAppMarkup("📋 查看详情", taskParam)
 		}
 	}
+
+	// Append info for pending assignees (REMOVED per user request)
+	// if len(missingAssignees) > 0 {
+	// 	replyText += fmt.Sprintf("\n\n⏳ 已暂存指派: %s (等待用户激活 Bot 后自动生效)", strings.Join(missingAssignees, ", "))
+	// }
 
 	h.sendMessage(msg.Chat.ID, replyText, markup, msg.MessageID, msg.MessageThreadID)
 }
@@ -820,20 +904,24 @@ func (h *Handler) shouldCreateTask(msg *Message) bool {
 	return botMentioned
 }
 
-func extractCommand(text string) (string, []string) {
+func extractCommand(text string) (string, string, []string) {
 	trimmed := strings.TrimSpace(text)
 	if trimmed == "" || !strings.HasPrefix(trimmed, "/") {
-		return "", nil
+		return "", "", nil
 	}
 	parts := strings.Fields(trimmed)
 	if len(parts) == 0 {
-		return "", nil
+		return "", "", nil
 	}
-	cmd := strings.ToLower(parts[0])
-	if idx := strings.Index(cmd, "@"); idx >= 0 {
-		cmd = cmd[:idx]
+	cmdFull := strings.ToLower(parts[0])
+	cmd := cmdFull
+	target := ""
+
+	if idx := strings.Index(cmdFull, "@"); idx >= 0 {
+		cmd = cmdFull[:idx]
+		target = cmdFull[idx+1:]
 	}
-	return cmd, parts[1:]
+	return cmd, target, parts[1:]
 }
 
 func (h *Handler) handleForwardedMessage(ctx context.Context, msg *Message) {
@@ -900,9 +988,21 @@ func (h *Handler) ensureUser(ctx context.Context, msg *Message) {
 	}
 
 	// Check if user exists
-	_, err := h.userRepo.FindByTgID(ctx, msg.From.ID)
+	user, err := h.userRepo.FindByTgID(ctx, msg.From.ID)
 	if err == nil {
-		// User exists, nothing to do
+		// User exists
+		// Try to claim pending assignments (in case they missed previous checks)
+		// This ensures that if they were assigned while their username was different (edge case) or if they just came back
+		// Actually, username updates happen here? NO, we don't update username here yet.
+		// Important: If username changed, we should update it.
+		// Updating user info logic is omitted for brevity but recommended.
+
+		// Run Async Claim
+		go func() {
+			if err := h.taskService.ClaimPendingAssignments(context.Background(), user); err != nil {
+				h.logger.Error("failed to claim pending assignments async", zap.Error(err))
+			}
+		}()
 		return
 	}
 
@@ -929,5 +1029,12 @@ func (h *Handler) ensureUser(ctx context.Context, msg *Message) {
 		h.logger.Warn("failed to create user on first interaction", zap.Error(err), zap.Int64("tg_id", msg.From.ID))
 	} else {
 		h.logger.Info("auto-created user on first interaction", zap.Int64("tg_id", msg.From.ID), zap.String("name", name))
+
+		// Run Async Claim
+		go func() {
+			if err := h.taskService.ClaimPendingAssignments(context.Background(), newUser); err != nil {
+				h.logger.Error("failed to claim pending assignments for new user", zap.Error(err))
+			}
+		}()
 	}
 }

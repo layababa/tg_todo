@@ -21,6 +21,7 @@ type Service struct {
 	logger        *zap.Logger
 	repo          repository.TaskRepository
 	userRepo      repository.UserRepository // Needed for Token
+	pendingRepo   repository.PendingAssignmentRepository
 	notifier      *notification.Service
 	encryptionKey string
 	notionClient  func(token string) pkgnotion.Client
@@ -31,6 +32,7 @@ type ServiceConfig struct {
 	Logger        *zap.Logger
 	Repo          repository.TaskRepository
 	UserRepo      repository.UserRepository
+	PendingRepo   repository.PendingAssignmentRepository
 	Notifier      *notification.Service
 	EncryptionKey string
 }
@@ -41,6 +43,7 @@ func NewService(cfg ServiceConfig) *Service {
 		logger:        cfg.Logger,
 		repo:          cfg.Repo,
 		userRepo:      cfg.UserRepo,
+		pendingRepo:   cfg.PendingRepo,
 		notifier:      cfg.Notifier,
 		encryptionKey: cfg.EncryptionKey,
 		notionClient:  pkgnotion.NewClient,
@@ -555,5 +558,42 @@ func (s *Service) AssignTask(ctx context.Context, taskID, userID string) error {
 	task.SyncStatus = repository.TaskSyncStatusPending
 	s.repo.UpdateStatus(ctx, task)
 
+	return nil
+}
+
+// ClaimPendingAssignments checks for any pending assignments for the user and assigns them
+func (s *Service) ClaimPendingAssignments(ctx context.Context, user *models.User) error {
+	if s.pendingRepo == nil {
+		return nil
+	}
+	// Case-insensitive match usually handled by DB query
+	if user.TgUsername == "" {
+		return nil
+	}
+
+	pendings, err := s.pendingRepo.ListByUsername(ctx, user.TgUsername)
+	if err != nil {
+		return err
+	}
+
+	if len(pendings) == 0 {
+		return nil
+	}
+
+	s.logger.Info("claiming pending assignments", zap.String("username", user.TgUsername), zap.Int("count", len(pendings)))
+
+	for _, p := range pendings {
+		// Assign task
+		// We use AssignTask logic
+		if err := s.AssignTask(ctx, p.TaskID, user.ID); err != nil {
+			s.logger.Error("failed to claim assignment", zap.String("task_id", p.TaskID), zap.Error(err))
+			continue
+		}
+
+		// Delete pending record
+		if err := s.pendingRepo.Delete(ctx, p.ID); err != nil {
+			s.logger.Error("failed to delete pending assignment", zap.String("id", p.ID), zap.Error(err))
+		}
+	}
 	return nil
 }
