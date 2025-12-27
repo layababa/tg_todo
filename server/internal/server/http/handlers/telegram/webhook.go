@@ -772,18 +772,25 @@ func (h *Handler) handleHideKeyboard(chatID int64) {
 // According to PRD Story S1/S2:
 // - Group chat: @Bot + text creates task
 // - Group chat: Reply + @Bot creates task
+// - Private chat: Any non-command text creates task
 func (h *Handler) shouldCreateTask(msg *Message) bool {
 	if msg == nil {
 		return false
 	}
 
-	// Only in group chats
-	if msg.Chat.Type != "group" && msg.Chat.Type != "supergroup" {
+	text := msg.Text
+	if text == "" {
 		return false
 	}
 
-	text := msg.Text
-	if text == "" {
+	// Private chat: any non-command text creates a task
+	if msg.Chat.Type == "private" {
+		// Commands are handled separately, so if we reach here it's not a command
+		return true
+	}
+
+	// Group chats: only create task if bot is mentioned
+	if msg.Chat.Type != "group" && msg.Chat.Type != "supergroup" {
 		return false
 	}
 
