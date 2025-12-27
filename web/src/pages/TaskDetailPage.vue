@@ -33,6 +33,17 @@ const replyToUserName = ref<string>('')
 const showDatePicker = ref(false)
 const dueAtLocal = ref('')
 
+const assignTask = () => {
+    if (!task.value?.ID) return
+    if (!window.Telegram?.WebApp) {
+        console.warn('Telegram WebApp is not available')
+        return
+    }
+    // Deep link format: assign <TaskID>
+    // This will open chat selection, then insert "@CheckMyTodoBot assign <TaskID>" into input
+    window.Telegram.WebApp.switchInlineQuery(`assign ${task.value.ID}`, ['users', 'groups', 'channels'])
+}
+
 const toggleDatePicker = () => {
     if (task.value?.DueAt) {
         const d = new Date(task.value.DueAt)
@@ -307,26 +318,109 @@ onMounted(fetchData)
                     </div>
                 </div>
 
-                <!-- Metropolitan Properties Section -->
-                <div class="flex flex-col gap-3 mb-8">
-                    <!-- Row 1: Status, Assignee, Date -->
-                    <div class="flex flex-wrap items-center gap-2">
-                         <div @click="cycleStatus" class="badge badge-outline gap-1.5 h-8 px-3 cursor-pointer hover:bg-base-content/10 transition-all border-base-content/20 rounded text-xs select-none">
-                            <i class="ri-loader-2-line"></i><span class="font-bold">{{ task?.Status || '待办' }}</span>
+                <!-- Redesigned Property Grid (Scheme B - 3 Rows) -->
+                <div class="grid grid-cols-2 gap-3 mb-8">
+                    <!-- 1.1 Status (状态) -->
+                    <div @click="cycleStatus" class="bg-base-200/50 p-3 rounded-lg border border-base-content/5 relative overflow-hidden group active:scale-95 transition-all cursor-pointer">
+                        <div class="flex items-center gap-2 mb-1 opacity-50">
+                            <i class="ri-loader-2-line text-xs"></i>
+                            <span class="text-[10px] uppercase font-mono tracking-wider">状态</span>
                         </div>
-                        <div class="badge badge-outline gap-1.5 h-8 px-3 border-base-content/20 rounded text-xs select-none text-base-content/60">
-                            <i class="ri-user-3-line"></i><span>我</span>
+                        <div class="font-bold text-sm flex items-center gap-2" :class="task?.Status === 'Done' ? 'text-success' : 'text-primary'">
+                            {{ {'To Do': '待办', 'In Progress': '进行中', 'Done': '已完成'}[task?.Status || ''] || task?.Status || '待办' }}
                         </div>
-                        <div @click="toggleDatePicker" :class="['badge badge-outline gap-1.5 h-8 px-3 border-base-content/20 rounded text-xs cursor-pointer select-none transition-all', task?.DueAt ? 'text-primary border-primary/50' : 'text-base-content/60 hover:bg-base-content/10']">
-                            <i class="ri-calendar-event-line"></i>{{ formatDueDate(task?.DueAt) }}
+                        <div class="absolute right-2 top-2 opacity-0 group-hover:opacity-20 transition-opacity"><i class="ri-arrow-right-line"></i></div>
+                    </div>
+
+                    <!-- 1.2 Due Date (截止日期) -->
+                    <div @click="toggleDatePicker" class="bg-base-200/50 p-3 rounded-lg border border-base-content/5 relative overflow-hidden group active:scale-95 transition-all cursor-pointer">
+                        <div class="flex items-center gap-2 mb-1 opacity-50">
+                            <i class="ri-calendar-event-line text-xs"></i>
+                            <span class="text-[10px] uppercase font-mono tracking-wider">截止日期</span>
+                        </div>
+                        <div class="font-bold text-sm" :class="task?.DueAt ? 'text-primary' : 'text-base-content/30'">
+                            {{ task?.DueAt ? formatDueDate(task.DueAt) : '未设置' }}
                         </div>
                     </div>
 
-                    <!-- Row 2: External Links -->
-                    <div class="flex flex-wrap gap-2">
-                        <a v-if="task?.ChatJumpURL" :href="task.ChatJumpURL" target="_blank" class="badge badge-outline gap-1.5 h-8 px-3 text-[#24A1DE] border-[#24A1DE]/30 bg-[#24A1DE]/5 hover:bg-[#24A1DE]/10 rounded text-xs transition-all"><i class="ri-telegram-fill"></i><span>Chat Context</span></a>
-                        <a :href="`https://t.me/${authStore.user?.telegram_username || ''}`" target="_blank" class="badge badge-outline gap-1.5 h-8 px-3 text-base-content/60 border-base-content/20 hover:text-primary hover:border-primary/50 rounded text-xs transition-all"><i class="ri-user-voice-line"></i><span>PM</span></a>
-                         <a v-if="task?.NotionURL" :href="task.NotionURL" target="_blank" class="badge badge-outline gap-1.5 h-8 px-3 text-base-content/60 border-base-content/20 hover:text-white hover:border-white/50 rounded text-xs transition-all"><i class="ri-notion-fill"></i><span>Notion</span></a>
+                    <!-- 2.1 Assignee (负责人) -->
+                    <div @click="assignTask" class="bg-base-200/50 p-3 rounded-lg border border-base-content/5 relative overflow-hidden group active:scale-95 transition-all cursor-pointer">
+                        <div class="flex items-center gap-2 mb-1 opacity-50">
+                            <i class="ri-user-3-line text-xs"></i>
+                            <span class="text-[10px] uppercase font-mono tracking-wider">负责人</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                             <div v-if="task?.Assignees && task.Assignees.length > 0" class="flex -space-x-1">
+                                <div v-for="user in task.Assignees" :key="user.id" class="w-4 h-4 rounded-full bg-gradient-to-tr from-primary to-secondary flex items-center justify-center text-[8px] text-black font-bold ring-2 ring-base-100/50" :title="user.name">
+                                    {{ user.name[0].toUpperCase() }}
+                                </div>
+                            </div>
+                            <div v-else class="w-4 h-4 rounded-full bg-base-content/10 flex items-center justify-center text-[8px] text-base-content/50 font-bold">
+                                ?
+                            </div>
+                            <span class="font-bold text-sm truncate">
+                                {{ (task?.Assignees && task.Assignees.length > 0) ? (task.Assignees[0].id === authStore.user?.id ? '我' : task.Assignees[0].name) : '点击指派' }}
+                            </span>
+                             <i class="ri-share-forward-line text-xs opacity-50 ml-auto"></i>
+                        </div>
+                    </div>
+
+                    <!-- 2.2 Priority (优先级) - Mocked -->
+                    <div class="bg-base-200/50 p-3 rounded-lg border border-base-content/5 relative overflow-hidden opacity-80">
+                         <div class="flex items-center gap-2 mb-1 opacity-50">
+                            <i class="ri-flag-2-line text-xs"></i>
+                            <span class="text-[10px] uppercase font-mono tracking-wider">优先级</span>
+                        </div>
+                        <div class="font-bold text-sm flex items-center gap-1">
+                            <span class="w-2 h-2 rounded-full bg-blue-400"></span>普通
+                        </div>
+                    </div>
+
+                    <!-- 3.1 Creator (创建人) - Click to PM -->
+                    <a v-if="task?.Creator?.tg_username" :href="`https://t.me/${task.Creator.tg_username}`" target="_blank" class="bg-base-200/50 p-3 rounded-lg border border-base-content/5 relative overflow-hidden group active:scale-95 transition-all cursor-pointer">
+                        <div class="flex items-center gap-2 mb-1 opacity-50">
+                            <i class="ri-user-add-line text-xs"></i>
+                            <span class="text-[10px] uppercase font-mono tracking-wider">创建人</span>
+                        </div>
+                        <div class="font-bold text-sm text-primary flex items-center gap-1 truncate">
+                             @{{ task.Creator.tg_username }} <i class="ri-external-link-line text-xs opacity-50"></i>
+                        </div>
+                    </a>
+                    <div v-else class="bg-base-200/50 p-3 rounded-lg border border-base-content/5 relative overflow-hidden opacity-50">
+                         <div class="flex items-center gap-2 mb-1 opacity-50">
+                            <i class="ri-user-add-line text-xs"></i>
+                            <span class="text-[10px] uppercase font-mono tracking-wider">创建人</span>
+                        </div>
+                        <div class="font-bold text-sm truncate">
+                             {{ task?.Creator?.name || '未知' }}
+                        </div>
+                    </div>
+
+                    <!-- 3.2 Source (来源) - Jump to Context -->
+                    <a v-if="task?.ChatJumpURL" :href="task.ChatJumpURL" target="_blank" class="bg-[#24A1DE]/10 p-3 rounded-lg border border-[#24A1DE]/20 relative overflow-hidden group active:scale-95 transition-all cursor-pointer">
+                        <div class="flex items-center gap-2 mb-1 text-[#24A1DE]/70">
+                            <i class="ri-telegram-fill text-xs"></i>
+                            <span class="text-[10px] uppercase font-mono tracking-wider">来源</span>
+                        </div>
+                        <div class="font-bold text-sm text-[#24A1DE] flex items-center gap-1">
+                            Telegram <i class="ri-external-link-line text-xs opacity-50"></i>
+                        </div>
+                    </a>
+                    <a v-else-if="task?.NotionURL" :href="task.NotionURL" target="_blank" class="bg-base-200/50 p-3 rounded-lg border border-base-content/5 relative overflow-hidden group active:scale-95 transition-all cursor-pointer">
+                         <div class="flex items-center gap-2 mb-1 opacity-50">
+                            <i class="ri-notion-fill text-xs"></i>
+                            <span class="text-[10px] uppercase font-mono tracking-wider">来源</span>
+                        </div>
+                        <div class="font-bold text-sm flex items-center gap-1">
+                            Notion <i class="ri-external-link-line text-xs opacity-50"></i>
+                        </div>
+                    </a>
+                    <div v-else class="bg-base-200/20 p-3 rounded-lg border border-base-content/5 opacity-50">
+                        <div class="flex items-center gap-2 mb-1">
+                            <i class="ri-link text-xs"></i>
+                            <span class="text-[10px] uppercase font-mono tracking-wider">来源</span>
+                        </div>
+                        <div class="text-xs italic">本地任务</div>
                     </div>
                 </div>
 
@@ -334,7 +428,7 @@ onMounted(fetchData)
                     <div @click="toggleContext" class="section-toggle cursor-pointer select-none">
                         <div class="flex items-center gap-2 text-sm font-mono"><i class="ri-chat-history-line"></i><span>上下文快照 ({{ contextItems.length }}条)</span></div>
                         <div class="flex items-center gap-2">
-                            <a v-if="task?.ChatJumpURL" :href="task.ChatJumpURL" target="_blank" class="history-link">查看完整记录</a>
+                            <!-- Removed redundant 'View Full Record' link as per request -->
                             <i class="ri-arrow-down-s-line transition-transform duration-300" :class="{ 'rotate-180': !contextOpen }"></i>
                         </div>
                     </div>
@@ -390,7 +484,7 @@ onMounted(fetchData)
                     <div class="absolute bottom-0 right-0 w-1.5 h-1.5 border-b border-r border-primary/30"></div>
                     
                     <div class="absolute bottom-2 right-2 opacity-0 group-focus-within:opacity-100 transition-opacity">
-                        <span class="text-[10px] font-mono text-primary animate-pulse">AUTO-SAVING...</span>
+                        <span class="text-[10px] font-mono text-primary animate-pulse">自动保存中...</span>
                     </div>
                 </div>
 
@@ -428,7 +522,7 @@ onMounted(fetchData)
         <footer class="shrink-0 bg-base-100/95 backdrop-blur border-t border-base-content/10 z-40 pb-[env(safe-area-inset-bottom)] transition-all duration-300">
             <!-- Reply Hint -->
             <div v-if="replyToCommentID" class="px-4 py-2 bg-base-content/5 flex justify-between items-center text-xs font-mono border-b border-base-content/5">
-                <span class="text-primary">REPLYING TO @{{ replyToUserName }}</span>
+                <span class="text-primary">回复给 @{{ replyToUserName }}</span>
                 <button @click="cancelReply" class="w-5 h-5 flex items-center justify-center rounded-full hover:bg-base-content/10"><i class="ri-close-line"></i></button>
             </div>
 
@@ -439,7 +533,7 @@ onMounted(fetchData)
                         ref="footerTextarea"
                         rows="1"
                         class="w-full bg-transparent border-none outline-none px-3 py-3 text-sm resize-none max-h-32 placeholder-base-content/30 leading-normal font-sans"
-                        :placeholder="replyToCommentID ? `回复 @${replyToUserName}...` : 'Write a comment...'"
+                        :placeholder="replyToCommentID ? `回复 @${replyToUserName}...` : '写下你的评论...'"
                         @input="(e) => resizeTextarea(e.target as HTMLTextAreaElement)"
                         @focus="onFocusComment"
                     ></textarea>

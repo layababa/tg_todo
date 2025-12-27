@@ -137,6 +137,70 @@ func (c *Client) SetMyCommands(req SetMyCommandsRequest) error {
 	return c.sendJSON("setMyCommands", payload)
 }
 
+// InlineQuery types
+type InlineQueryResultArticle struct {
+	Type                string                `json:"type"`
+	ID                  string                `json:"id"`
+	Title               string                `json:"title"`
+	InputMessageContent InputMessageContent   `json:"input_message_content"`
+	ReplyMarkup         *InlineKeyboardMarkup `json:"reply_markup,omitempty"`
+	Description         string                `json:"description,omitempty"`
+}
+
+type InputMessageContent struct {
+	MessageText string `json:"message_text"`
+	ParseMode   string `json:"parse_mode"`
+}
+
+type answerInlineQueryReq struct {
+	InlineQueryID string      `json:"inline_query_id"`
+	Results       interface{} `json:"results"`
+	CacheTime     int         `json:"cache_time"`
+	IsPersonal    bool        `json:"is_personal"`
+}
+
+func (c *Client) AnswerInlineQuery(queryID string, results interface{}) error {
+	return c.sendJSON("answerInlineQuery", answerInlineQueryReq{
+		InlineQueryID: queryID,
+		Results:       results,
+		CacheTime:     0,
+		IsPersonal:    true,
+	})
+}
+
+// CallbackQuery Answer
+type answerCallbackQueryReq struct {
+	CallbackQueryID string `json:"callback_query_id"`
+	Text            string `json:"text,omitempty"`
+	ShowAlert       bool   `json:"show_alert,omitempty"`
+}
+
+func (c *Client) AnswerCallbackQuery(queryID string, text string) error {
+	return c.sendJSON("answerCallbackQuery", answerCallbackQueryReq{
+		CallbackQueryID: queryID,
+		Text:            text,
+	})
+}
+
+// EditMessageText
+type editMessageTextReq struct {
+	ChatID          int64                 `json:"chat_id,omitempty"`
+	MessageID       int                   `json:"message_id,omitempty"`
+	InlineMessageID string                `json:"inline_message_id,omitempty"`
+	Text            string                `json:"text"`
+	ParseMode       string                `json:"parse_mode"`
+	ReplyMarkup     *InlineKeyboardMarkup `json:"reply_markup,omitempty"`
+}
+
+func (c *Client) EditMessageText(inlineMessageID string, text string, markup *InlineKeyboardMarkup) error {
+	return c.sendJSON("editMessageText", editMessageTextReq{
+		InlineMessageID: inlineMessageID,
+		Text:            text,
+		ParseMode:       "HTML",
+		ReplyMarkup:     markup,
+	})
+}
+
 func (c *Client) sendJSON(method string, payload interface{}) error {
 	url := fmt.Sprintf("%s%s/%s", c.baseURL, c.token, method)
 

@@ -7,11 +7,14 @@ import (
 	"time"
 
 	"github.com/dstotijn/go-notion"
+	"go.uber.org/zap"
+	"gorm.io/gorm"
+
+	"github.com/layababa/tg_todo/server/internal/models"
 	"github.com/layababa/tg_todo/server/internal/repository"
 	"github.com/layababa/tg_todo/server/internal/service/notification"
 	pkgnotion "github.com/layababa/tg_todo/server/pkg/notion"
 	"github.com/layababa/tg_todo/server/pkg/security"
-	"go.uber.org/zap"
 )
 
 type Service struct {
@@ -476,4 +479,64 @@ func (s *Service) buildContentBlocks(task *repository.Task) []notion.Block {
 	}
 
 	return children
+}
+
+// AssignTaskToTelegramUser assigns the task to a user identified by Telegram ID
+// It ensures the user exists in the local database first
+func (s *Service) AssignTaskToTelegramUser(ctx context.Context, taskID string, tgUser *models.User) error {
+	// 1. Ensure User Exists
+	existingUser, err := s.userRepo.FindByTgID(ctx, tgUser.TgID)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return fmt.Errorf("failed to lookup user: %w", err)
+	}
+
+	var userID string
+	if existingUser != nil {
+		userID = existingUser.ID
+		// Optional: Update user info if changed?
+	} else {
+		// Create new user
+		if err := s.userRepo.Create(ctx, tgUser); err != nil {
+			return fmt.Errorf("failed to create user: %w", err)
+		}
+		userID = tgUser.ID
+	}
+
+	// 2. Assign Task
+	return s.AssignTask(ctx, taskID, userID)
+}
+
+// AssignTask assigns the task to a user (by internal UUID)
+func (s *Service) AssignTask(ctx context.Context, taskID, userID string) error {
+	task, err := s.repo.GetByID(ctx, taskID)
+	if err != nil {
+		return err
+	}
+	if task == nil {
+		return errors.New("task not found")
+	}
+
+	// 1. Update DB
+	if err := s.repo.AssignTask(ctx, taskID, userID); err != nil {
+		return err
+	}
+
+	// 2. Notify (Task Assigned)
+	// We need to fetch the Full Task again to get the new Assignee details for notification?
+	// Or just trust ID.
+	// Notification event: EventTaskAssigned?
+	// Existing events: EventStatusChanged, EventTaskCreated, EventCommentAdded.
+	// We should add EventTaskAssigned in notification package or reuse something.
+	// For now, let's just log.
+	s.logger.Info("task assigned", zap.String("task_id", taskID), zap.String("user_id", userID))
+
+	// If synced to Notion, we might need to update Notion assignees.
+	// Notion Sync Logic is complex (User Mapping).
+	// We'll mark as Pending Sync to retry update.
+	// But `UpdateParams` logic resets sync status.
+	// We should explicitly set SyncStatus to Pending.
+	task.SyncStatus = repository.TaskSyncStatusPending
+	s.repo.UpdateStatus(ctx, task)
+
+	return nil
 }

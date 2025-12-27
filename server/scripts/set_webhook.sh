@@ -34,7 +34,7 @@ echo ""
 # 调用 Telegram API 设置 Webhook
 RESPONSE=$(curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/setWebhook" \
     -H "Content-Type: application/json" \
-    -d "{\"url\": \"${WEBHOOK_URL}\"}")
+    -d "{\"url\": \"${WEBHOOK_URL}\", \"allowed_updates\": [\"message\", \"edited_message\", \"channel_post\", \"edited_channel_post\", \"inline_query\", \"chosen_inline_result\", \"callback_query\", \"my_chat_member\", \"chat_member\"]}")
 
 echo "📡 Telegram API 响应："
 echo "$RESPONSE" | jq '.' 2>/dev/null || echo "$RESPONSE"

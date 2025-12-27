@@ -49,4 +49,41 @@ const router = createRouter({
   ],
 });
 
+// Deep Linking Handler
+router.beforeEach((to, from, next) => {
+  // Only check on first load (from.name is null/undefined)
+  if (from.name) {
+    next();
+    return;
+  }
+
+  // @ts-ignore
+  const tg = window.Telegram?.WebApp;
+  if (!tg) {
+    next();
+    return;
+  }
+
+  const startParam = tg.initDataUnsafe?.start_param;
+  if (startParam) {
+    console.log("[Router] Found start_param:", startParam);
+    if (startParam.startsWith("task_")) {
+      const taskId = startParam.replace("task_", "");
+      next({ name: "task-detail", params: { id: taskId } });
+      return;
+    }
+    if (startParam.startsWith("bind_")) {
+      const groupId = startParam.replace("bind_", "");
+      next({ name: "bind-group", params: { groupID: groupId } });
+      return;
+    }
+    if (startParam === "settings") {
+      next({ name: "settings" });
+      return;
+    }
+  }
+
+  next();
+});
+
 export default router;

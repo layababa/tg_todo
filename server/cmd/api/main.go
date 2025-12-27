@@ -278,6 +278,7 @@ func main() {
 		Deduplicator: deduplicator,
 		Repo:         tgUpdateRepo,
 		TaskCreator:  taskCreator,
+		TaskService:  taskService, // Injected TaskService
 		GroupService: groupService,
 		TgClient:     tgClient,
 		SecretToken:  os.Getenv("TELEGRAM_SECRET_TOKEN"),

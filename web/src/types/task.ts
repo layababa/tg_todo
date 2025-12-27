@@ -6,6 +6,13 @@ export interface TaskContextSnapshot {
   CreatedAt: string;
 }
 
+export interface User {
+  id: string;
+  name: string;
+  tg_username?: string;
+  photo_url?: string;
+}
+
 export interface Task {
   ID: string;
   Title: string;
@@ -16,10 +23,11 @@ export interface Task {
   CreatedAt: string;
   DueAt?: string | null;
   // Details
-  Description?: string; // Currently missing in backend struct? Or is it handled elsewhere?
+  Description?: string;
   ChatJumpURL?: string;
   Snapshots?: TaskContextSnapshot[];
-  Assignees?: any[]; // Todo: Define User type
+  Assignees?: User[];
+  Creator?: User;
 }
 
 export interface TaskDetail {

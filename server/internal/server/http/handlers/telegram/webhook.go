@@ -13,6 +13,7 @@ import (
 	"go.uber.org/zap"
 	"gorm.io/datatypes"
 
+	"github.com/layababa/tg_todo/server/internal/models"
 	"github.com/layababa/tg_todo/server/internal/repository"
 	groupsvc "github.com/layababa/tg_todo/server/internal/service/group"
 	"github.com/layababa/tg_todo/server/internal/service/task"
@@ -29,6 +30,7 @@ type Handler struct {
 	deduplicator telegram.Deduplicator
 	repo         repository.TelegramUpdateRepository
 	taskCreator  *task.Creator
+	taskService  *task.Service // Added TaskService
 	groupService *groupsvc.Service
 	tgClient     *telegram.Client
 	secretToken  string
@@ -42,6 +44,7 @@ type Config struct {
 	Deduplicator telegram.Deduplicator
 	Repo         repository.TelegramUpdateRepository
 	TaskCreator  *task.Creator
+	TaskService  *task.Service // Added TaskService
 	GroupService *groupsvc.Service
 	TgClient     *telegram.Client
 	SecretToken  string
@@ -56,6 +59,7 @@ func NewHandler(cfg Config) *Handler {
 		deduplicator: cfg.Deduplicator,
 		repo:         cfg.Repo,
 		taskCreator:  cfg.TaskCreator,
+		taskService:  cfg.TaskService, // Added TaskService
 		groupService: cfg.GroupService,
 		tgClient:     cfg.TgClient,
 		secretToken:  cfg.SecretToken,
@@ -114,6 +118,32 @@ type Update struct {
 			} `json:"user"`
 		} `json:"new_chat_member"`
 	} `json:"my_chat_member"`
+	InlineQuery   *InlineQuery   `json:"inline_query"`
+	CallbackQuery *CallbackQuery `json:"callback_query"`
+}
+
+type InlineQuery struct {
+	ID       string `json:"id"`
+	From     User   `json:"from"`
+	Query    string `json:"query"`
+	Offset   string `json:"offset"`
+	ChatType string `json:"chat_type"`
+}
+
+type CallbackQuery struct {
+	ID              string   `json:"id"`
+	From            User     `json:"from"`
+	Message         *Message `json:"message,omitempty"`
+	InlineMessageID string   `json:"inline_message_id,omitempty"`
+	Data            string   `json:"data"`
+}
+
+type User struct {
+	ID        int64  `json:"id"`
+	IsBot     bool   `json:"is_bot"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Username  string `json:"username"`
 }
 
 // HandleWebhook processes incoming webhook requests
@@ -226,7 +256,21 @@ func (h *Handler) HandleWebhook(c *gin.Context) {
 		}
 	}
 
-	// B. Message
+	// C. Inline Query
+	if update.InlineQuery != nil {
+		h.handleInlineQuery(ctx, update.InlineQuery)
+		c.Status(http.StatusOK)
+		return
+	}
+
+	// D. Callback Query
+	if update.CallbackQuery != nil {
+		h.handleCallbackQuery(ctx, update.CallbackQuery)
+		c.Status(http.StatusOK)
+		return
+	}
+
+	// B. Message (Existing logic)
 	if update.Message != nil {
 		msg := update.Message
 
@@ -262,6 +306,146 @@ func (h *Handler) HandleWebhook(c *gin.Context) {
 	}
 
 	c.Status(http.StatusOK)
+}
+
+// define structs locally for InlineQuery/CallbackQuery if not present in Update struct
+// Based on previous file view, Update struct was:
+/*
+type Update struct {
+	UpdateID     int64    `json:"update_id"`
+	Message      *Message `json:"message"`
+	MyChatMember *struct { ... }
+}
+*/
+// I need to add InlineQuery and CallbackQuery fields to Update struct in this file first?
+// Wait, I cannot add fields here inside a method replacement.
+// I should rely on the previous tool call which edited `Update` struct?
+// No, I haven't edited `Update` struct yet. I missed that step. I only planned to do it.
+// I will edit `Update` struct in a separate replacement chunk in this tool call or a following one.
+// Let's assume I will do it.
+
+func (h *Handler) handleInlineQuery(ctx context.Context, iq *InlineQuery) {
+	query := strings.TrimSpace(iq.Query)
+	// format: assign <TaskID>
+	if !strings.HasPrefix(query, "assign ") {
+		return
+	}
+	taskID := strings.TrimPrefix(query, "assign ")
+	if taskID == "" {
+		return
+	}
+
+	// Fetch Task
+	t, err := h.taskService.GetTask(ctx, taskID)
+	if err != nil {
+		return // Ignore errors
+	}
+
+	// Construct Result
+
+	// Create Buttons
+	var rows [][]telegram.InlineKeyboardButton
+
+	// Row 1: Accept Button
+	rows = append(rows, []telegram.InlineKeyboardButton{
+		{
+			Text:         "🙋‍♂️ 我来认领 (Claim)",
+			CallbackData: fmt.Sprintf("accept_task:%s", t.ID),
+		},
+	})
+
+	// Row 2: View Details (if WebApp URL available)
+	// format: https://t.me/<bot>?startapp=task_<id>
+	if h.botUsername != "" {
+		appLink := fmt.Sprintf("https://t.me/%s/app?startapp=task_%s", h.botUsername, t.ID)
+		rows = append(rows, []telegram.InlineKeyboardButton{
+			{
+				Text: "📋 查看详情",
+				URL:  appLink,
+			},
+		})
+	}
+
+	markup := &telegram.InlineKeyboardMarkup{
+		InlineKeyboard: rows,
+	}
+
+	assigneeName := "待认领"
+	if len(t.Assignees) > 0 {
+		assigneeName = t.Assignees[0].Name
+	}
+
+	dueDate := "无"
+	if t.DueAt != nil {
+		dueDate = t.DueAt.Format("2006-01-02 15:04")
+	}
+
+	msgText := fmt.Sprintf(
+		"📋 <b>任务分享</b>\n\n"+
+			"<b>%s</b>\n"+
+			"──────────────\n"+
+			"👤 负责人: %s\n"+
+			"📅 截止: %s\n"+
+			"──────────────\n"+
+			"👇 点击下方按钮认领或查看详情",
+		t.Title, assigneeName, dueDate,
+	)
+
+	article := telegram.InlineQueryResultArticle{
+		Type:        "article",
+		ID:          taskID,
+		Title:       fmt.Sprintf("分享任务: %s", t.Title),
+		Description: fmt.Sprintf("当前负责人: %s", assigneeName),
+		InputMessageContent: telegram.InputMessageContent{
+			MessageText: msgText,
+			ParseMode:   "HTML",
+		},
+		ReplyMarkup: markup,
+	}
+
+	if err := h.tgClient.AnswerInlineQuery(iq.ID, []telegram.InlineQueryResultArticle{article}); err != nil {
+		h.logger.Error("failed to answer inline query", zap.Error(err))
+	}
+}
+
+func (h *Handler) handleCallbackQuery(ctx context.Context, cq *CallbackQuery) {
+	data := cq.Data
+	// format: accept_task:<TaskID>
+	if strings.HasPrefix(data, "accept_task:") {
+		taskID := strings.TrimPrefix(data, "accept_task:")
+
+		// Prepare User Model
+		user := &models.User{
+			TgID:       cq.From.ID,
+			TgUsername: cq.From.Username,
+			Name:       strings.TrimSpace(cq.From.FirstName + " " + cq.From.LastName),
+		}
+
+		// Assign Task via Service (handles user creation if needed)
+		err := h.taskService.AssignTaskToTelegramUser(ctx, taskID, user)
+		if err != nil {
+			h.logger.Error("failed to assign task", zap.Error(err))
+			h.tgClient.AnswerCallbackQuery(cq.ID, "❌ Failed to assign task")
+			return
+		}
+
+		// Update success
+		claimantName := cq.From.FirstName
+		if cq.From.LastName != "" {
+			claimantName += " " + cq.From.LastName
+		}
+
+		// Edit message
+		t, _ := h.taskService.GetTask(ctx, taskID) // Fetch fresh logic
+		title := "Task"
+		if t != nil {
+			title = t.Title
+		}
+
+		newText := fmt.Sprintf("<b>Task: %s</b>\n\n✅ Assigned to %s", title, claimantName)
+		h.tgClient.EditMessageText(cq.InlineMessageID, newText, nil) // Remove buttons
+		h.tgClient.AnswerCallbackQuery(cq.ID, "✅ You are now the assignee!")
+	}
 }
 
 func (h *Handler) handleStart(ctx context.Context, chatID int64, args []string) {

@@ -59,6 +59,7 @@ type Task struct {
 	UpdatedAt       time.Time      `gorm:"default:now()"`
 	DeletedAt       gorm.DeletedAt `gorm:"index"`
 
+	Creator   *models.User          `gorm:"foreignKey:CreatorID"`
 	Assignees []models.User         `gorm:"many2many:task_assignees;"`
 	Snapshots []TaskContextSnapshot `gorm:"foreignKey:TaskID"`
 	Events    []TaskEvent           `gorm:"foreignKey:TaskID"`
@@ -123,6 +124,7 @@ type TaskRepository interface {
 	ListPendingByGroup(ctx context.Context, groupID string) ([]Task, error)
 	ListForReminders(ctx context.Context, now time.Time) ([]Task, error)
 	UpdateReminderFlags(ctx context.Context, id string, reminder1h, reminderDue bool) error
+	AssignTask(ctx context.Context, taskID, userID string) error
 }
 
 type taskRepository struct {
@@ -144,6 +146,7 @@ func (r *taskRepository) GetByID(ctx context.Context, id string) (*Task, error) 
 	var task Task
 	err := r.db.WithContext(ctx).
 		Preload("Assignees").
+		Preload("Creator").
 		Preload("Snapshots").
 		First(&task, "id = ?", id).Error
 	if err != nil {
@@ -204,6 +207,7 @@ func (r *taskRepository) ListByUser(ctx context.Context, userID string, filter T
 	query := r.db.WithContext(ctx).
 		Model(&Task{}).
 		Preload("Assignees").
+		Preload("Creator").
 		Preload("Snapshots").
 		Where("tasks.deleted_at IS NULL")
 
@@ -314,4 +318,26 @@ func (r *taskRepository) UpdateReminderFlags(ctx context.Context, id string, rem
 		return nil
 	}
 	return r.db.WithContext(ctx).Model(&Task{}).Where("id = ?", id).Updates(updates).Error
+}
+
+// AssignTask assigns a user to a task (replacing existing assignees for simple assignment)
+func (r *taskRepository) AssignTask(ctx context.Context, taskID, userID string) error {
+	// First check if user exists? Association Replace expects User model or ID.
+	// We can just append to association.
+	// For "Claim", we might want to Add or Replace.
+	// Let's assume Replace for single assignee model for now, or Append.
+	// The requirement implies "Assign to Me", so user becomes an assignee.
+	// If we want multiple assignees, we append.
+
+	// Create a dummy user object with ID
+	var user models.User
+	user.ID = userID
+
+	var task Task
+	task.ID = taskID
+
+	// Use Association Replace to set specific assignee (clears others) or Append to add?
+	// Linear/Notion usually support multiple, but "Claim" usually means "I take it".
+	// Let's use Replace to ensure clear ownership for this feature.
+	return r.db.WithContext(ctx).Model(&task).Association("Assignees").Replace(&user)
 }
