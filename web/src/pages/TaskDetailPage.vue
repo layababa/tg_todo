@@ -351,8 +351,16 @@ onMounted(fetchData)
                         </div>
                         <div class="flex items-center gap-2">
                              <div v-if="task?.Assignees && task.Assignees.length > 0" class="flex -space-x-1">
-                                <div v-for="user in task.Assignees" :key="user.id" class="w-4 h-4 rounded-full bg-gradient-to-tr from-primary to-secondary flex items-center justify-center text-[8px] text-black font-bold ring-2 ring-base-100/50" :title="user.name">
-                                    {{ user.name[0].toUpperCase() }}
+                                <div v-for="user in task.Assignees" :key="user.id">
+                                    <img 
+                                        v-if="user.photo_url" 
+                                        :src="user.photo_url" 
+                                        class="w-4 h-4 rounded-full object-cover ring-2 ring-base-100/50" 
+                                        :title="user.name"
+                                    />
+                                    <div v-else class="w-4 h-4 rounded-full bg-gradient-to-tr from-primary to-secondary flex items-center justify-center text-[8px] text-black font-bold ring-2 ring-base-100/50" :title="user.name">
+                                        {{ user.name[0].toUpperCase() }}
+                                    </div>
                                 </div>
                             </div>
                             <div v-else class="w-4 h-4 rounded-full bg-base-content/10 flex items-center justify-center text-[8px] text-base-content/50 font-bold">
@@ -383,6 +391,7 @@ onMounted(fetchData)
                             <span class="text-[10px] uppercase font-mono tracking-wider">创建人</span>
                         </div>
                         <div class="font-bold text-sm text-primary flex items-center gap-1 truncate">
+                             <img v-if="task.Creator?.photo_url" :src="task.Creator.photo_url" class="w-4 h-4 rounded-full object-cover mr-1"/>
                              @{{ task.Creator.tg_username }} <i class="ri-external-link-line text-xs opacity-50"></i>
                         </div>
                     </a>
@@ -391,7 +400,8 @@ onMounted(fetchData)
                             <i class="ri-user-add-line text-xs"></i>
                             <span class="text-[10px] uppercase font-mono tracking-wider">创建人</span>
                         </div>
-                        <div class="font-bold text-sm truncate">
+                        <div class="font-bold text-sm truncate flex items-center gap-1">
+                             <img v-if="task?.Creator?.photo_url" :src="task.Creator.photo_url" class="w-4 h-4 rounded-full object-cover mr-1"/>
                              {{ task?.Creator?.name || '未知' }}
                         </div>
                     </div>

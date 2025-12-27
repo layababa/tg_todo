@@ -60,6 +60,7 @@ type Task struct {
 	DeletedAt       gorm.DeletedAt `gorm:"index"`
 
 	Creator   *models.User          `gorm:"foreignKey:CreatorID"`
+	Group     *models.Group         `gorm:"foreignKey:GroupID"`
 	Assignees []models.User         `gorm:"many2many:task_assignees;"`
 	Snapshots []TaskContextSnapshot `gorm:"foreignKey:TaskID"`
 	Events    []TaskEvent           `gorm:"foreignKey:TaskID"`
@@ -208,6 +209,7 @@ func (r *taskRepository) ListByUser(ctx context.Context, userID string, filter T
 		Model(&Task{}).
 		Preload("Assignees").
 		Preload("Creator").
+		Preload("Group").
 		Preload("Snapshots").
 		Where("tasks.deleted_at IS NULL")
 
@@ -283,6 +285,7 @@ func (r *taskRepository) ListPendingByGroup(ctx context.Context, groupID string)
 		Where("group_id = ? AND (sync_status = ? OR notion_page_id IS NULL) AND deleted_at IS NULL",
 			groupID, TaskSyncStatusPending).
 		Preload("Assignees").
+		Preload("Group").
 		Preload("Snapshots").
 		Find(&tasks).Error
 	if err != nil {

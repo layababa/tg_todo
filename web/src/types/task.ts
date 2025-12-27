@@ -28,6 +28,10 @@ export interface Task {
   Snapshots?: TaskContextSnapshot[];
   Assignees?: User[];
   Creator?: User;
+  Group?: {
+    id: string;
+    title: string;
+  };
 }
 
 export interface TaskDetail {

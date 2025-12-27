@@ -51,6 +51,8 @@ type CreateInput struct {
 	ChatID    int64
 	CreatorID int64 // Telegram User ID
 	Text      string
+	ChatTitle string // Optional: For group creation if missing
+	ChatType  string
 	ReplyToID int64 // Optional: Message ID being replied to
 }
 
@@ -103,11 +105,36 @@ func (c *Creator) CreateTask(ctx context.Context, input CreateInput) (*repositor
 	if err == nil && group != nil {
 		groupID = &group.ID
 		databaseID = group.DatabaseID
+
+		// Update Group Title if changed
+		if input.ChatTitle != "" && group.Title != input.ChatTitle {
+			group.Title = input.ChatTitle
+			if err := c.groupRepo.CreateOrUpdate(ctx, group); err != nil {
+				c.logger.Warn("failed to update group title", zap.Error(err))
+			} else {
+				c.logger.Info("updated group title", zap.String("id", *groupID), zap.String("new_title", input.ChatTitle))
+			}
+		}
 	} else {
-		// It's okay if group is not found (e.g. DM or uninitialized group),
-		// but typically MyChatMember should have initialized it.
-		// We treat it as individual/unbound task.
-		c.logger.Debug("group not found or error", zap.String("chat_id", groupIDStr), zap.Error(err))
+		// Group not found? If we have ChatTitle and it looks like a group, let's create it as Unbound.
+		// This ensures we can display the source name.
+		if input.ChatTitle != "" && (input.ChatType == "group" || input.ChatType == "supergroup") {
+			newGroup := &models.Group{
+				ID:        groupIDStr,
+				Title:     input.ChatTitle,
+				Status:    models.GroupStatusUnbound,
+				CreatedAt: time.Now(),
+				UpdatedAt: time.Now(),
+			}
+			if err := c.groupRepo.CreateOrUpdate(ctx, newGroup); err == nil {
+				groupID = &newGroup.ID
+				c.logger.Info("auto-created unbound group for task", zap.String("id", groupIDStr), zap.String("title", input.ChatTitle))
+			} else {
+				c.logger.Warn("failed to auto-create group", zap.Error(err))
+			}
+		} else {
+			c.logger.Debug("group not found and not created", zap.String("chat_id", groupIDStr))
+		}
 	}
 
 	// 6. Create Task in DB (DB FIRST)

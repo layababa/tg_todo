@@ -304,19 +304,28 @@ onUnmounted(() => {
                         >
                             <div class="p-4 pr-3">
                                 <div class="flex justify-between items-start mb-3">
-                                    <div class="text-sm font-medium leading-snug pr-2">{{ task.Title }}</div>
-                                    <div class="font-mono text-[10px] opacity-60 border border-base-content/20 px-1 rounded truncate max-w-[80px]">
-                                        {{ task.DatabaseID ? databases.find(d => d.id === task.DatabaseID)?.name || 'DB' : 'Manual' }}
+                                    <div class="text-sm font-medium leading-snug pr-2">
+                                        <span v-if="task.Status === 'In Progress'" class="text-primary mr-1" title="进行中">▶</span>
+                                        {{ task.Title }}
+                                    </div>
+                                    <div class="font-mono text-[10px] opacity-60 border border-base-content/20 px-1 rounded truncate max-w-[80px]" :title="task.Group?.title || '本地'">
+                                        {{ task.Group?.title || '本地' }}
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-4 text-xs text-base-content/60 font-mono">
                                     <div class="flex items-center gap-1.5">
-                                        <i class="ri-user-3-line"></i>
-                                        <span>{{ task.Assignees?.[0]?.FirstName || 'Me' }}</span>
+                                        <img 
+                                            v-if="task.Assignees?.[0]?.photo_url"
+                                            :src="task.Assignees[0].photo_url"
+                                            class="w-4 h-4 rounded-full object-cover"
+                                            alt="Avatar"
+                                        />
+                                        <i v-else class="ri-user-3-line"></i>
+                                        <span>{{ task.Assignees?.[0]?.name || '待认领' }}</span>
                                     </div>
-                                    <div class="flex items-center gap-1.5">
-                                        <i class="ri-time-line"></i>
-                                        <span>{{ formatDate(task.CreatedAt) }}</span>
+                                    <div class="flex items-center gap-1.5" :class="{'text-primary': task.DueAt}">
+                                        <i :class="task.DueAt ? 'ri-calendar-event-line' : 'ri-time-line'"></i>
+                                        <span>{{ task.DueAt ? formatDate(task.DueAt) : formatDate(task.CreatedAt) }}</span>
                                     </div>
                                 </div>
                             </div>
