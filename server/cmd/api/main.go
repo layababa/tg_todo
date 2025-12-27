@@ -131,6 +131,7 @@ func main() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	r := gin.New()
+	r.Use(gin.Logger())
 	r.Use(middleware.RequestID())
 	r.Use(middleware.Recovery(logger))
 	r.Use(middleware.CORS())
