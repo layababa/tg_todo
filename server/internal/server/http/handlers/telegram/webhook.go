@@ -88,7 +88,8 @@ type Message struct {
 	Text            string `json:"text"`
 	MessageThreadID int64  `json:"message_thread_id"`
 	ReplyToMessage  *struct {
-		MessageID int64 `json:"message_id"`
+		MessageID int64  `json:"message_id"`
+		Text      string `json:"text"`
 	} `json:"reply_to_message"`
 	ForwardDate int64 `json:"forward_date"`
 	ForwardFrom *struct {
@@ -616,12 +617,28 @@ func (h *Handler) handleTaskCommand(ctx context.Context, msg *Message) {
 	}
 	text = strings.TrimSpace(text)
 
+	// User Request: If text is empty (only mentions) and it is a reply, use the replied message as task title
+	if text == "" && msg.ReplyToMessage != nil {
+		text = msg.ReplyToMessage.Text
+	}
+
+	// Logic for Context Anchor:
+	// If creating via Reply, we want context BEFORE the replied message (the reference).
+	// If creating via Command, we want context BEFORE the command.
+	var anchorID int64
+	if msg.ReplyToMessage != nil {
+		anchorID = msg.ReplyToMessage.MessageID
+	} else {
+		anchorID = msg.MessageID
+	}
+
 	input := task.CreateInput{
-		ChatID:    msg.Chat.ID,
-		CreatorID: msg.From.ID,
-		Text:      text,
-		ChatTitle: msg.Chat.Title,
-		ChatType:  msg.Chat.Type,
+		ChatID:          msg.Chat.ID,
+		CreatorID:       msg.From.ID,
+		Text:            text,
+		ChatTitle:       msg.Chat.Title,
+		ChatType:        msg.Chat.Type,
+		AnchorMessageID: anchorID,
 	}
 	if msg.ReplyToMessage != nil {
 		input.ReplyToID = msg.ReplyToMessage.MessageID

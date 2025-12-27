@@ -51,16 +51,22 @@ func NewCreator(cfg CreatorConfig) *Creator {
 
 // CreateInput represents input for creating a task
 type CreateInput struct {
-	ChatID    int64
-	CreatorID int64 // Telegram User ID
-	Text      string
-	ChatTitle string // Optional: For group creation if missing
-	ChatType  string
-	ReplyToID int64 // Optional: Message ID being replied to
+	ChatID          int64
+	CreatorID       int64 // Telegram User ID
+	Text            string
+	ChatTitle       string // Optional: For group creation if missing
+	ChatType        string
+	ReplyToID       int64 // Optional: Message ID being replied to
+	AnchorMessageID int64 // Optional: Message ID to anchor context (fetch messages before this)
 }
 
 // CreateTask creates a task from telegram input
 func (c *Creator) CreateTask(ctx context.Context, input CreateInput) (*repository.Task, []string, error) {
+	// ... (rest of function, captureContext call needs update)
+	// Actually I can just update the captureContext call site in CreateTask function body and the function definition.
+	// But replace_file_content is for contiguous blocks.
+	// Let's split this.
+
 	// 1. Find or Create Creator User
 	creator, err := c.userRepo.FindByTgID(ctx, input.CreatorID)
 	if err != nil {
@@ -94,7 +100,12 @@ func (c *Creator) CreateTask(ctx context.Context, input CreateInput) (*repositor
 	}
 
 	// 4. Capture Context (Last 10 messages)
-	snapshots, err := c.captureContext(ctx, input.ChatID, input.ReplyToID)
+	// If AnchorMessageID is set, use it. Otherwise use ReplyToID if present (old behavior?), or just current?
+	// The requirement: "Timeline save should be reference message above 10 entries".
+	// So if ReplyToID (Reference) is set, Anchor = ReplyToID.
+	// We will logic this in webhook handler or here. Logic here is safer.
+	// Let's pass AnchorMessageID explicitly from input.
+	snapshots, err := c.captureContext(ctx, input.ChatID, input.AnchorMessageID)
 	if err != nil {
 		c.logger.Warn("failed to capture context", zap.Error(err))
 		// Continue without context
@@ -239,8 +250,8 @@ func (c *Creator) parseCommand(text string) (string, []string) {
 }
 
 // captureContext retrieves recent messages from telegram_updates
-func (c *Creator) captureContext(ctx context.Context, chatID int64, replyToID int64) ([]repository.TaskContextSnapshot, error) {
-	updates, err := c.updateRepo.GetRecentMessages(ctx, chatID, 10)
+func (c *Creator) captureContext(ctx context.Context, chatID int64, anchorID int64) ([]repository.TaskContextSnapshot, error) {
+	updates, err := c.updateRepo.GetRecentMessages(ctx, chatID, 10, anchorID)
 	if err != nil {
 		return nil, err
 	}

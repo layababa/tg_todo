@@ -299,7 +299,7 @@ func (m *mockUpdateRepo) Save(context.Context, *repository.TelegramUpdate) error
 	return m.err
 }
 
-func (m *mockUpdateRepo) GetRecentMessages(context.Context, int64, int) ([]repository.TelegramUpdate, error) {
+func (m *mockUpdateRepo) GetRecentMessages(context.Context, int64, int, int64) ([]repository.TelegramUpdate, error) {
 	return nil, nil // Return empty list for tests by default
 }
 

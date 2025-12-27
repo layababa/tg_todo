@@ -44,7 +44,8 @@ func TestShouldCreateTask(t *testing.T) {
 				},
 				Text: "@user 处理这个",
 				ReplyToMessage: &struct {
-					MessageID int64 `json:"message_id"`
+					MessageID int64  `json:"message_id"`
+					Text      string `json:"text"`
 				}{
 					MessageID: 999,
 				},
@@ -64,7 +65,8 @@ func TestShouldCreateTask(t *testing.T) {
 				},
 				Text: "@test_bot @user 处理这个",
 				ReplyToMessage: &struct {
-					MessageID int64 `json:"message_id"`
+					MessageID int64  `json:"message_id"`
+					Text      string `json:"text"`
 				}{
 					MessageID: 999,
 				},

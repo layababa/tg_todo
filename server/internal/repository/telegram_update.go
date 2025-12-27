@@ -21,7 +21,7 @@ type TelegramUpdate struct {
 // TelegramUpdateRepository handles database operations for telegram updates
 type TelegramUpdateRepository interface {
 	Save(ctx context.Context, update *TelegramUpdate) error
-	GetRecentMessages(ctx context.Context, chatID int64, limit int) ([]TelegramUpdate, error)
+	GetRecentMessages(ctx context.Context, chatID int64, limit int, beforeID int64) ([]TelegramUpdate, error)
 }
 
 type telegramUpdateRepository struct {
@@ -38,26 +38,33 @@ func (r *telegramUpdateRepository) Save(ctx context.Context, update *TelegramUpd
 	return r.db.WithContext(ctx).Create(update).Error
 }
 
-// GetRecentMessages retrieves the last N messages for a chat
-func (r *telegramUpdateRepository) GetRecentMessages(ctx context.Context, chatID int64, limit int) ([]TelegramUpdate, error) {
+// GetRecentMessages retrieves the last N messages for a chat, optionally before a specific update ID
+func (r *telegramUpdateRepository) GetRecentMessages(ctx context.Context, chatID int64, limit int, beforeID int64) ([]TelegramUpdate, error) {
 	var updates []TelegramUpdate
-	// Query JSONB: raw_data->'message'->'chat'->'id'
-	// Note: ->> returns text, so we must compare with string representation of chatID
 	chatIDStr := fmt.Sprintf("%d", chatID)
-	err := r.db.WithContext(ctx).
-		Where("raw_data -> 'message' -> 'chat' ->> 'id' = ?", chatIDStr).
+
+	query := r.db.WithContext(ctx).
+		Where("raw_data -> 'message' -> 'chat' ->> 'id' = ?", chatIDStr)
+
+	if beforeID > 0 {
+		// assuming update_id is sequential, we filter by update_id < beforeID
+		// Or should we use message_id?
+		// TelegramUpdate stores raw JSON. We don't have indexed message_id column (only UpdateID).
+		// However, we want context *before the referenced message*.
+		// If we use UpdateID, we need to know the UpdateID of the referenced message.
+		// We only have MessageID from ReplyToMessage.
+		// Querying JSONB for message_id is slow but works for small datasets or with GIN index.
+		// Ideally we should extract message_id to a column.
+		// For now, let's query raw_data->'message'->'message_id' < ?
+		query = query.Where("(raw_data -> 'message' ->> 'message_id')::int < ?", beforeID)
+	}
+
+	err := query.
 		Order("created_at DESC").
 		Limit(limit).
 		Find(&updates).Error
 	if err != nil {
 		return nil, err
 	}
-	// Reverse order to be chronological? Usually nice for context.
-	// But slice reverse is manual in Go.
-	// We can return DESC and let service reverse or usage decide.
-	// Creator usage implies chronological context list.
-	// Let's keep it DESC here (newest first) for efficient DB query, then caller might reverse.
-	// Actually for "Context Snapshot", chronological (oldest to newest) makes sense for reading.
-	// But to get "last 10", we MUST sort DESC Limit 10, THEN reverse.
 	return updates, nil
 }

@@ -24,8 +24,8 @@ func (m *MockUpdateRepo) Save(ctx context.Context, u *repository.TelegramUpdate)
 	return m.Called(ctx, u).Error(0)
 }
 
-func (m *MockUpdateRepo) GetRecentMessages(ctx context.Context, chatID int64, limit int) ([]repository.TelegramUpdate, error) {
-	args := m.Called(ctx, chatID, limit)
+func (m *MockUpdateRepo) GetRecentMessages(ctx context.Context, chatID int64, limit int, beforeID int64) ([]repository.TelegramUpdate, error) {
+	args := m.Called(ctx, chatID, limit, beforeID)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
