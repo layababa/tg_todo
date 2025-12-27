@@ -7,38 +7,141 @@ on:
     branches: [main]
 
 env:
-  GO_VERSION: '1.21.x'
-  NODE_VERSION: '20.x'
+  GO_VERSION: "1.21.x"
+  NODE_VERSION: "20.x"
 
 jobs:
   backend:
+    name: Backend CI
     runs-on: ubuntu-latest
+    # Run on PRs or push to main
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
     defaults:
       run:
         working-directory: server
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
         with:
           go-version: ${{ env.GO_VERSION }}
-      - name: Go test
-        run: GOCACHE=$RUNNER_TEMP/go-cache go test ./...
+          cache: true
+          cache-dependency-path: server/go.sum
+
+      - name: Go Format Check
+        run: |
+          if [ -n "$(gofmt -l .)" ]; then
+            echo "The following files are not formatted:"
+            gofmt -l .
+            exit 1
+          fi
+
+      - name: Go Test
+        run: go test -v ./...
+
+      - name: Go Build Check (API)
+        run: go build -v -o /dev/null ./cmd/api
+
+      - name: Go Build Check (Bot)
+        run: go build -v -o /dev/null ./cmd/bot
 
   frontend:
+    name: Frontend CI
     runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
     defaults:
       run:
         working-directory: web
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "pnpm"
           cache-dependency-path: web/package-lock.json
+
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install
+
       - name: Lint
-        run: npm run lint
+        run: pnpm run lint
+
+      - name: Type Check
+        run: pnpm run type-check
+
       - name: Unit tests
-        run: npm run test
+        run: pnpm run test
+
+      - name: Build Check
+        run: pnpm run build
+
+  deploy:
+    name: Build & Push to GHCR
+    needs: [backend, frontend]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push API image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./server
+          file: ./server/Dockerfile
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/tg_todo_api:latest
+
+      - name: Build and push Bot image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./server
+          file: ./server/Dockerfile
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/tg_todo_bot:latest
+          build-args: |
+            BUILD_COMMAND=/bin/bot
+
+      - name: Build and push Web image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./web/Dockerfile
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/tg_todo_web:latest
+          build-args: |
+            VITE_API_BASE_URL=https://ddddapiprod.zcvyzest.xyz
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 10321
+          script: |
+            cd /root/tg_todo
+            git pull origin main
+            cd infra
+            # 使用环境变量替换镜像中的用户名（仅为占位符，由 docker compose 自动填充或在此注入）
+            export GITHUB_REPOSITORY_OWNER=${{ github.repository_owner }}
+            docker compose -f docker-compose.prod.yml pull
+            docker compose -f docker-compose.prod.yml up -d
+            docker image prune -f

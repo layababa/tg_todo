@@ -11,10 +11,7 @@ services:
       - postgres-prod-data:/var/lib/postgresql/data
 
   api:
-    image: tg_todo_api:prod
-    build:
-      context: ../server
-      dockerfile: Dockerfile
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/tg_todo_api:latest
     container_name: tg_todo_prod_api
     restart: unless-stopped
     env_file:
@@ -34,10 +31,7 @@ services:
       - db
 
   bot:
-    image: tg_todo_bot:prod
-    build:
-      context: ../server
-      dockerfile: Dockerfile
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/tg_todo_bot:latest
     container_name: tg_todo_prod_bot
     command: ["/bin/bot"]
     restart: unless-stopped
@@ -55,12 +49,7 @@ services:
       - db
 
   web:
-    image: tg_todo_web:prod
-    build:
-      context: ..
-      dockerfile: web/Dockerfile
-      args:
-        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-https://api.xwqpfzmlj.com}
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/tg_todo_web:latest
     container_name: tg_todo_prod_web
     restart: unless-stopped
     ports:
