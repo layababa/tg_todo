@@ -278,6 +278,7 @@ func main() {
 		Logger:       logger,
 		Deduplicator: deduplicator,
 		Repo:         tgUpdateRepo,
+		UserRepo:     userRepo,
 		TaskCreator:  taskCreator,
 		TaskService:  taskService, // Injected TaskService
 		GroupService: groupService,
