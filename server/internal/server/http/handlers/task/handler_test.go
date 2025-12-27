@@ -153,6 +153,8 @@ func TestDeleteTaskFailure(t *testing.T) {
 	logger := zap.NewNop()
 	h := NewHandler(logger, service, new(mockUserGroupRepo))
 
+	creatorID := "user-1"
+	service.On("GetTask", mock.Anything, "task-1").Return(&repository.Task{ID: "task-1", CreatorID: &creatorID}, nil)
 	service.On("DeleteTask", mock.Anything, "task-1").Return(errors.New("boom"))
 
 	w := httptest.NewRecorder()

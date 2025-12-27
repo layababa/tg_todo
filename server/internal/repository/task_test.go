@@ -20,6 +20,7 @@ func setupTaskTestDB(t *testing.T) *gorm.DB {
 			id TEXT PRIMARY KEY,
 			notion_page_id TEXT,
 			title TEXT NOT NULL,
+			description TEXT,
 			status TEXT,
 			sync_status TEXT,
 			group_id TEXT,
@@ -30,6 +31,8 @@ func setupTaskTestDB(t *testing.T) *gorm.DB {
 			chat_jump_url TEXT,
 			notion_url TEXT,
 			archived BOOLEAN DEFAULT 0,
+			reminder_1h_sent BOOLEAN DEFAULT 0,
+			reminder_due_sent BOOLEAN DEFAULT 0,
 			created_at DATETIME,
 			updated_at DATETIME,
 			deleted_at DATETIME
