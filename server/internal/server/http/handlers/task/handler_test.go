@@ -57,8 +57,8 @@ func (m *mockTaskService) CreateWebTask(ctx context.Context, userID, title, desc
 	return args.Get(0).(*repository.Task), args.Error(1)
 }
 
-func (m *mockTaskService) CreateComment(ctx context.Context, taskID, userID, content string) (*repository.TaskComment, error) {
-	args := m.Called(ctx, taskID, userID, content)
+func (m *mockTaskService) CreateComment(ctx context.Context, taskID, userID, content string, parentID *string) (*repository.TaskComment, error) {
+	args := m.Called(ctx, taskID, userID, content, parentID)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}

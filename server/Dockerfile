@@ -16,8 +16,7 @@ RUN go mod download
 COPY . .
 
 # Build the applications
-RUN CGO_ENABLED=0 GOOS=linux go build -o api ./cmd/api && \
-    CGO_ENABLED=0 GOOS=linux go build -o bot ./cmd/bot
+RUN CGO_ENABLED=0 GOOS=linux go build -o api ./cmd/api
 
 # Runtime stage
 FROM alpine:3.19
@@ -29,7 +28,6 @@ RUN apk add --no-cache ca-certificates tzdata
 
 # Copy binaries from builder
 COPY --from=builder /app/api ./api
-COPY --from=builder /app/bot ./bot
 
 # Copy config
 COPY --from=builder /app/config ./config

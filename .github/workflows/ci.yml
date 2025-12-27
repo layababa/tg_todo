@@ -108,16 +108,6 @@ jobs:
           push: true
           tags: ghcr.io/${{ github.repository_owner }}/tg_todo_api:latest
 
-      - name: Build and push Bot image
-        uses: docker/build-push-action@v5
-        with:
-          context: ./server
-          file: ./server/Dockerfile
-          push: true
-          tags: ghcr.io/${{ github.repository_owner }}/tg_todo_bot:latest
-          build-args: |
-            BUILD_COMMAND=/bin/bot
-
       - name: Build and push Web image
         uses: docker/build-push-action@v5
         with:

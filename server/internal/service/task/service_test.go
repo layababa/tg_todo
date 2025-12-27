@@ -52,8 +52,12 @@ func (m *mockTaskRepository) Update(ctx context.Context, task *repository.Task) 
 	return m.Called(ctx, task).Error(0)
 }
 
-func (m *mockTaskRepository) CreateComment(ctx context.Context, comment *repository.TaskComment) error {
-	return m.Called(ctx, comment).Error(0)
+func (m *mockTaskRepository) CreateComment(ctx context.Context, comment *repository.TaskComment) (*repository.TaskComment, error) {
+	args := m.Called(ctx, comment)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*repository.TaskComment), args.Error(1)
 }
 
 func (m *mockTaskRepository) ListComments(ctx context.Context, taskID string) ([]repository.TaskComment, error) {

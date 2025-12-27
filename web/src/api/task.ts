@@ -34,6 +34,7 @@ export interface PatchTaskRequest {
   title?: string;
   status?: string;
   due_at?: string | null;
+  description?: string;
 }
 
 export const patchTask = async (
