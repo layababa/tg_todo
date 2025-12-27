@@ -1,9 +1,0 @@
-﻿2025-12-27T13:04:23.0347412Z ##[group]Run go build -v -o /dev/null ./cmd/bot
-2025-12-27T13:04:23.0347761Z [36;1mgo build -v -o /dev/null ./cmd/bot[0m
-2025-12-27T13:04:23.0380203Z shell: /usr/bin/bash -e {0}
-2025-12-27T13:04:23.0380428Z env:
-2025-12-27T13:04:23.0380584Z   GO_VERSION: 1.21.x
-2025-12-27T13:04:23.0380769Z   NODE_VERSION: 20.x
-2025-12-27T13:04:23.0380934Z ##[endgroup]
-2025-12-27T13:04:23.0503034Z stat /home/runner/work/tg_todo/tg_todo/server/cmd/bot: directory not found
-2025-12-27T13:04:23.0520551Z ##[error]Process completed with exit code 1.

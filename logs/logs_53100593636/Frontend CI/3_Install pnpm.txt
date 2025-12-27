@@ -1,0 +1,23 @@
+﻿2025-12-27T14:58:03.7178417Z ##[group]Run pnpm/action-setup@v3
+2025-12-27T14:58:03.7178758Z with:
+2025-12-27T14:58:03.7178928Z   version: 8
+2025-12-27T14:58:03.7179101Z   dest: ~/setup-pnpm
+2025-12-27T14:58:03.7179298Z   run_install: null
+2025-12-27T14:58:03.7179496Z   package_json_file: package.json
+2025-12-27T14:58:03.7179722Z   standalone: false
+2025-12-27T14:58:03.7180126Z env:
+2025-12-27T14:58:03.7180292Z   GO_VERSION: 1.21.x
+2025-12-27T14:58:03.7180475Z   NODE_VERSION: 20.x
+2025-12-27T14:58:03.7180659Z ##[endgroup]
+2025-12-27T14:58:03.8051437Z ##[group]Running self-installer...
+2025-12-27T14:58:04.4229607Z Progress: resolved 1, reused 0, downloaded 0, added 0
+2025-12-27T14:58:04.4362918Z Packages: +1
+2025-12-27T14:58:04.4374048Z +
+2025-12-27T14:58:04.8154567Z Progress: resolved 1, reused 0, downloaded 1, added 1, done
+2025-12-27T14:58:04.8406385Z 
+2025-12-27T14:58:04.8406858Z dependencies:
+2025-12-27T14:58:04.8407264Z + pnpm 8.15.9 (10.26.2 is available)
+2025-12-27T14:58:04.8407499Z 
+2025-12-27T14:58:04.8433965Z Done in 863ms
+2025-12-27T14:58:04.8608286Z ##[endgroup]
+2025-12-27T14:58:04.8612245Z Installation Completed!

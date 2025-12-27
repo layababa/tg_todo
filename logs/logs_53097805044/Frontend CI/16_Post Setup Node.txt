@@ -1,5 +1,0 @@
-﻿2025-12-27T13:07:37.3381568Z Post job cleanup.
-2025-12-27T13:07:37.4989790Z [command]/usr/bin/tar --posix -cf cache.tzst --exclude cache.tzst -P -C /home/runner/work/tg_todo/tg_todo --files-from manifest.txt --use-compress-program zstdmt
-2025-12-27T13:07:39.5840254Z Sent 44236800 of 46722637 (94.7%), 42.1 MBs/sec
-2025-12-27T13:07:39.8380156Z Sent 46722637 of 46722637 (100.0%), 35.5 MBs/sec
-2025-12-27T13:07:40.0785469Z Cache saved with the key: node-cache-Linux-x64-pnpm-61f7b5c2c4a86378e1f147606eed6635a3ad0895e20f9f1ebf1e3dc45c9b7b0f

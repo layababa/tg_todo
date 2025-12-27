@@ -1,0 +1,32 @@
+﻿2025-12-27T14:58:00.5069538Z Current runner version: '2.330.0'
+2025-12-27T14:58:00.5095007Z ##[group]Runner Image Provisioner
+2025-12-27T14:58:00.5095968Z Hosted Compute Agent
+2025-12-27T14:58:00.5096515Z Version: 20251211.462
+2025-12-27T14:58:00.5097066Z Commit: 6cbad8c2bb55d58165063d031ccabf57e2d2db61
+2025-12-27T14:58:00.5097869Z Build Date: 2025-12-11T16:28:49Z
+2025-12-27T14:58:00.5098485Z Worker ID: {636a57f5-01df-4bf4-a488-1a7fa5942af8}
+2025-12-27T14:58:00.5099139Z ##[endgroup]
+2025-12-27T14:58:00.5099692Z ##[group]Operating System
+2025-12-27T14:58:00.5100255Z Ubuntu
+2025-12-27T14:58:00.5100688Z 24.04.3
+2025-12-27T14:58:00.5101229Z LTS
+2025-12-27T14:58:00.5101655Z ##[endgroup]
+2025-12-27T14:58:00.5102140Z ##[group]Runner Image
+2025-12-27T14:58:00.5102736Z Image: ubuntu-24.04
+2025-12-27T14:58:00.5103484Z Version: 20251215.174.1
+2025-12-27T14:58:00.5104579Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20251215.174/images/ubuntu/Ubuntu2404-Readme.md
+2025-12-27T14:58:00.5105991Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20251215.174
+2025-12-27T14:58:00.5107233Z ##[endgroup]
+2025-12-27T14:58:00.5108331Z ##[group]GITHUB_TOKEN Permissions
+2025-12-27T14:58:00.5110187Z Contents: read
+2025-12-27T14:58:00.5110807Z Metadata: read
+2025-12-27T14:58:00.5111324Z Packages: read
+2025-12-27T14:58:00.5111816Z ##[endgroup]
+2025-12-27T14:58:00.5114494Z Secret source: Actions
+2025-12-27T14:58:00.5115514Z Prepare workflow directory
+2025-12-27T14:58:00.5532101Z Prepare all required actions
+2025-12-27T14:58:00.5572990Z Getting action download info
+2025-12-27T14:58:00.9126496Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+2025-12-27T14:58:01.1153076Z Download action repository 'pnpm/action-setup@v3' (SHA:a3252b78c470c02df07e9d59298aecedc3ccdd6d)
+2025-12-27T14:58:02.0073571Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+2025-12-27T14:58:02.2663662Z Complete job name: Frontend CI
