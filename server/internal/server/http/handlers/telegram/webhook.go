@@ -724,6 +724,13 @@ func (h *Handler) handleTaskCommand(ctx context.Context, msg *Message) {
 }
 
 func (h *Handler) sendMessage(chatID int64, text string, markup interface{}, replyToID int64, threadID int64) {
+	// When replying to a message, Telegram infers the thread from the replied message.
+	// Providing message_thread_id explicitly can cause "message thread not found" errors
+	// if there's a mismatch or specific behavior with General topics or thread roots.
+	if replyToID != 0 {
+		threadID = 0
+	}
+
 	h.logger.Debug("sendMessage called",
 		zap.Int64("chatID", chatID),
 		zap.Bool("hasMarkup", markup != nil),
