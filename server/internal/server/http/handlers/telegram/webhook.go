@@ -173,9 +173,6 @@ func (h *Handler) HandleWebhook(c *gin.Context) {
 		return
 	}
 
-	// Debug: log raw update
-	h.logger.Debug("received telegram update", zap.String("raw_json", string(body)))
-
 	// 3. Parse Update
 	var update Update
 	if err := json.Unmarshal(body, &update); err != nil {
