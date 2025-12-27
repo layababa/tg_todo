@@ -84,8 +84,9 @@ type Message struct {
 		Type  string `json:"type"` // private, group, supergroup
 		Title string `json:"title"`
 	} `json:"chat"`
-	Text           string `json:"text"`
-	ReplyToMessage *struct {
+	Text            string `json:"text"`
+	MessageThreadID int64  `json:"message_thread_id"`
+	ReplyToMessage  *struct {
 		MessageID int64 `json:"message_id"`
 	} `json:"reply_to_message"`
 	ForwardDate int64 `json:"forward_date"`
@@ -252,7 +253,7 @@ func (h *Handler) HandleWebhook(c *gin.Context) {
 					)
 				}
 
-				h.sendMessage(mcm.Chat.ID, welcomeText, markup, 0)
+				h.sendMessage(mcm.Chat.ID, welcomeText, markup, 0, 0)
 			}
 		} else if status == "left" || status == "kicked" {
 			// Bot left
@@ -292,19 +293,19 @@ func (h *Handler) HandleWebhook(c *gin.Context) {
 		cmd, args := extractCommand(msg.Text)
 		switch cmd {
 		case "/start":
-			h.handleStart(ctx, msg.Chat.ID, args)
+			h.handleStart(ctx, msg.Chat.ID, msg.MessageThreadID, args)
 		case "/help":
-			h.handleHelp(msg.Chat.ID)
+			h.handleHelp(msg.Chat.ID, msg.MessageThreadID)
 		case "/settings":
-			h.handleSettings(msg.Chat.ID, msg.Chat.Type)
+			h.handleSettings(msg.Chat.ID, msg.MessageThreadID, msg.Chat.Type)
 		case "/bind":
-			h.handleBind(ctx, msg.Chat.ID, msg.From.ID, msg.Chat.Title)
+			h.handleBind(ctx, msg.Chat.ID, msg.From.ID, msg.MessageThreadID, msg.Chat.Title)
 		case "/todo":
 			h.handleTaskCommand(ctx, msg)
 		case "/menu":
-			h.handleMenu(msg.Chat.ID)
+			h.handleMenu(msg.Chat.ID, msg.MessageThreadID)
 		case "/close", "/hide":
-			h.handleHideKeyboard(msg.Chat.ID)
+			h.handleHideKeyboard(msg.Chat.ID, msg.MessageThreadID)
 		default:
 			// PRD Story S1/S2: 群聊中 @Bot 或 Reply + @Bot 创建任务
 			if h.shouldCreateTask(msg) {
@@ -477,7 +478,7 @@ func (h *Handler) handleCallbackQuery(ctx context.Context, cq *CallbackQuery) {
 	}
 }
 
-func (h *Handler) handleStart(ctx context.Context, chatID int64, args []string) {
+func (h *Handler) handleStart(ctx context.Context, chatID int64, threadID int64, args []string) {
 	var startParam string
 	if len(args) > 0 {
 		startParam = args[0]
@@ -487,16 +488,16 @@ func (h *Handler) handleStart(ctx context.Context, chatID int64, args []string) 
 	if link := h.resolveShareableLink(startParam); link != "" {
 		text += fmt.Sprintf("\n\n🔗 直接打开：%s", link)
 	}
-	h.sendMessage(chatID, text, openAppMarkup, 0)
+	h.sendMessage(chatID, text, openAppMarkup, 0, threadID)
 
 	quickActions := "⚡️ 快捷操作：\n" +
 		"• 点 /todo 直接创建任务\n" +
 		"• 点 /settings 设置默认数据库\n" +
 		"• 点 /help 查看全部指令"
-	h.sendMessage(chatID, quickActions, h.buildQuickCommandKeyboard(), 0)
+	h.sendMessage(chatID, quickActions, h.buildQuickCommandKeyboard(), 0, threadID)
 }
 
-func (h *Handler) handleHelp(chatID int64) {
+func (h *Handler) handleHelp(chatID int64, threadID int64) {
 	text := "🆘 指令清单：\n" +
 		"/start — 开始使用 / 打开 Mini App\n" +
 		"/menu — 展示快捷菜单（/todo、/settings 等）\n" +
@@ -506,12 +507,12 @@ func (h *Handler) handleHelp(chatID int64) {
 		"/bind — (群管理员) 绑定当前群的 Notion 数据库\n" +
 		"/todo — (群聊) 快速创建任务，或引用消息后 @Bot 生成任务\n\n" +
 		"更多使用说明：Mini App > 帮助中心。"
-	h.sendMessage(chatID, text, h.buildHelpInlineMarkup(), 0)
+	h.sendMessage(chatID, text, h.buildHelpInlineMarkup(), 0, threadID)
 }
 
-func (h *Handler) handleSettings(chatID int64, chatType string) {
+func (h *Handler) handleSettings(chatID int64, threadID int64, chatType string) {
 	if chatType != "private" {
-		h.sendMessage(chatID, "⚠️ 请在与机器人私聊中输入 /settings，以免泄露个人设置。", nil, 0)
+		h.sendMessage(chatID, "⚠️ 请在与机器人私聊中输入 /settings，以免泄露个人设置。", nil, 0, threadID)
 		return
 	}
 	const startParam = "settings"
@@ -520,10 +521,10 @@ func (h *Handler) handleSettings(chatID int64, chatType string) {
 	if link := h.resolveShareableLink(startParam); link != "" {
 		text += fmt.Sprintf("\n\n🔗 直接打开：%s", link)
 	}
-	h.sendMessage(chatID, text, markup, 0)
+	h.sendMessage(chatID, text, markup, 0, threadID)
 }
 
-func (h *Handler) handleBind(ctx context.Context, chatID, userID int64, title string) {
+func (h *Handler) handleBind(ctx context.Context, chatID, userID, threadID int64, title string) {
 	if h.groupService != nil {
 		groupID := fmt.Sprintf("%d", chatID)
 		if err := h.groupService.EnsureGroup(ctx, groupID, title, fmt.Sprintf("%d", userID)); err != nil {
@@ -537,7 +538,7 @@ func (h *Handler) handleBind(ctx context.Context, chatID, userID int64, title st
 	if link := h.resolveShareableLink(startParam); link != "" {
 		text += fmt.Sprintf("\n\n🔗 直接打开：%s", link)
 	}
-	h.sendMessage(chatID, text, markup, 0)
+	h.sendMessage(chatID, text, markup, 0, threadID)
 }
 
 func (h *Handler) handleTaskCommand(ctx context.Context, msg *Message) {
@@ -557,7 +558,7 @@ func (h *Handler) handleTaskCommand(ctx context.Context, msg *Message) {
 	createdTask, err := h.taskCreator.CreateTask(ctx, input)
 	if err != nil {
 		h.logger.Error("failed to create task", zap.Error(err))
-		h.sendMessage(msg.Chat.ID, "❌ 创建任务失败，请稍后再试。", nil, msg.MessageID)
+		h.sendMessage(msg.Chat.ID, "❌ 创建任务失败，请稍后再试。", nil, msg.MessageID, msg.MessageThreadID)
 		return
 	}
 
@@ -632,19 +633,20 @@ func (h *Handler) handleTaskCommand(ctx context.Context, msg *Message) {
 		}
 	}
 
-	h.sendMessage(msg.Chat.ID, replyText, markup, msg.MessageID)
+	h.sendMessage(msg.Chat.ID, replyText, markup, msg.MessageID, msg.MessageThreadID)
 }
 
-func (h *Handler) sendMessage(chatID int64, text string, markup interface{}, replyToID int64) {
+func (h *Handler) sendMessage(chatID int64, text string, markup interface{}, replyToID int64, threadID int64) {
 	h.logger.Debug("sendMessage called",
 		zap.Int64("chatID", chatID),
 		zap.Bool("hasMarkup", markup != nil),
-		zap.Int64("replyToID", replyToID))
+		zap.Int64("replyToID", replyToID),
+		zap.Int64("threadID", threadID))
 	var err error
 	if markup != nil {
-		err = h.tgClient.SendMessageWithMarkupAndReply(chatID, text, markup, replyToID)
+		err = h.tgClient.SendMessageWithMarkupAndReplyAndThread(chatID, text, markup, replyToID, threadID)
 	} else {
-		err = h.tgClient.SendMessageWithReply(chatID, text, replyToID)
+		err = h.tgClient.SendMessageWithReplyAndThread(chatID, text, replyToID, threadID)
 	}
 	if err != nil {
 		h.logger.Error("failed to send telegram message", zap.Error(err), zap.Int64("chat_id", chatID))
@@ -769,12 +771,12 @@ func (h *Handler) buildHelpInlineMarkup() *telegram.InlineKeyboardMarkup {
 	}
 }
 
-func (h *Handler) handleMenu(chatID int64) {
-	h.sendMessage(chatID, "📋 已为您展示快捷菜单，直接点按钮即可发送指令。输入 /close 可以在任意时刻隐藏。", h.buildQuickCommandKeyboard(), 0)
+func (h *Handler) handleMenu(chatID int64, threadID int64) {
+	h.sendMessage(chatID, "📋 已为您展示快捷菜单，直接点按钮即可发送指令。输入 /close 可以在任意时刻隐藏。", h.buildQuickCommandKeyboard(), 0, threadID)
 }
 
-func (h *Handler) handleHideKeyboard(chatID int64) {
-	h.sendMessage(chatID, "✅ 已隐藏快捷菜单，如需再次显示请输入 /menu。", &telegram.ReplyKeyboardRemove{RemoveKeyboard: true}, 0)
+func (h *Handler) handleHideKeyboard(chatID int64, threadID int64) {
+	h.sendMessage(chatID, "✅ 已隐藏快捷菜单，如需再次显示请输入 /menu。", &telegram.ReplyKeyboardRemove{RemoveKeyboard: true}, 0, threadID)
 }
 
 // shouldCreateTask checks if a message should trigger task creation
@@ -864,7 +866,7 @@ func (h *Handler) handleForwardedMessage(ctx context.Context, msg *Message) {
 
 	text := msg.Text
 	if text == "" {
-		h.sendMessage(msg.Chat.ID, "⚠️ 暂不支持转发非文本消息。", nil, msg.MessageID)
+		h.sendMessage(msg.Chat.ID, "⚠️ 暂不支持转发非文本消息。", nil, msg.MessageID, msg.MessageThreadID)
 		return
 	}
 
@@ -878,7 +880,7 @@ func (h *Handler) handleForwardedMessage(ctx context.Context, msg *Message) {
 	createdTask, err := h.taskCreator.CreatePersonalTask(ctx, input, meta)
 	if err != nil {
 		h.logger.Error("failed to create personal task", zap.Error(err))
-		h.sendMessage(msg.Chat.ID, "❌ 保存任务失败，请稍后再试。", nil, msg.MessageID)
+		h.sendMessage(msg.Chat.ID, "❌ 保存任务失败，请稍后再试。", nil, msg.MessageID, msg.MessageThreadID)
 		return
 	}
 
@@ -892,7 +894,7 @@ func (h *Handler) handleForwardedMessage(ctx context.Context, msg *Message) {
 	} else {
 		replyText += "\n(已同步到 Notion)"
 	}
-	h.sendMessage(msg.Chat.ID, replyText, markup, msg.MessageID)
+	h.sendMessage(msg.Chat.ID, replyText, markup, msg.MessageID, msg.MessageThreadID)
 }
 
 // ensureUser creates a user record if it doesn't exist when they interact with the bot

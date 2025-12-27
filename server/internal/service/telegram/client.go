@@ -85,18 +85,24 @@ type sendMessageReq struct {
 	ParseMode        string      `json:"parse_mode,omitempty"`
 	ReplyMarkup      interface{} `json:"reply_markup,omitempty"`
 	ReplyToMessageID int64       `json:"reply_to_message_id,omitempty"`
+	MessageThreadID  int64       `json:"message_thread_id,omitempty"`
 }
 
 func (c *Client) SendMessage(chatID int64, text string) error {
-	return c.SendMessageWithReply(chatID, text, 0)
+	return c.SendMessageWithReplyAndThread(chatID, text, 0, 0)
 }
 
 func (c *Client) SendMessageWithReply(chatID int64, text string, replyToID int64) error {
+	return c.SendMessageWithReplyAndThread(chatID, text, replyToID, 0)
+}
+
+func (c *Client) SendMessageWithReplyAndThread(chatID int64, text string, replyToID int64, threadID int64) error {
 	return c.sendJSON("sendMessage", sendMessageReq{
 		ChatID:           chatID,
 		Text:             text,
 		ParseMode:        "HTML",
 		ReplyToMessageID: replyToID,
+		MessageThreadID:  threadID,
 	})
 }
 
@@ -111,16 +117,21 @@ func (c *Client) SendMessageWithButtons(chatID int64, text string, markup Inline
 }
 
 func (c *Client) SendMessageWithMarkup(chatID int64, text string, markup interface{}) error {
-	return c.SendMessageWithMarkupAndReply(chatID, text, markup, 0)
+	return c.SendMessageWithMarkupAndReplyAndThread(chatID, text, markup, 0, 0)
 }
 
 func (c *Client) SendMessageWithMarkupAndReply(chatID int64, text string, markup interface{}, replyToID int64) error {
+	return c.SendMessageWithMarkupAndReplyAndThread(chatID, text, markup, replyToID, 0)
+}
+
+func (c *Client) SendMessageWithMarkupAndReplyAndThread(chatID int64, text string, markup interface{}, replyToID int64, threadID int64) error {
 	return c.sendJSON("sendMessage", sendMessageReq{
 		ChatID:           chatID,
 		Text:             text,
 		ParseMode:        "HTML",
 		ReplyMarkup:      markup,
 		ReplyToMessageID: replyToID,
+		MessageThreadID:  threadID,
 	})
 }
 
