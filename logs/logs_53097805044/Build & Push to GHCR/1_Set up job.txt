@@ -1,0 +1,33 @@
+﻿2025-12-27T13:07:02.4522389Z Current runner version: '2.330.0'
+2025-12-27T13:07:02.4556338Z ##[group]Runner Image Provisioner
+2025-12-27T13:07:02.4557650Z Hosted Compute Agent
+2025-12-27T13:07:02.4558559Z Version: 20251211.462
+2025-12-27T13:07:02.4559546Z Commit: 6cbad8c2bb55d58165063d031ccabf57e2d2db61
+2025-12-27T13:07:02.4560913Z Build Date: 2025-12-11T16:28:49Z
+2025-12-27T13:07:02.4562014Z Worker ID: {76316ec0-e342-49bc-9aba-35d1a3a722a1}
+2025-12-27T13:07:02.4563269Z ##[endgroup]
+2025-12-27T13:07:02.4564241Z ##[group]Operating System
+2025-12-27T13:07:02.4565483Z Ubuntu
+2025-12-27T13:07:02.4566225Z 24.04.3
+2025-12-27T13:07:02.4567302Z LTS
+2025-12-27T13:07:02.4568121Z ##[endgroup]
+2025-12-27T13:07:02.4568963Z ##[group]Runner Image
+2025-12-27T13:07:02.4569959Z Image: ubuntu-24.04
+2025-12-27T13:07:02.4570748Z Version: 20251215.174.1
+2025-12-27T13:07:02.4572682Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20251215.174/images/ubuntu/Ubuntu2404-Readme.md
+2025-12-27T13:07:02.4575444Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20251215.174
+2025-12-27T13:07:02.4577682Z ##[endgroup]
+2025-12-27T13:07:02.4579587Z ##[group]GITHUB_TOKEN Permissions
+2025-12-27T13:07:02.4582432Z Contents: read
+2025-12-27T13:07:02.4583462Z Metadata: read
+2025-12-27T13:07:02.4584241Z Packages: write
+2025-12-27T13:07:02.4585395Z ##[endgroup]
+2025-12-27T13:07:02.4588745Z Secret source: Actions
+2025-12-27T13:07:02.4590324Z Prepare workflow directory
+2025-12-27T13:07:02.5144988Z Prepare all required actions
+2025-12-27T13:07:02.5202337Z Getting action download info
+2025-12-27T13:07:02.8772305Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+2025-12-27T13:07:02.9898921Z Download action repository 'docker/login-action@v3' (SHA:5e57cd118135c172c3672efd75eb46360885c0ef)
+2025-12-27T13:07:03.4402083Z Download action repository 'docker/build-push-action@v5' (SHA:ca052bb54ab0790a636c9b5f226502c73d547a25)
+2025-12-27T13:07:03.8967808Z Download action repository 'appleboy/ssh-action@v1.0.3' (SHA:029f5b4aeeeb58fdfe1410a5d17f967dacf36262)
+2025-12-27T13:07:04.3433216Z Complete job name: Build & Push to GHCR

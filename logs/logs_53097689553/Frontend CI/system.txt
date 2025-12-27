@@ -1,0 +1,5 @@
+2025-12-27T13:02:35.9450000Z Requested labels: ubuntu-latest
+2025-12-27T13:02:35.9450000Z Job defined at: layababa/tg_todo/.github/workflows/ci.yml@refs/heads/main
+2025-12-27T13:02:35.9450000Z Waiting for a runner to pick up this job...
+2025-12-27T13:02:36.4490000Z Job is waiting for a hosted runner to come online.
+2025-12-27T13:02:36.4490000Z Job is about to start running on the hosted runner: GitHub Actions 1000006102

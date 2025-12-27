@@ -1,0 +1,8 @@
+﻿2025-12-27T13:04:21.4576171Z ##[group]Run go build -v -o /dev/null ./cmd/api
+2025-12-27T13:04:21.4576537Z [36;1mgo build -v -o /dev/null ./cmd/api[0m
+2025-12-27T13:04:21.4608456Z shell: /usr/bin/bash -e {0}
+2025-12-27T13:04:21.4608674Z env:
+2025-12-27T13:04:21.4608999Z   GO_VERSION: 1.21.x
+2025-12-27T13:04:21.4609180Z   NODE_VERSION: 20.x
+2025-12-27T13:04:21.4609355Z ##[endgroup]
+2025-12-27T13:04:21.7539296Z github.com/layababa/tg_todo/server/cmd/api

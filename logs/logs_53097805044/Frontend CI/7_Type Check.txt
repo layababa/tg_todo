@@ -1,0 +1,12 @@
+﻿2025-12-27T13:07:25.7655875Z ##[group]Run pnpm run type-check
+2025-12-27T13:07:25.7656311Z [36;1mpnpm run type-check[0m
+2025-12-27T13:07:25.7685836Z shell: /usr/bin/bash -e {0}
+2025-12-27T13:07:25.7686255Z env:
+2025-12-27T13:07:25.7686526Z   GO_VERSION: 1.21.x
+2025-12-27T13:07:25.7686840Z   NODE_VERSION: 20.x
+2025-12-27T13:07:25.7687204Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+2025-12-27T13:07:25.7687634Z ##[endgroup]
+2025-12-27T13:07:26.1468197Z 
+2025-12-27T13:07:26.1468995Z > tg-miniapp-web@0.1.0 type-check /home/runner/work/tg_todo/tg_todo/web
+2025-12-27T13:07:26.1469654Z > vue-tsc --noEmit
+2025-12-27T13:07:26.1469854Z 

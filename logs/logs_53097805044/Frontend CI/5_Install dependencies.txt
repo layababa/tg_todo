@@ -1,0 +1,77 @@
+﻿2025-12-27T13:07:08.0414888Z ##[group]Run pnpm install
+2025-12-27T13:07:08.0415253Z [36;1mpnpm install[0m
+2025-12-27T13:07:08.0445153Z shell: /usr/bin/bash -e {0}
+2025-12-27T13:07:08.0445410Z env:
+2025-12-27T13:07:08.0445795Z   GO_VERSION: 1.21.x
+2025-12-27T13:07:08.0446100Z   NODE_VERSION: 20.x
+2025-12-27T13:07:08.0446332Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+2025-12-27T13:07:08.0446609Z ##[endgroup]
+2025-12-27T13:07:08.4604587Z  WARN  Ignoring not compatible lockfile at /home/runner/work/tg_todo/tg_todo/web/pnpm-lock.yaml
+2025-12-27T13:07:08.6935925Z Progress: resolved 1, reused 0, downloaded 0, added 0
+2025-12-27T13:07:08.9032150Z  WARN  deprecated eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+2025-12-27T13:07:09.6944161Z Progress: resolved 62, reused 0, downloaded 51, added 0
+2025-12-27T13:07:10.6945808Z Progress: resolved 206, reused 0, downloaded 191, added 0
+2025-12-27T13:07:11.7040171Z Progress: resolved 328, reused 0, downloaded 300, added 0
+2025-12-27T13:07:12.7039307Z Progress: resolved 514, reused 0, downloaded 437, added 0
+2025-12-27T13:07:13.7049395Z Progress: resolved 705, reused 0, downloaded 630, added 0
+2025-12-27T13:07:14.0042042Z  WARN  5 deprecated subdependencies found: @humanwhocodes/config-array@0.13.0, @humanwhocodes/object-schema@2.0.3, glob@7.2.3, inflight@1.0.6, rimraf@3.0.2
+2025-12-27T13:07:14.0271659Z Packages: +672
+2025-12-27T13:07:14.0272453Z ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+2025-12-27T13:07:14.3651228Z Progress: resolved 715, reused 0, downloaded 672, added 672, done
+2025-12-27T13:07:14.5139180Z .../node_modules/vue-demi postinstall$ node -e "try{require('./scripts/postinstall.js')}catch(e){}"
+2025-12-27T13:07:14.5912908Z .../node_modules/vue-demi postinstall: Done
+2025-12-27T13:07:14.5999952Z .../esbuild@0.21.5/node_modules/esbuild postinstall$ node install.js
+2025-12-27T13:07:14.6393582Z .../esbuild@0.21.5/node_modules/esbuild postinstall: Done
+2025-12-27T13:07:14.6865174Z .../cypress@13.17.0/node_modules/cypress postinstall$ node index.js --exec install
+2025-12-27T13:07:15.0047086Z .../cypress@13.17.0/node_modules/cypress postinstall: Installing Cypress (version: 13.17.0)
+2025-12-27T13:07:15.0064738Z .../cypress@13.17.0/node_modules/cypress postinstall: [STARTED] Task without title.
+2025-12-27T13:07:16.7386561Z .../cypress@13.17.0/node_modules/cypress postinstall: [SUCCESS] Task without title.
+2025-12-27T13:07:16.7392313Z .../cypress@13.17.0/node_modules/cypress postinstall: [STARTED] Task without title.
+2025-12-27T13:07:21.8653693Z .../cypress@13.17.0/node_modules/cypress postinstall: [SUCCESS] Task without title.
+2025-12-27T13:07:21.8655050Z .../cypress@13.17.0/node_modules/cypress postinstall: [STARTED] Task without title.
+2025-12-27T13:07:21.8878599Z .../cypress@13.17.0/node_modules/cypress postinstall: [SUCCESS] Task without title.
+2025-12-27T13:07:22.8889158Z .../cypress@13.17.0/node_modules/cypress postinstall: You can now open Cypress by running one of the following, depending on your package manager:
+2025-12-27T13:07:22.8890462Z .../cypress@13.17.0/node_modules/cypress postinstall: - npx cypress open
+2025-12-27T13:07:22.8891609Z .../cypress@13.17.0/node_modules/cypress postinstall: - yarn cypress open
+2025-12-27T13:07:22.8894315Z .../cypress@13.17.0/node_modules/cypress postinstall: - pnpm cypress open
+2025-12-27T13:07:22.8897249Z .../cypress@13.17.0/node_modules/cypress postinstall: https://on.cypress.io/opening-the-app
+2025-12-27T13:07:22.8983012Z .../cypress@13.17.0/node_modules/cypress postinstall: Done
+2025-12-27T13:07:23.7438976Z 
+2025-12-27T13:07:23.7439620Z dependencies:
+2025-12-27T13:07:23.7440120Z + @twa-dev/sdk 7.10.1 (8.0.2 is available)
+2025-12-27T13:07:23.7440550Z + axios 1.13.2
+2025-12-27T13:07:23.7440944Z + pinia 2.3.1 (3.0.4 is available)
+2025-12-27T13:07:23.7441311Z + vue 3.5.26
+2025-12-27T13:07:23.7441629Z + vue-router 4.6.4
+2025-12-27T13:07:23.7441820Z 
+2025-12-27T13:07:23.7441962Z devDependencies:
+2025-12-27T13:07:23.7442353Z + @rushstack/eslint-patch 1.15.0
+2025-12-27T13:07:23.7443214Z + @testing-library/jest-dom 6.9.1
+2025-12-27T13:07:23.7443604Z + @testing-library/vue 8.1.0
+2025-12-27T13:07:23.7444000Z + @types/node 20.19.27 (25.0.3 is available)
+2025-12-27T13:07:23.7444478Z + @vitejs/plugin-vue 5.2.4 (6.0.3 is available)
+2025-12-27T13:07:23.7444974Z + @vitest/coverage-v8 1.6.1 (4.0.16 is available)
+2025-12-27T13:07:23.7445441Z + @vitest/ui 1.6.1 (4.0.16 is available)
+2025-12-27T13:07:23.7446169Z + @vue/eslint-config-prettier 9.0.0 (10.2.0 is available)
+2025-12-27T13:07:23.7446873Z + @vue/eslint-config-typescript 13.0.0 (14.6.0 is available)
+2025-12-27T13:07:23.7447427Z + @vue/test-utils 2.4.6
+2025-12-27T13:07:23.7447792Z + autoprefixer 10.4.23
+2025-12-27T13:07:23.7448155Z + cypress 13.17.0 (15.8.1 is available)
+2025-12-27T13:07:23.7448613Z + daisyui 4.12.24 (5.5.14 is available)
+2025-12-27T13:07:23.7449106Z + eslint 8.57.1 (9.39.2 is available) deprecated
+2025-12-27T13:07:23.7449686Z + eslint-plugin-vue 9.33.0 (10.6.2 is available)
+2025-12-27T13:07:23.7450232Z + jsdom 24.1.3 (27.4.0 is available)
+2025-12-27T13:07:23.7450637Z + postcss 8.5.6
+2025-12-27T13:07:23.7450953Z + prettier 3.7.4
+2025-12-27T13:07:23.7451288Z + stylelint 16.26.1
+2025-12-27T13:07:23.7451796Z + stylelint-config-standard 36.0.1 (39.0.1 is available)
+2025-12-27T13:07:23.7452381Z + stylelint-config-standard-vue 1.0.0
+2025-12-27T13:07:23.7452894Z + stylelint-order 6.0.4 (7.0.0 is available)
+2025-12-27T13:07:23.7453421Z + tailwindcss 3.4.19 (4.1.18 is available)
+2025-12-27T13:07:23.7453915Z + type-fest 4.41.0 (5.3.1 is available)
+2025-12-27T13:07:23.7454340Z + typescript 5.9.3
+2025-12-27T13:07:23.7454735Z + vite 5.4.21 (7.3.0 is available)
+2025-12-27T13:07:23.7455137Z + vitest 1.6.1 (4.0.16 is available)
+2025-12-27T13:07:23.7455755Z + vue-tsc 2.2.12 (3.2.1 is available)
+2025-12-27T13:07:23.7455992Z 
+2025-12-27T13:07:23.7456164Z Done in 15.6s
