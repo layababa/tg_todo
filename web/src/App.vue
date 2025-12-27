@@ -18,9 +18,9 @@ watch(() => route.path, (toPath, fromPath) => {
   const fromDepth = fromPath ? fromPath.split('/').filter(Boolean).length : 0
   
   if (toDepth < fromDepth || toPath === '/home') {
-    transitionName.value = 'page-slide-left' // Back/Pop
+    transitionName.value = 'page-slide-right' // Back/Pop
   } else {
-    transitionName.value = 'page-slide-right' // Forward/Push
+    transitionName.value = 'page-slide-left' // Forward/Push
   }
 })
 </script>

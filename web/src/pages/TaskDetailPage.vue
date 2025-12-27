@@ -22,7 +22,7 @@ const comments = ref<Comment[]>([])
 const loading = ref(true)
 const errorMessage = ref('')
 const contextOpen = ref(false)
-const hudCollapsed = ref(true)
+
 const newComment = ref('')
 const isNew = computed(() => route.params.id === 'new')
 const isSaving = ref(false)
@@ -231,7 +231,10 @@ const submitComment = async () => {
             comment.user = { id: authStore.user.id, name: authStore.user.name, photo_url: authStore.user.photo_url }
         }
         comments.value.push(comment)
-        hudCollapsed.value = true
+        nextTick(() => {
+            const el = document.querySelector('footer textarea') as HTMLTextAreaElement
+            if (el) el.style.height = 'auto'
+        })
     } catch (e) {
         newComment.value = content; replyToCommentID.value = parentID
     }
@@ -239,8 +242,10 @@ const submitComment = async () => {
 
 const setReply = (comment: Comment) => {
     replyToCommentID.value = comment.id; replyToUserName.value = comment.user?.name || 'Unknown'
-    hudCollapsed.value = false
-    nextTick(() => document.querySelector('.hud-textarea')?.focus())
+    nextTick(() => {
+        const el = document.querySelector('footer textarea') as HTMLTextAreaElement
+        el?.focus()
+    })
 }
 
 const cancelReply = () => { replyToCommentID.value = null; replyToUserName.value = '' }
@@ -254,20 +259,19 @@ const onDelete = async () => {
 }
 
 const toggleContext = () => contextOpen.value = !contextOpen.value
-const toggleHud = () => hudCollapsed.value = !hudCollapsed.value
-const onFocusComment = () => hudCollapsed.value = false
+const onFocusComment = () => {} // No-op now, just for event binding if needed
 const goBack = () => router.push('/home')
 
 onMounted(fetchData)
 </script>
 
 <template>
-  <div class="page-root">
+  <div class="page-root flex flex-col h-full overflow-hidden">
     <div class="grid-bg"></div>
     <div class="scan-line"></div>
 
-    <div class="app-container relative">
-        <header class="header sticky top-0 z-30 bg-base-100/80 backdrop-blur-md">
+    <div class="app-container flex flex-col h-full w-full relative !min-h-0 !pb-0">
+        <header class="header shrink-0 z-30 bg-base-100/95 backdrop-blur-md">
             <div class="flex items-center justify-between">
                 <button @click="goBack" class="icon-btn tech-btn !w-auto !px-2 !border-none text-sm gap-2">
                     <i class="ri-arrow-left-line"></i> 返回
@@ -289,20 +293,40 @@ onMounted(fetchData)
             </div>
         </header>
 
-        <main class="px-4 pb-32 pt-4">
+        <main class="flex-1 overflow-y-auto px-4 pt-4 pb-4 scroll-smooth">
             <div v-if="loading" class="flex justify-center mt-20">
                 <span class="loading loading-spinner text-primary"></span>
             </div>
             <div v-else-if="task">
-                <div class="flex items-center justify-between gap-4 mb-6">
+                <div class="flex items-center justify-between gap-4 mb-4">
                     <textarea v-model="task.Title" @blur="updateTitle" placeholder="Task Title..." class="detail-title-input flex-1 bg-transparent border-b border-transparent focus:border-primary text-2xl font-bold outline-none resize-none overflow-hidden" rows="1"></textarea>
                     <div class="flex items-center gap-2">
                         <button v-show="task.Title" @click="saveTask" class="btn btn-circle btn-ghost btn-sm text-primary">
                             <i class="ri-check-line text-xl"></i>
                         </button>
-                        <a v-if="task?.ChatJumpURL" :href="task.ChatJumpURL" target="_blank" class="flex items-center gap-2 px-3 py-2 bg-[#24A1DE]/5 border border-[#24A1DE]/20 hover:border-[#24A1DE] transition-all shrink-0">
-                            <i class="ri-telegram-fill text-[#24A1DE] text-lg"></i>
-                        </a>
+                    </div>
+                </div>
+
+                <!-- Metropolitan Properties Section -->
+                <div class="flex flex-col gap-3 mb-8">
+                    <!-- Row 1: Status, Assignee, Date -->
+                    <div class="flex flex-wrap items-center gap-2">
+                         <div @click="cycleStatus" class="badge badge-outline gap-1.5 h-8 px-3 cursor-pointer hover:bg-base-content/10 transition-all border-base-content/20 rounded text-xs select-none">
+                            <i class="ri-loader-2-line"></i><span class="font-bold">{{ task?.Status || '待办' }}</span>
+                        </div>
+                        <div class="badge badge-outline gap-1.5 h-8 px-3 border-base-content/20 rounded text-xs select-none text-base-content/60">
+                            <i class="ri-user-3-line"></i><span>我</span>
+                        </div>
+                        <div @click="toggleDatePicker" :class="['badge badge-outline gap-1.5 h-8 px-3 border-base-content/20 rounded text-xs cursor-pointer select-none transition-all', task?.DueAt ? 'text-primary border-primary/50' : 'text-base-content/60 hover:bg-base-content/10']">
+                            <i class="ri-calendar-event-line"></i>{{ formatDueDate(task?.DueAt) }}
+                        </div>
+                    </div>
+
+                    <!-- Row 2: External Links -->
+                    <div class="flex flex-wrap gap-2">
+                        <a v-if="task?.ChatJumpURL" :href="task.ChatJumpURL" target="_blank" class="badge badge-outline gap-1.5 h-8 px-3 text-[#24A1DE] border-[#24A1DE]/30 bg-[#24A1DE]/5 hover:bg-[#24A1DE]/10 rounded text-xs transition-all"><i class="ri-telegram-fill"></i><span>Chat Context</span></a>
+                        <a :href="`https://t.me/${authStore.user?.telegram_username || ''}`" target="_blank" class="badge badge-outline gap-1.5 h-8 px-3 text-base-content/60 border-base-content/20 hover:text-primary hover:border-primary/50 rounded text-xs transition-all"><i class="ri-user-voice-line"></i><span>PM</span></a>
+                         <a v-if="task?.NotionURL" :href="task.NotionURL" target="_blank" class="badge badge-outline gap-1.5 h-8 px-3 text-base-content/60 border-base-content/20 hover:text-white hover:border-white/50 rounded text-xs transition-all"><i class="ri-notion-fill"></i><span>Notion</span></a>
                     </div>
                 </div>
 
@@ -370,7 +394,7 @@ onMounted(fetchData)
                     </div>
                 </div>
 
-                <div class="mt-8 border-t border-base-content/10 pt-4">
+                <div class="mt-8 border-t border-base-content/10 pt-4 pb-8">
                     <div class="flex items-center justify-between mb-4">
                         <div class="text-[10px] text-primary uppercase font-mono tracking-widest">评论</div>
                         <button @click="onFocusComment" class="btn btn-xs btn-outline btn-primary">添加评论</button>
@@ -399,57 +423,37 @@ onMounted(fetchData)
                 </div>
             </div>
         </main>
-    </div>
 
-    <div v-show="!hudCollapsed" @click="hudCollapsed = true" class="hud-overlay fixed inset-0 bg-black/60 backdrop-blur-[2px] z-[900]"></div>
+        <!-- Fixed Bottom Input Footer -->
+        <footer class="shrink-0 bg-base-100/95 backdrop-blur border-t border-base-content/10 z-40 pb-[env(safe-area-inset-bottom)] transition-all duration-300">
+            <!-- Reply Hint -->
+            <div v-if="replyToCommentID" class="px-4 py-2 bg-base-content/5 flex justify-between items-center text-xs font-mono border-b border-base-content/5">
+                <span class="text-primary">REPLYING TO @{{ replyToUserName }}</span>
+                <button @click="cancelReply" class="w-5 h-5 flex items-center justify-center rounded-full hover:bg-base-content/10"><i class="ri-close-line"></i></button>
+            </div>
 
-    <div class="hud-container-fixed">
-      <div class="bottom-hud" :class="{ 'hud-collapsed': hudCollapsed }">
-          <div @click="toggleHud" class="hud-toggle-btn cursor-pointer flex justify-center py-1">
-              <i class="ri-arrow-down-s-line transition-transform duration-300" :class="{ 'rotate-180': hudCollapsed }"></i>
-          </div>
-
-          <div v-show="!hudCollapsed" class="hud-expanded-content">
-              <div class="hud-header">
-                  <div class="flex flex-wrap items-center gap-2 mb-3">
-                      <div @click="cycleStatus" class="badge badge-outline gap-1.5 h-8 px-3 cursor-pointer hover:bg-white hover:text-black transition-all border-base-content/20 rounded-none">
-                          <i class="ri-loader-2-line text-xs"></i><span class="text-xs font-bold">{{ task?.Status || '待办' }}</span>
-                      </div>
-                      <div class="badge badge-outline gap-1.5 h-8 px-3 border-base-content/20 rounded-none"><i class="ri-user-3-line text-xs"></i><span class="text-xs">我</span></div>
-                      <div @click="toggleDatePicker" class="badge badge-outline gap-1.5 h-8 px-3 border-base-content/20 rounded-none text-xs cursor-pointer hover:bg-white hover:text-black transition-all">
-                          <i class="ri-calendar-event-line"></i>{{ formatDueDate(task?.DueAt) }}
-                      </div>
-                  </div>
-                  <div class="flex gap-2 mb-4">
-                      <a v-if="task?.ChatJumpURL" :href="task.ChatJumpURL" target="_blank" class="badge badge-outline gap-1.5 h-8 px-3 text-[#24A1DE] border-base-content/20 rounded-none"><i class="ri-telegram-fill"></i><span>Chat</span></a>
-                      <a :href="`https://t.me/${authStore.user?.telegram_username || ''}`" target="_blank" class="badge badge-outline gap-1.5 h-8 px-3 text-primary border-base-content/20 rounded-none"><i class="ri-user-voice-line"></i><span>PM</span></a>
-                      <a v-if="task?.NotionURL" :href="task.NotionURL" target="_blank" class="badge badge-outline gap-1.5 h-8 px-3 text-white border-base-content/20 rounded-none"><i class="ri-notion-fill"></i><span>Notion</span></a>
-                  </div>
-              </div>
-
-              <div class="hud-body">
-                  <div v-if="replyToCommentID" class="reply-hint">
-                      REPLYING TO @{{ replyToUserName }}
-                      <button @click="cancelReply"><i class="ri-close-line"></i></button>
-                  </div>
-                  <!-- Textarea 自动填充 -->
-                  <div class="textarea-container">
-                    <textarea v-model="newComment" @focus="onFocusComment" :placeholder="replyToCommentID ? `回复 ${replyToUserName}...` : '输入 / 执行系统指令...'" class="hud-textarea"></textarea>
-                  </div>
-              </div>
-
-              <div class="hud-footer">
-                  <button @click="submitComment" class="confirm-btn" :disabled="!newComment.trim()">
-                    确认并执行指令
-                  </button>
-              </div>
-          </div>
-
-          <div v-show="hudCollapsed" class="hud-collapsed-bar" @click="onFocusComment">
-               <div class="status-dot"></div>
-               <input readonly type="text" placeholder="输入 / 执行系统指令..." class="collapsed-input">
-          </div>
-      </div>
+            <div class="p-3 flex items-end gap-3">
+                 <div class="flex-1 bg-base-200/50 rounded-lg border border-base-content/5 focus-within:border-primary/50 focus-within:bg-base-200 transition-all flex items-center">
+                    <textarea 
+                        v-model="newComment"
+                        ref="footerTextarea"
+                        rows="1"
+                        class="w-full bg-transparent border-none outline-none px-3 py-3 text-sm resize-none max-h-32 placeholder-base-content/30 leading-normal font-sans"
+                        :placeholder="replyToCommentID ? `回复 @${replyToUserName}...` : 'Write a comment...'"
+                        @input="(e) => resizeTextarea(e.target as HTMLTextAreaElement)"
+                        @focus="onFocusComment"
+                    ></textarea>
+                </div>
+                <button 
+                    @click="submitComment" 
+                    class="w-11 h-11 flex items-center justify-center rounded-full bg-primary text-black shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all text-xl shrink-0"
+                    :disabled="!newComment.trim()"
+                    :class="{ 'opacity-50 grayscale': !newComment.trim() }"
+                >
+                    <i class="ri-send-plane-fill"></i>
+                </button>
+            </div>
+        </footer>
     </div>
 
     <Teleport to="body">
@@ -477,163 +481,6 @@ onMounted(fetchData)
 </template>
 
 <style scoped>
-.bottom-hud {
-    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    background: #000000;
-    border-top: 1px solid #ABF600;
-    box-shadow: 0 -20px 60px rgba(0, 0, 0, 1);
-    width: 100%;
-    max-width: 600px;
-    margin: 0 auto;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    /* Ensure it behaves correctly in fixed container */
-    height: auto;
-}
-
-.bottom-hud:not(.hud-collapsed) {
-    /* 调整高度到 60vh */
-    height: 60vh !important; 
-}
-
-.hud-expanded-content {
-    /* 强制去除可能的高度限制 */
-    height: auto !important;
-    max-height: none !important;
-    /* 关键：使用 flex: 1 让它填充 .bottom-hud 的剩余空间 */
-    flex: 1;
-    /* 使用 Flex 纵向布局 */
-    display: flex;
-    flex-direction: column;
-    padding: 1.25rem;
-    padding-bottom: max(1.25rem, env(safe-area-inset-bottom));
-    overflow: hidden; /* 防止溢出 */
-}
-
-.hud-header {
-    flex: 0 0 auto; /* Header 高度自适应 */
-    margin-bottom: 1rem;
-}
-
-.hud-body {
-    flex: 1 1 auto; /* Body 占据剩余所有空间 */
-    display: flex;
-    flex-direction: column;
-    min-height: 0; /* 关键：允许内容收缩，防止溢出 */
-    margin-bottom: 1rem;
-    overflow-y: auto; /* 允许内部滚动 */
-}
-
-.textarea-container {
-    flex: 1; /* 容器占满 Body */
-    display: flex;
-    flex-direction: column;
-    /* 移除 height: 100% 避免在 flex 容器中行为怪异 */
-    min-height: 0; 
-}
-
-
-.hud-textarea {
-    width: 100%;
-    /* 确保填满容器 */
-    flex: 1;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 1rem;
-    color: white;
-    font-size: 1rem;
-    resize: none;
-    outline: none;
-    display: block;
-    min-height: 150px; /* 强制最小高度 */
-}
-
-.hud-textarea:focus {
-    border-color: #ABF600;
-}
-
-.hud-footer {
-    flex: 0 0 auto; /* Footer 高度自适应 */
-}
-
-.confirm-btn {
-    width: 100%;
-    background: #ABF600 !important;
-    color: black !important;
-    font-weight: 900;
-    padding: 0.75rem; /* 减小 padding 以降低高度 */
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    border: none;
-    cursor: pointer;
-    font-size: 0.875rem;
-    display: block;
-}
-
-.confirm-btn:active {
-    opacity: 0.8;
-}
-
-.confirm-btn:disabled {
-    background: #222 !important;
-    color: #444 !important;
-    cursor: not-allowed;
-}
-
-.hud-collapsed-bar {
-    background: #0a0a0a;
-    padding: 1.25rem;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    cursor: text;
-}
-
-.status-dot {
-    width: 0.5rem;
-    height: 0.5rem;
-    border-radius: 50%;
-    background: #ABF600;
-    box-shadow: 0 0 10px #ABF600;
-}
-
-.collapsed-input {
-    background: transparent;
-    flex: 1;
-    font-size: 0.875rem;
-    font-family: monospace;
-    outline: none;
-    color: rgba(171, 246, 0, 0.7);
-}
-
-.reply-hint {
-    background: rgba(171, 246, 0, 0.1);
-    border-left: 2px solid #ABF600;
-    padding: 0.5rem 0.75rem;
-    font-family: monospace;
-    font-size: 0.625rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.5rem;
-    flex: 0 0 auto;
-}
-
-.hud-container-fixed {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-    display: flex;
-    justify-content: center;
-    pointer-events: none;
-    align-items: flex-end; /* Anchor to bottom */
-}
-
-.bottom-hud { pointer-events: auto; }
-
 .context-content {
     background-color: #0e1621;
     padding: 16px 12px;

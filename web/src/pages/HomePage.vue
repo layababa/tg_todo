@@ -187,8 +187,8 @@ onUnmounted(() => {
         <div class="app-container min-h-full pb-24">
             <!-- Header -->
             <header 
-                class="header sticky top-0 z-30 bg-base-100 backdrop-blur-md"
-                :class="{ 'shadow-lg shadow-black/20': isHeaderCollapsed }"
+                class="header sticky top-0 z-30 bg-base-100/95"
+                :class="{ 'shadow-lg shadow-black/10': isHeaderCollapsed }"
             >
                 <!-- Top Bar (Always visible) -->
                 <div class="flex justify-between items-center"
@@ -277,8 +277,8 @@ onUnmounted(() => {
             <main 
                 class="px-0" 
                 id="taskList"
-                @touchstart="handleTouchStart"
-                @touchend="handleTouchEnd"
+                @touchstart.passive="handleTouchStart"
+                @touchend.passive="handleTouchEnd"
             >
                 <div v-if="loading && tasks.length === 0" class="flex flex-col gap-4 p-4">
                     <div v-for="i in 3" :key="i" class="skeleton h-24 w-full rounded bg-base-200/50"></div>
@@ -300,8 +300,7 @@ onUnmounted(() => {
                             v-for="{ task } in activeTasks" 
                             :key="task.ID" 
                             @click="goToDetail(task.ID)"
-                            class="mx-5 mb-3 bg-base-200/60 border border-base-content/10 pl-3 relative overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(171,246,0,0.1)] hover:border-primary group cursor-pointer"
-                            style="clip-path: polygon(0 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%); border-left-width: 4px;"
+                            class="mx-5 mb-3 bg-base-200/60 border border-base-content/10 pl-3 relative overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:border-primary group cursor-pointer rounded-lg border-l-4 border-l-transparent will-change-transform"
                         >
                             <div class="p-4 pr-3">
                                 <div class="flex justify-between items-start mb-3">
@@ -322,7 +321,7 @@ onUnmounted(() => {
                                 </div>
                             </div>
                             <!-- Hover Corner Effect -->
-                            <div class="absolute bottom-0 right-0 w-4 h-4 bg-gradient-to-tl from-base-content/30 to-transparent opacity-50 z-10 pointer-events-none group-hover:from-primary group-hover:opacity-100 transition-all"></div>
+                            <div class="absolute bottom-0 right-0 w-8 h-8 bg-gradient-to-tl from-base-content/10 to-transparent z-10 pointer-events-none group-hover:from-primary/20 transition-all"></div>
                         </div>
                     </div>
 
@@ -338,8 +337,7 @@ onUnmounted(() => {
                                 v-for="{ task } in doneTasks" 
                                 :key="task.ID" 
                                 @click="goToDetail(task.ID)"
-                                class="mx-5 mb-3 bg-base-200/30 border border-base-content/5 pl-3 opacity-60 grayscale transition-all hover:grayscale-0 hover:opacity-100 cursor-pointer"
-                                style="clip-path: polygon(0 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%); border-left: 4px solid var(--border-dim);"
+                                class="mx-5 mb-3 bg-base-200/30 border border-base-content/5 pl-3 opacity-60 grayscale transition-all hover:grayscale-0 hover:opacity-100 cursor-pointer rounded-lg border-l-4 border-l-base-content/20"
                             >
                                 <div class="p-4">
                                     <div class="text-sm line-through opacity-70">{{ task.Title }}</div>

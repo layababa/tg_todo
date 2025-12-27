@@ -69,7 +69,8 @@ const theme = getColorScale(props.depth)
 
         <!-- Text Bubble with Quote and Color Scale -->
         <div 
-          class="text-sm break-words leading-relaxed rounded-lg border transition-all overflow-hidden"
+          @click="onReply(comment)"
+          class="text-sm break-words leading-relaxed rounded-lg border transition-all overflow-hidden whitespace-pre-wrap cursor-pointer active:scale-[0.99] active:opacity-90 hover:bg-base-content/5"
           :style="{ 
             backgroundColor: theme.bg,
             borderColor: theme.border
