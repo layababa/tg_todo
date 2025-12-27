@@ -90,6 +90,11 @@ func (s *Service) ListTasks(ctx context.Context, userID string, params ListParam
 	return result, nil
 }
 
+// GetTaskCounts returns status counts for the user
+func (s *Service) GetTaskCounts(ctx context.Context, userID string) (*repository.TaskCounts, error) {
+	return s.repo.GetTaskCounts(ctx, userID)
+}
+
 // GetTask returns a single task by ID
 func (s *Service) GetTask(ctx context.Context, id string) (*repository.Task, error) {
 	return s.repo.GetByID(ctx, id)

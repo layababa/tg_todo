@@ -55,3 +55,19 @@ export const createTask = async (data: CreateTaskRequest): Promise<Task> => {
 export const deleteTask = async (id: string): Promise<void> => {
   await apiClient.delete(`/tasks/${id}`);
 };
+
+export interface TaskCounts {
+  assigned: number;
+  created: number;
+  done: number;
+}
+
+export interface GetTaskCountsResponse {
+  success: boolean;
+  data: TaskCounts;
+}
+
+export const getTaskCounts = async (): Promise<TaskCounts> => {
+  const res = await apiClient.get<GetTaskCountsResponse>("/tasks/counts");
+  return res.data.data;
+};

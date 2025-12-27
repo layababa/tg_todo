@@ -26,6 +26,7 @@ type taskService interface {
 	// Comment methods
 	CreateComment(ctx context.Context, taskID, userID, content string, parentID *string) (*repository.TaskComment, error)
 	ListComments(ctx context.Context, taskID string) ([]repository.TaskComment, error)
+	GetTaskCounts(ctx context.Context, userID string) (*repository.TaskCounts, error)
 }
 
 type Handler struct {
@@ -51,7 +52,7 @@ func (h *Handler) List(c *gin.Context) {
 
 	view := repository.TaskView(c.DefaultQuery("view", string(repository.TaskViewAll)))
 	switch view {
-	case repository.TaskViewAll, repository.TaskViewAssigned, repository.TaskViewCreated:
+	case repository.TaskViewAll, repository.TaskViewAssigned, repository.TaskViewCreated, repository.TaskViewDone:
 	default:
 		c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": gin.H{"code": "invalid_view", "message": "invalid view"}})
 		return
@@ -78,6 +79,23 @@ func (h *Handler) List(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"success": true, "data": gin.H{"items": items}})
+}
+
+func (h *Handler) GetCounts(c *gin.Context) {
+	user, ok := middleware.GetUserFromContext(c)
+	if !ok {
+		c.AbortWithStatus(http.StatusUnauthorized)
+		return
+	}
+
+	counts, err := h.service.GetTaskCounts(c.Request.Context(), user.ID)
+	if err != nil {
+		h.logger.Error("get task counts failed", zap.Error(err), zap.String("user_id", user.ID))
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": gin.H{"code": "internal_error", "message": "failed to get task counts"}})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"success": true, "data": counts})
 }
 
 func (h *Handler) Get(c *gin.Context) {

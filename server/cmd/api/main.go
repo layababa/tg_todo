@@ -248,6 +248,7 @@ func main() {
 	taskGroup := api.Group("/tasks")
 	taskGroup.Use(middleware.TelegramAuth(cfg.Telegram.BotToken, userRepo))
 	taskGroup.GET("", taskHandler.List)
+	taskGroup.GET("/counts", taskHandler.GetCounts)
 	taskGroup.GET("/:task_id", taskHandler.Get)
 	taskGroup.PATCH("/:task_id", taskHandler.Update)
 	taskGroup.DELETE("/:task_id", taskHandler.Delete)

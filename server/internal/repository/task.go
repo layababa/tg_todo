@@ -126,6 +126,7 @@ type TaskRepository interface {
 	ListForReminders(ctx context.Context, now time.Time) ([]Task, error)
 	UpdateReminderFlags(ctx context.Context, id string, reminder1h, reminderDue bool) error
 	AssignTask(ctx context.Context, taskID, userID string) error
+	GetTaskCounts(ctx context.Context, userID string) (*TaskCounts, error)
 }
 
 type taskRepository struct {
@@ -191,6 +192,7 @@ const (
 	TaskViewAll      TaskView = "all"
 	TaskViewAssigned TaskView = "assigned"
 	TaskViewCreated  TaskView = "created"
+	TaskViewDone     TaskView = "done"
 )
 
 // TaskListFilter contains filters for listing tasks
@@ -221,10 +223,23 @@ func (r *taskRepository) ListByUser(ctx context.Context, userID string, filter T
 	case TaskViewAssigned:
 		query = query.Group("tasks.id").
 			Joins("JOIN task_assignees ta ON ta.task_id = tasks.id").
-			Where("ta.user_id = ?", userID)
+			Where("ta.user_id = ? AND tasks.status != ?", userID, TaskStatusDone).
+			// Prioritize self-created tasks for grouped display
+			Order("tasks.creator_id = '" + userID + "' DESC")
 	case TaskViewCreated:
-		query = query.Where("tasks.creator_id = ?", userID)
-	default:
+		query = query.Where("tasks.creator_id = ? AND tasks.status != ?", userID, TaskStatusDone).
+			// Prioritize assigned to others (not self)
+			// Need a subquery or join to determine if assigned to self?
+			// Simplest: Created items usually sorted by time.
+			// Let's keep standard sort for now, grouping can be done in frontend or reliable on generic sort.
+			// Revert to time sort primarily.
+			Order("tasks.created_at DESC")
+	case TaskViewDone:
+		// Done items (Created OR Assigned) AND Status=Done
+		query = query.Group("tasks.id").
+			Joins("LEFT JOIN task_assignees ta ON ta.task_id = tasks.id").
+			Where("(tasks.creator_id = ? OR ta.user_id = ?) AND tasks.status = ?", userID, userID, TaskStatusDone)
+	default: // All
 		query = query.Group("tasks.id").
 			Joins("LEFT JOIN task_assignees ta ON ta.task_id = tasks.id").
 			Where("tasks.creator_id = ? OR ta.user_id = ?", userID, userID)
@@ -241,6 +256,45 @@ func (r *taskRepository) ListByUser(ctx context.Context, userID string, filter T
 		return nil, err
 	}
 	return tasks, nil
+}
+
+// TaskCounts represents counts for different tabs
+type TaskCounts struct {
+	Assigned int64 `json:"assigned"`
+	Created  int64 `json:"created"`
+	Done     int64 `json:"done"`
+}
+
+// GetTaskCounts returns counts for home page tabs
+func (r *taskRepository) GetTaskCounts(ctx context.Context, userID string) (*TaskCounts, error) {
+	counts := &TaskCounts{}
+
+	// 1. Assigned (Active)
+	if err := r.db.WithContext(ctx).Model(&Task{}).
+		Joins("JOIN task_assignees ta ON ta.task_id = tasks.id").
+		Where("ta.user_id = ? AND tasks.status != ? AND tasks.deleted_at IS NULL", userID, TaskStatusDone).
+		Count(&counts.Assigned).Error; err != nil {
+		return nil, err
+	}
+
+	// 2. Created (Active)
+	if err := r.db.WithContext(ctx).Model(&Task{}).
+		Where("creator_id = ? AND status != ? AND deleted_at IS NULL", userID, TaskStatusDone).
+		Count(&counts.Created).Error; err != nil {
+		return nil, err
+	}
+
+	// 3. Done (Created or Assigned)
+	// Need complex query: (CreatedByMe OR AssignedToMe) AND Status=Done
+	if err := r.db.WithContext(ctx).Model(&Task{}).
+		Group("tasks.id").
+		Joins("LEFT JOIN task_assignees ta ON ta.task_id = tasks.id").
+		Where("(tasks.creator_id = ? OR ta.user_id = ?) AND tasks.status = ? AND tasks.deleted_at IS NULL", userID, userID, TaskStatusDone).
+		Count(&counts.Done).Error; err != nil {
+		return nil, err
+	}
+
+	return counts, nil
 }
 
 // SoftDelete performs a soft delete on the task
