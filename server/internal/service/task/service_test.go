@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -77,6 +78,30 @@ func (m *mockTaskRepository) ListPendingByGroup(ctx context.Context, groupID str
 		return nil, args.Error(1)
 	}
 	return args.Get(0).([]repository.Task), args.Error(1)
+}
+
+func (m *mockTaskRepository) AssignTask(ctx context.Context, taskID, userID string) error {
+	return m.Called(ctx, taskID, userID).Error(0)
+}
+
+func (m *mockTaskRepository) GetTaskCounts(ctx context.Context, userID string) (*repository.TaskCounts, error) {
+	args := m.Called(ctx, userID)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*repository.TaskCounts), args.Error(1)
+}
+
+func (m *mockTaskRepository) ListForReminders(ctx context.Context, now time.Time) ([]repository.Task, error) {
+	args := m.Called(ctx, now)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]repository.Task), args.Error(1)
+}
+
+func (m *mockTaskRepository) UpdateReminderFlags(ctx context.Context, id string, reminder1h, reminderDue bool) error {
+	return m.Called(ctx, id, reminder1h, reminderDue).Error(0)
 }
 
 func TestListTasksDelegatesToRepository(t *testing.T) {

@@ -70,8 +70,8 @@ const groupedTasks = computed(() => {
     const list = tasks.value.map(td => td.task)
     
     if (currentTab.value === 'assigned') {
-        const selfCreated = list.filter(t => t.CreatorID === myId.value)
-        const otherCreated = list.filter(t => t.CreatorID !== myId.value)
+        const selfCreated = list.filter(t => t.Creator?.id === myId.value)
+        const otherCreated = list.filter(t => t.Creator?.id !== myId.value)
         return {
             '自己创建': selfCreated,
             '他人创建': otherCreated
@@ -85,8 +85,8 @@ const groupedTasks = computed(() => {
             '指派自己': assignedSelf
         }
     } else { // Done
-        const selfCreated = list.filter(t => t.CreatorID === myId.value)
-        const otherCreated = list.filter(t => t.CreatorID !== myId.value)
+        const selfCreated = list.filter(t => t.Creator?.id === myId.value)
+        const otherCreated = list.filter(t => t.Creator?.id !== myId.value)
         return {
             '自己创建': selfCreated,
             '他人创建': otherCreated
@@ -325,11 +325,11 @@ onUnmounted(() => {
         <div v-if="Object.keys(groupedTasks).length > 1" class="w-full max-w-[600px] mx-auto px-5 py-3 border-b border-base-content/5 bg-base-100">
             <div class="flex gap-2 overflow-x-auto no-scrollbar scroll-smooth">
                 <button v-for="(groupTasks, groupName) in groupedTasks" :key="'chip-' + groupName"
-                    @click="scrollToGroup(groupName)"
+                    @click="scrollToGroup(groupName as string)"
                     class="px-3 py-1 rounded-full text-[10px] font-mono border transition-all whitespace-nowrap"
-                    :class="groupTasks.length > 0 ? 'border-primary text-primary bg-primary/5 hover:bg-primary/10' : 'border-base-content/10 text-base-content/40'"
+                    :class="groupTasks && groupTasks.length > 0 ? 'border-primary text-primary bg-primary/5 hover:bg-primary/10' : 'border-base-content/10 text-base-content/40'"
                 >
-                    {{ groupName }} ({{ groupTasks.length }})
+                    {{ groupName }} ({{ groupTasks?.length || 0 }})
                 </button>
             </div>
         </div>

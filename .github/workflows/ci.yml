@@ -85,7 +85,6 @@ jobs:
 
   deploy:
     name: Build & Push to GHCR
-    needs: [backend, frontend]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:

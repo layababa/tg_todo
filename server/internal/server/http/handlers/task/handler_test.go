@@ -73,11 +73,39 @@ func (m *mockTaskService) ListComments(ctx context.Context, taskID string) ([]re
 	return args.Get(0).([]repository.TaskComment), args.Error(1)
 }
 
+func (m *mockTaskService) GetTaskCounts(ctx context.Context, userID string) (*repository.TaskCounts, error) {
+	args := m.Called(ctx, userID)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*repository.TaskCounts), args.Error(1)
+}
+
+type mockUserGroupRepo struct {
+	mock.Mock
+}
+
+func (m *mockUserGroupRepo) FindByUserAndGroup(ctx context.Context, userID, groupID string) (*models.UserGroup, error) {
+	args := m.Called(ctx, userID, groupID)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*models.UserGroup), args.Error(1)
+}
+
+func (m *mockUserGroupRepo) Create(ctx context.Context, userGroup *models.UserGroup) error {
+	return m.Called(ctx, userGroup).Error(0)
+}
+
+func (m *mockUserGroupRepo) Delete(ctx context.Context, userID, groupID string) error {
+	return m.Called(ctx, userID, groupID).Error(0)
+}
+
 func TestListTasksHandler(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	service := new(mockTaskService)
 	logger := zap.NewNop()
-	h := NewHandler(logger, service)
+	h := NewHandler(logger, service, new(mockUserGroupRepo))
 
 	params := taskservice.ListParams{View: repository.TaskViewAssigned, Limit: 10}
 	service.On("ListTasks", mock.Anything, "user-1", params).Return([]taskservice.TaskDetail{
@@ -103,7 +131,7 @@ func TestGetTaskNotFound(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	service := new(mockTaskService)
 	logger := zap.NewNop()
-	h := NewHandler(logger, service)
+	h := NewHandler(logger, service, new(mockUserGroupRepo))
 
 	service.On("GetTask", mock.Anything, "task-404").Return((*repository.Task)(nil), gorm.ErrRecordNotFound)
 
@@ -123,7 +151,7 @@ func TestDeleteTaskFailure(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	service := new(mockTaskService)
 	logger := zap.NewNop()
-	h := NewHandler(logger, service)
+	h := NewHandler(logger, service, new(mockUserGroupRepo))
 
 	service.On("DeleteTask", mock.Anything, "task-1").Return(errors.New("boom"))
 
