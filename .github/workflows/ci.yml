@@ -112,7 +112,7 @@ jobs:
           push: true
           tags: ghcr.io/${{ github.repository_owner }}/tg_todo_web:latest
           build-args: |
-            VITE_API_BASE_URL=https://ddddapiprod.zcvyzest.xyz
+            VITE_API_BASE_URL=https://ddddapiprod.zcvyzest.xyz/api
 
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
