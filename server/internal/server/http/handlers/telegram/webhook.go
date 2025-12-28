@@ -618,7 +618,12 @@ func (h *Handler) handleTaskCommand(ctx context.Context, msg *Message) {
 	text = strings.TrimSpace(text)
 
 	// User Request: If text is empty (only mentions) and it is a reply, use the replied message as task title
-	if text == "" && msg.ReplyToMessage != nil {
+	// We need to check what remains AFTER stripping all mentions
+	mentionPattern := regexp.MustCompile(`@\w+`)
+	textWithoutMentions := strings.TrimSpace(mentionPattern.ReplaceAllString(text, ""))
+
+	if textWithoutMentions == "" && msg.ReplyToMessage != nil && msg.ReplyToMessage.Text != "" {
+		// The original text only contained mentions, fallback to reply text
 		text = msg.ReplyToMessage.Text
 	}
 
