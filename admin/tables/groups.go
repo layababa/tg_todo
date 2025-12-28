@@ -10,12 +10,21 @@ import (
 
 // GetGroupsTable 返回 groups 表的配置
 func GetGroupsTable(ctx *context.Context) table.Table {
-	groups := table.NewDefaultTable(ctx, table.DefaultConfigWithDriver("postgresql"))
+	cfg := table.DefaultConfigWithDriver("postgresql")
+	cfg.PrimaryKey = table.PrimaryKey{
+		Type: db.Varchar,
+		Name: "id",
+	}
+
+	groups := table.NewDefaultTable(ctx, cfg)
 
 	info := groups.GetInfo()
 	info.SetTable("groups").SetTitle("群组管理").SetDescription("Telegram 群组列表")
 
-	info.AddField("ID", "id", db.UUID).FieldFilterable()
+	// 隐藏操作列（只读模式）
+	info.HideEditButton().HideDeleteButton().HideNewButton()
+
+	info.AddField("ID", "id", db.Varchar).FieldHide()
 	info.AddField("群名称", "title", db.Text).FieldFilterable()
 	info.AddField("TG Chat ID", "tg_chat_id", db.Bigint).FieldSortable()
 	info.AddField("状态", "status", db.Text).FieldDisplay(func(model types.FieldModel) interface{} {
@@ -34,21 +43,19 @@ func GetGroupsTable(ctx *context.Context) table.Table {
 		{Value: "Unbound", Text: "未绑定"},
 		{Value: "Inactive", Text: "失效"},
 	})
+
 	info.AddField("创建时间", "created_at", db.Timestamptz).FieldSortable()
 	info.AddField("更新时间", "updated_at", db.Timestamptz)
 
 	info.SetFilterFormLayout(form.LayoutTwoCol)
 
+	// 详情页配置
 	formList := groups.GetForm()
 	formList.SetTable("groups")
-	formList.AddField("ID", "id", db.UUID, form.Text).FieldNotAllowEdit().FieldNotAllowAdd()
-	formList.AddField("群名称", "title", db.Text, form.Text)
+	formList.AddField("ID", "id", db.Varchar, form.Text).FieldNotAllowEdit().FieldNotAllowAdd()
+	formList.AddField("群名称", "title", db.Text, form.Text).FieldNotAllowEdit()
 	formList.AddField("TG Chat ID", "tg_chat_id", db.Bigint, form.Number).FieldNotAllowEdit()
-	formList.AddField("状态", "status", db.Text, form.Select).FieldOptions(types.FieldOptions{
-		{Value: "Connected", Text: "已连接"},
-		{Value: "Unbound", Text: "未绑定"},
-		{Value: "Inactive", Text: "失效"},
-	})
+	formList.AddField("状态", "status", db.Text, form.Text).FieldNotAllowEdit()
 	formList.AddField("创建时间", "created_at", db.Timestamptz, form.Datetime).FieldNotAllowEdit()
 	formList.AddField("更新时间", "updated_at", db.Timestamptz, form.Datetime).FieldNotAllowEdit()
 
