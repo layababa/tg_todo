@@ -624,7 +624,11 @@ func (h *Handler) handleTaskCommand(ctx context.Context, msg *Message) {
 
 	if textWithoutMentions == "" && msg.ReplyToMessage != nil && msg.ReplyToMessage.Text != "" {
 		// The original text only contained mentions, fallback to reply text
-		text = msg.ReplyToMessage.Text
+		// But also ensure the reply text has actual content (not just mentions)
+		replyTextCleaned := strings.TrimSpace(mentionPattern.ReplaceAllString(msg.ReplyToMessage.Text, ""))
+		if replyTextCleaned != "" {
+			text = msg.ReplyToMessage.Text
+		}
 	}
 
 	// Logic for Context Anchor:
