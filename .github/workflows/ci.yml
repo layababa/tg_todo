@@ -78,9 +78,36 @@ jobs:
       - name: Build Check
         run: pnpm run build
 
+  admin:
+    name: Admin CI
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: admin
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+          cache-dependency-path: admin/go.sum
+
+      - name: Go Format Check
+        run: |
+          if [ -n "$(gofmt -l .)" ]; then
+            echo "The following files are not formatted:"
+            gofmt -l .
+            exit 1
+          fi
+
+      - name: Go Build Check
+        run: go build -v -o /dev/null .
+
   deploy:
     name: Build & Push to GHCR
-    needs: [backend, frontend] # Wait for CI to pass
+    needs: [backend, frontend, admin] # Wait for CI to pass
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
@@ -113,6 +140,14 @@ jobs:
           tags: ghcr.io/${{ github.repository_owner }}/tg_todo_web:latest
           build-args: |
             VITE_API_BASE_URL=https://ddddapiprod.zcvyzest.xyz/api
+
+      - name: Build and push Admin image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./admin
+          file: ./admin/Dockerfile
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/tg_todo_admin:latest
 
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3

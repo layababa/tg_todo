@@ -47,5 +47,21 @@ services:
     depends_on:
       - api
 
+  admin:
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/tg_todo_admin:latest
+    container_name: tg_todo_prod_admin
+    restart: unless-stopped
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: ${POSTGRES_USER:-tg_todo}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-change-me}
+      DB_NAME: ${POSTGRES_DB:-tg_todo}
+      PORT: 9033
+    ports:
+      - "9033:9033"
+    depends_on:
+      - db
+
 volumes:
   postgres-prod-data:
