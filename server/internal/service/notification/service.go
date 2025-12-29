@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/layababa/tg_todo/server/internal/repository"
 	"github.com/layababa/tg_todo/server/internal/service/telegram"
@@ -143,18 +144,36 @@ func (s *Service) Notify(ctx context.Context, event EventType, task *repository.
 				}
 			}
 
-			groupMsg := fmt.Sprintf("💬 <b>新评论</b> - %s\n\n%s: %s", task.Title, actorName, comment.Content)
+			// Generate Task Deep Link
+			cleanBotName := strings.TrimPrefix(s.botName, "@")
+			taskLink := fmt.Sprintf("https://t.me/%s?startapp=task_%s", cleanBotName, task.ID)
 
-			// Optional: Add button to view task?
-			// markup := BuildTaskMarkup(task.ID, s.botName, s.appShortName)
-			// SendMessageToThread doesn't support markup in my interface yet?
-			// My interface: SendMessageToThread(chatID int64, text string, threadID int) error
-			// I should probably stick to simple text or update interface to support markup if needed.
-			// The requirement said "显示这条任务的评论 或者具体的跟评详情".
-			// Text is sufficient.
+			// Format: "💬 新评论 - [Task Title]\n\n[Actor]: [Content]\n[Link]"
+			// Using HTML link for title or separate line? User asked for deep link.
+			// User example:
+			// 💬 新评论 - TaskTitle
+			//
+			// User: Content
+			// (Assume link is attached or implemented via hidden link or button if allowed, but SendMessageToThread no button currently)
+			// Let's add a text link at bottom or linked title.
+			// User said "Need a deep link to task in group reply".
+
+			groupMsg := fmt.Sprintf("💬 新评论 - <a href=\"%s\">%s</a>\n\n%s: %s",
+				taskLink,
+				escapeHTML(task.Title),
+				actorName,
+				comment.Content)
 
 			if err := s.tgClient.SendMessageToThread(groupID, groupMsg, threadID); err != nil {
-				s.logger.Error("failed to sync comment to group", zap.Error(err))
+				s.logger.Error("failed to sync comment to group", zap.Error(err), zap.Int("thread_id", threadID))
+
+				// Retry to General (ThreadID=0) if it was a thread send and failed
+				if threadID != 0 {
+					s.logger.Info("retrying sync to general topic", zap.Int64("group_id", groupID))
+					if err := s.tgClient.SendMessageToThread(groupID, groupMsg, 0); err != nil {
+						s.logger.Error("failed to sync comment to general topic fallback", zap.Error(err))
+					}
+				}
 			} else {
 				s.logger.Info("synced comment to group", zap.Int64("group_id", groupID), zap.Int("thread_id", threadID))
 			}

@@ -58,6 +58,7 @@ type CreateInput struct {
 	ChatType        string
 	ReplyToID       int64 // Optional: Message ID being replied to
 	AnchorMessageID int64 // Optional: Message ID to anchor context (fetch messages before this)
+	ThreadID        int64 // Optional: For Telegram Topics
 }
 
 // CreateTask creates a task from telegram input
@@ -164,8 +165,14 @@ func (c *Creator) CreateTask(ctx context.Context, input CreateInput) (*repositor
 		CreatorID:  &creator.ID,
 		Assignees:  assignees,
 		Snapshots:  snapshots,
+		Snapshots:  snapshots,
 		GroupID:    groupID,
 		DatabaseID: databaseID,
+	}
+
+	if input.ThreadID != 0 {
+		topicStr := fmt.Sprintf("%d", input.ThreadID)
+		task.Topic = topicStr
 	}
 
 	// Generate Jump URL

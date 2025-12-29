@@ -664,6 +664,7 @@ func (h *Handler) handleTaskCommand(ctx context.Context, msg *Message) {
 		ChatTitle:       msg.Chat.Title,
 		ChatType:        msg.Chat.Type,
 		AnchorMessageID: anchorID,
+		ThreadID:        msg.MessageThreadID,
 	}
 	if msg.ReplyToMessage != nil {
 		input.ReplyToID = msg.ReplyToMessage.MessageID

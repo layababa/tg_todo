@@ -84,17 +84,17 @@ func formatMessage(data TemplateData) string {
 		}
 
 	case EventCommentAdded:
-		sb.WriteString("💬 <b>新评论</b>\n\n")
-		sb.WriteString(fmt.Sprintf("<b>任务:</b> %s\n", taskTitle))
+		sb.WriteString("💬 新评论\n\n")
+		sb.WriteString(fmt.Sprintf("任务: %s\n", taskTitle))
 		if actorName != "" {
-			sb.WriteString(fmt.Sprintf("<b>评论者:</b> %s\n", actorName))
+			sb.WriteString(fmt.Sprintf("评论者: %s\n", actorName))
 		}
 		if data.Comment != nil {
 			content := data.Comment.Content
-			if len(content) > 100 {
-				content = content[:97] + "..."
+			if len(content) > 200 {
+				content = content[:197] + "..."
 			}
-			sb.WriteString(fmt.Sprintf("\n<i>%s</i>\n", escapeHTML(content)))
+			sb.WriteString(fmt.Sprintf("\n%s\n", escapeHTML(content)))
 		}
 
 	case EventReminder1h:
