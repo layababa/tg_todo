@@ -208,6 +208,10 @@ func (m *mockTaskRepo) GetTaskCounts(ctx context.Context, userID string) (*repos
 	return nil, nil
 }
 
+func (m *mockTaskRepo) GetCommentByID(_ context.Context, _ string) (*repository.TaskComment, error) {
+	return nil, nil
+}
+
 func (m *mockTaskRepo) ListComments(_ context.Context, _ string) ([]repository.TaskComment, error) {
 	return nil, nil
 }

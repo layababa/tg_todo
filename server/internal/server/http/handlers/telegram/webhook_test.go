@@ -46,6 +46,7 @@ func TestShouldCreateTask(t *testing.T) {
 				ReplyToMessage: &struct {
 					MessageID int64  `json:"message_id"`
 					Text      string `json:"text"`
+					Caption   string `json:"caption"`
 				}{
 					MessageID: 999,
 				},
@@ -67,6 +68,7 @@ func TestShouldCreateTask(t *testing.T) {
 				ReplyToMessage: &struct {
 					MessageID int64  `json:"message_id"`
 					Text      string `json:"text"`
+					Caption   string `json:"caption"`
 				}{
 					MessageID: 999,
 				},
