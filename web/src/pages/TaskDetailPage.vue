@@ -42,7 +42,7 @@ const assignTask = () => {
   // Deep link format: assign <TaskID>
   // This will open chat selection, then insert "@CheckMyTodoBot assign <TaskID>" into input
   window.Telegram?.WebApp?.switchInlineQuery?.(
-    `share ${task.value.ID} ${task.value.Title}`,
+    `share (${task.value.Title})[${task.value.ID}]`,
     ["users", "groups", "channels"]
   );
 };

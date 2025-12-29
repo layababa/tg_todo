@@ -354,18 +354,31 @@ type Update struct {
 func (h *Handler) handleInlineQuery(ctx context.Context, iq *InlineQuery) {
 	query := strings.TrimSpace(iq.Query)
 	// format: assign <TaskID> or share <TaskID> <Title>
-	if strings.HasPrefix(query, "assign ") || strings.HasPrefix(query, "share ") {
-		// Extract ID first.
-		// "assign UUID" -> UUID
-		// "share UUID Title" -> UUID
-		parts := strings.Split(query, " ")
-		if len(parts) >= 2 {
-			taskID := parts[1]
-			if taskID != "" {
-				h.handleInlineAssignQuery(ctx, iq, taskID)
-				return
+	// format: assign <TaskID> or share <TaskID> <Title> or share (Title)[TaskID]
+	var taskID string
+
+	if strings.HasPrefix(query, "assign ") {
+		taskID = strings.TrimPrefix(query, "assign ")
+	} else if strings.HasPrefix(query, "share ") {
+		// Try format: share (Title)[UUID]
+		start := strings.LastIndex(query, "[")
+		end := strings.LastIndex(query, "]")
+		if start > 0 && end > start && end == len(query)-1 {
+			taskID = query[start+1 : end]
+		}
+
+		// Fallback to legacy
+		if taskID == "" || len(taskID) != 36 {
+			parts := strings.Fields(query)
+			if len(parts) >= 2 {
+				taskID = parts[1]
 			}
 		}
+	}
+
+	if taskID != "" {
+		h.handleInlineAssignQuery(ctx, iq, taskID)
+		return
 	}
 
 	// Default: Create Task Preview
@@ -584,20 +597,36 @@ func (h *Handler) handleTaskCommand(ctx context.Context, msg *Message) {
 	// Check both Text (for text messages) and Caption (for photo/video/document messages)
 	// Intercept "assign <UUID>" or "share <UUID>" commands mistakenly sent as text
 	// This fixes the issue where user sends the inline query text directly
+	// Intercept "assign <UUID>" or "share <UUID>" commands mistakenly sent as text
 	if strings.HasPrefix(text, "assign ") || strings.HasPrefix(text, "share ") {
-		parts := strings.Fields(text)
-		if len(parts) >= 2 {
-			potentialID := parts[1]
-			// Simple UUID validation (length 36, contains dashes)
-			if len(potentialID) == 36 && strings.Contains(potentialID, "-") {
-				// Try Fetch Task
-				taskObj, err := h.taskService.GetTask(ctx, potentialID)
-				if err == nil && taskObj != nil {
-					// It's a valid Task ID. Reply with Share Card.
-					msgText, markup := h.buildShareCard(taskObj)
-					h.sendMessage(msg.Chat.ID, msgText, markup, msg.MessageID, msg.MessageThreadID)
-					return // Stop processing (do not create task)
+		var potentialID string
+		if strings.HasPrefix(text, "assign ") {
+			parts := strings.Fields(text)
+			if len(parts) >= 2 {
+				potentialID = parts[1]
+			}
+		} else if strings.HasPrefix(text, "share ") {
+			start := strings.LastIndex(text, "[")
+			end := strings.LastIndex(text, "]")
+			if start > 0 && end > start && end == len(text)-1 {
+				potentialID = text[start+1 : end]
+			}
+			if potentialID == "" || len(potentialID) != 36 {
+				parts := strings.Fields(text)
+				if len(parts) >= 2 {
+					potentialID = parts[1]
 				}
+			}
+		}
+
+		if len(potentialID) == 36 && strings.Contains(potentialID, "-") {
+			// Try Fetch Task
+			taskObj, err := h.taskService.GetTask(ctx, potentialID)
+			if err == nil && taskObj != nil {
+				// It's a valid Task ID. Reply with Share Card.
+				msgText, markup := h.buildShareCard(taskObj)
+				h.sendMessage(msg.Chat.ID, msgText, markup, msg.MessageID, msg.MessageThreadID)
+				return // Stop processing (do not create task)
 			}
 		}
 	}
@@ -1112,7 +1141,7 @@ func (h *Handler) buildShareCard(taskObj *repository.Task) (string, *telegram.In
 			"📅 截止: %s\n"+
 			"──────────────\n"+
 			"👇 点击下方按钮认领或查看详情",
-		taskObj.Title, assigneeName, dueDate,
+		escapeHTML(taskObj.Title), assigneeName, dueDate,
 	)
 
 	return msgText, markup
@@ -1123,4 +1152,14 @@ func getFirstAssigneeName(taskObj *repository.Task) string {
 		return taskObj.Assignees[0].Name
 	}
 	return "待认领"
+}
+
+func escapeHTML(s string) string {
+	replacer := strings.NewReplacer(
+		"&", "&amp;",
+		"<", "&lt;",
+		">", "&gt;",
+		"\"", "&quot;",
+	)
+	return replacer.Replace(s)
 }
