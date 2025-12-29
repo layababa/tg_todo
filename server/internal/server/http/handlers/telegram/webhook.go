@@ -642,7 +642,8 @@ func (h *Handler) handleTaskCommand(ctx context.Context, msg *Message) {
 			// Ensure the reply content has actual text (not just mentions)
 			replyContentCleaned := strings.TrimSpace(mentionPattern.ReplaceAllString(replyContent, ""))
 			if replyContentCleaned != "" {
-				text = replyContent
+				// Append reply content to existing text (which contains mentions) instead of replacing it
+				text = strings.TrimSpace(text + " " + replyContent)
 			}
 		}
 	}
