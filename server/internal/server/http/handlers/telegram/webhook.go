@@ -90,6 +90,7 @@ type Message struct {
 	ReplyToMessage  *struct {
 		MessageID int64  `json:"message_id"`
 		Text      string `json:"text"`
+		Caption   string `json:"caption"` // For photo/video/document messages
 	} `json:"reply_to_message"`
 	ForwardDate int64 `json:"forward_date"`
 	ForwardFrom *struct {
@@ -622,20 +623,27 @@ func (h *Handler) handleTaskCommand(ctx context.Context, msg *Message) {
 	mentionPattern := regexp.MustCompile(`@\w+`)
 	textWithoutMentions := strings.TrimSpace(mentionPattern.ReplaceAllString(text, ""))
 
-	// Debug logging for reply message fallback
+	// User Request: If text is empty (only mentions) and it is a reply, use the replied message as task title
+	// Check both Text (for text messages) and Caption (for photo/video/document messages)
 	if textWithoutMentions == "" && msg.ReplyToMessage != nil {
+		// Get reply content: prioritize Text, fallback to Caption
+		replyContent := msg.ReplyToMessage.Text
+		if replyContent == "" {
+			replyContent = msg.ReplyToMessage.Caption
+		}
+
 		h.logger.Info("handleTaskCommand: text is empty, checking reply message",
 			zap.Int64("reply_msg_id", msg.ReplyToMessage.MessageID),
 			zap.String("reply_text", msg.ReplyToMessage.Text),
-			zap.Bool("reply_text_empty", msg.ReplyToMessage.Text == ""))
-	}
+			zap.String("reply_caption", msg.ReplyToMessage.Caption),
+			zap.String("reply_content", replyContent))
 
-	if textWithoutMentions == "" && msg.ReplyToMessage != nil && msg.ReplyToMessage.Text != "" {
-		// The original text only contained mentions, fallback to reply text
-		// But also ensure the reply text has actual content (not just mentions)
-		replyTextCleaned := strings.TrimSpace(mentionPattern.ReplaceAllString(msg.ReplyToMessage.Text, ""))
-		if replyTextCleaned != "" {
-			text = msg.ReplyToMessage.Text
+		if replyContent != "" {
+			// Ensure the reply content has actual text (not just mentions)
+			replyContentCleaned := strings.TrimSpace(mentionPattern.ReplaceAllString(replyContent, ""))
+			if replyContentCleaned != "" {
+				text = replyContent
+			}
 		}
 	}
 
