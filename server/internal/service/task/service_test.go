@@ -60,6 +60,10 @@ func (m *mockTaskRepository) CreateComment(ctx context.Context, comment *reposit
 	return args.Get(0).(*repository.TaskComment), args.Error(1)
 }
 
+func (m *mockTaskRepository) GetCommentByID(ctx context.Context, id string) (*repository.TaskComment, error) {
+	return nil, nil
+}
+
 func (m *mockTaskRepository) ListComments(ctx context.Context, taskID string) ([]repository.TaskComment, error) {
 	args := m.Called(ctx, taskID)
 	if args.Get(0) == nil {
