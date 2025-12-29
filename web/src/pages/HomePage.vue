@@ -94,6 +94,11 @@ const groupedTasks = computed(() => {
     }
 })
 
+// Filter out empty groups for anchor chips
+const nonEmptyGroups = computed(() => {
+    return Object.entries(groupedTasks.value).filter(([_, tasks]) => tasks.length > 0)
+})
+
 // Methods
 const loadTasks = async (reset = false) => {
     if (reset) {
@@ -321,15 +326,14 @@ onUnmounted(() => {
             </div>
         </div>
 
-        <!-- Anchor Chips (In Header) -->
-        <div v-if="Object.keys(groupedTasks).length > 1" class="w-full max-w-[600px] mx-auto px-5 py-3 border-b border-base-content/5 bg-base-100">
+        <!-- Anchor Chips (In Header) - Only show non-empty groups -->
+        <div v-if="nonEmptyGroups.length > 1" class="w-full max-w-[600px] mx-auto px-5 py-3 border-b border-base-content/5 bg-base-100">
             <div class="flex gap-2 overflow-x-auto no-scrollbar scroll-smooth">
-                <button v-for="(groupTasks, groupName) in groupedTasks" :key="'chip-' + groupName"
+                <button v-for="[groupName, groupTasks] in nonEmptyGroups" :key="'chip-' + groupName"
                     @click="scrollToGroup(groupName)"
-                    class="px-3 py-1 rounded-full text-[10px] font-mono border transition-all whitespace-nowrap"
-                    :class="(groupTasks?.length || 0) > 0 ? 'border-primary text-primary bg-primary/5 hover:bg-primary/10' : 'border-base-content/10 text-base-content/40'"
+                    class="px-3 py-1 rounded-full text-[10px] font-mono border transition-all whitespace-nowrap border-primary text-primary bg-primary/5 hover:bg-primary/10"
                 >
-                    {{ groupName }} ({{ groupTasks?.length || 0 }})
+                    {{ groupName }} ({{ groupTasks.length }})
                 </button>
             </div>
         </div>
