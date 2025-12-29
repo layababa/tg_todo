@@ -363,8 +363,11 @@ func (h *Handler) handleInlineQuery(ctx context.Context, iq *InlineQuery) {
 		// Try format: share (Title)[UUID]
 		start := strings.LastIndex(query, "[")
 		end := strings.LastIndex(query, "]")
-		if start > 0 && end > start && end == len(query)-1 {
-			taskID = query[start+1 : end]
+		if start > 0 && end > start {
+			potentialID := query[start+1 : end]
+			if len(potentialID) == 36 {
+				taskID = potentialID
+			}
 		}
 
 		// Fallback to legacy
@@ -608,7 +611,7 @@ func (h *Handler) handleTaskCommand(ctx context.Context, msg *Message) {
 		} else if strings.HasPrefix(text, "share ") {
 			start := strings.LastIndex(text, "[")
 			end := strings.LastIndex(text, "]")
-			if start > 0 && end > start && end == len(text)-1 {
+			if start > 0 && end > start {
 				potentialID = text[start+1 : end]
 			}
 			if potentialID == "" || len(potentialID) != 36 {
@@ -1141,7 +1144,7 @@ func (h *Handler) buildShareCard(taskObj *repository.Task) (string, *telegram.In
 			"📅 截止: %s\n"+
 			"──────────────\n"+
 			"👇 点击下方按钮认领或查看详情",
-		escapeHTML(taskObj.Title), assigneeName, dueDate,
+		escapeHTML(taskObj.Title), escapeHTML(assigneeName), dueDate,
 	)
 
 	return msgText, markup
