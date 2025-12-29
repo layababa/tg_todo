@@ -165,7 +165,6 @@ func (c *Creator) CreateTask(ctx context.Context, input CreateInput) (*repositor
 		CreatorID:  &creator.ID,
 		Assignees:  assignees,
 		Snapshots:  snapshots,
-		Snapshots:  snapshots,
 		GroupID:    groupID,
 		DatabaseID: databaseID,
 	}
