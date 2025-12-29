@@ -622,6 +622,14 @@ func (h *Handler) handleTaskCommand(ctx context.Context, msg *Message) {
 	mentionPattern := regexp.MustCompile(`@\w+`)
 	textWithoutMentions := strings.TrimSpace(mentionPattern.ReplaceAllString(text, ""))
 
+	// Debug logging for reply message fallback
+	if textWithoutMentions == "" && msg.ReplyToMessage != nil {
+		h.logger.Info("handleTaskCommand: text is empty, checking reply message",
+			zap.Int64("reply_msg_id", msg.ReplyToMessage.MessageID),
+			zap.String("reply_text", msg.ReplyToMessage.Text),
+			zap.Bool("reply_text_empty", msg.ReplyToMessage.Text == ""))
+	}
+
 	if textWithoutMentions == "" && msg.ReplyToMessage != nil && msg.ReplyToMessage.Text != "" {
 		// The original text only contained mentions, fallback to reply text
 		// But also ensure the reply text has actual content (not just mentions)
