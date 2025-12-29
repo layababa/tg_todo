@@ -353,15 +353,19 @@ type Update struct {
 
 func (h *Handler) handleInlineQuery(ctx context.Context, iq *InlineQuery) {
 	query := strings.TrimSpace(iq.Query)
-	// format: assign <TaskID>
-	// format: assign <TaskID>
-	if strings.HasPrefix(query, "assign ") {
-		taskID := strings.TrimPrefix(query, "assign ")
-		if taskID == "" {
-			return
+	// format: assign <TaskID> or share <TaskID> <Title>
+	if strings.HasPrefix(query, "assign ") || strings.HasPrefix(query, "share ") {
+		// Extract ID first.
+		// "assign UUID" -> UUID
+		// "share UUID Title" -> UUID
+		parts := strings.Split(query, " ")
+		if len(parts) >= 2 {
+			taskID := parts[1]
+			if taskID != "" {
+				h.handleInlineAssignQuery(ctx, iq, taskID)
+				return
+			}
 		}
-		h.handleInlineAssignQuery(ctx, iq, taskID)
-		return
 	}
 
 	// Default: Create Task Preview
@@ -391,61 +395,14 @@ func (h *Handler) handleInlineAssignQuery(ctx context.Context, iq *InlineQuery, 
 	}
 	h.logger.Info("handleInlineQuery: Task found", zap.String("task_id", taskObj.ID), zap.String("title", taskObj.Title))
 
-	// Construct Result
-
-	// Create Buttons
-	var rows [][]telegram.InlineKeyboardButton
-
-	// Row 1: Accept Button
-	rows = append(rows, []telegram.InlineKeyboardButton{
-		{
-			Text:         "🙋‍♂️ 我来认领 (Claim)",
-			CallbackData: fmt.Sprintf("accept_task:%s", taskObj.ID),
-		},
-	})
-
-	// Row 2: View Details (if WebApp URL available)
-	if h.botUsername != "" {
-		// Use "task" alias as configured by user
-		appLink := fmt.Sprintf("https://t.me/%s/task?startapp=task_%s", h.botUsername, taskObj.ID)
-		rows = append(rows, []telegram.InlineKeyboardButton{
-			{
-				Text: "📋 查看详情",
-				URL:  appLink,
-			},
-		})
-	}
-
-	markup := &telegram.InlineKeyboardMarkup{
-		InlineKeyboard: rows,
-	}
-
-	assigneeName := "待认领"
-	if len(taskObj.Assignees) > 0 {
-		assigneeName = taskObj.Assignees[0].Name
-	}
-
-	dueDate := "无"
-	if taskObj.DueAt != nil {
-		dueDate = taskObj.DueAt.Format("2006-01-02 15:04")
-	}
-
-	msgText := fmt.Sprintf(
-		"📋 <b>任务分享</b>\n\n"+
-			"<b>%s</b>\n"+
-			"──────────────\n"+
-			"👤 负责人: %s\n"+
-			"📅 截止: %s\n"+
-			"──────────────\n"+
-			"👇 点击下方按钮认领或查看详情",
-		taskObj.Title, assigneeName, dueDate,
-	)
+	// Construct Result using shared helper
+	msgText, markup := h.buildShareCard(taskObj)
 
 	article := telegram.InlineQueryResultArticle{
 		Type:        "article",
 		ID:          taskID,
 		Title:       fmt.Sprintf("分享任务: %s", taskObj.Title),
-		Description: fmt.Sprintf("当前负责人: %s", assigneeName),
+		Description: fmt.Sprintf("当前负责人: %s", getFirstAssigneeName(taskObj)), // Helper needed? Or inline
 		InputMessageContent: telegram.InputMessageContent{
 			MessageText: msgText,
 			ParseMode:   "HTML",
@@ -625,6 +582,26 @@ func (h *Handler) handleTaskCommand(ctx context.Context, msg *Message) {
 
 	// User Request: If text is empty (only mentions) and it is a reply, use the replied message as task title
 	// Check both Text (for text messages) and Caption (for photo/video/document messages)
+	// Intercept "assign <UUID>" or "share <UUID>" commands mistakenly sent as text
+	// This fixes the issue where user sends the inline query text directly
+	if strings.HasPrefix(text, "assign ") || strings.HasPrefix(text, "share ") {
+		parts := strings.Fields(text)
+		if len(parts) >= 2 {
+			potentialID := parts[1]
+			// Simple UUID validation (length 36, contains dashes)
+			if len(potentialID) == 36 && strings.Contains(potentialID, "-") {
+				// Try Fetch Task
+				taskObj, err := h.taskService.GetTask(ctx, potentialID)
+				if err == nil && taskObj != nil {
+					// It's a valid Task ID. Reply with Share Card.
+					msgText, markup := h.buildShareCard(taskObj)
+					h.sendMessage(msg.Chat.ID, msgText, markup, msg.MessageID, msg.MessageThreadID)
+					return // Stop processing (do not create task)
+				}
+			}
+		}
+	}
+
 	if textWithoutMentions == "" && msg.ReplyToMessage != nil {
 		// Get reply content: prioritize Text, fallback to Caption
 		replyContent := msg.ReplyToMessage.Text
@@ -1088,4 +1065,62 @@ func (h *Handler) ensureUser(ctx context.Context, msg *Message) {
 			}
 		}()
 	}
+}
+
+// buildShareCard constructs the text and markup for sharing/assigning a task
+func (h *Handler) buildShareCard(taskObj *repository.Task) (string, *telegram.InlineKeyboardMarkup) {
+	// Create Buttons
+	var rows [][]telegram.InlineKeyboardButton
+
+	// Row 1: Accept Button
+	rows = append(rows, []telegram.InlineKeyboardButton{
+		{
+			Text:         "🙋‍♂️ 我来认领 (Claim)",
+			CallbackData: fmt.Sprintf("accept_task:%s", taskObj.ID),
+		},
+	})
+
+	// Row 2: View Details (if WebApp URL available)
+	if h.botUsername != "" {
+		// Use "task" alias as configured by user
+		cleanBotName := strings.TrimPrefix(h.botUsername, "@")
+		appLink := fmt.Sprintf("https://t.me/%s/task?startapp=task_%s", cleanBotName, taskObj.ID)
+		rows = append(rows, []telegram.InlineKeyboardButton{
+			{
+				Text: "📋 查看详情",
+				URL:  appLink,
+			},
+		})
+	}
+
+	markup := &telegram.InlineKeyboardMarkup{
+		InlineKeyboard: rows,
+	}
+
+	assigneeName := getFirstAssigneeName(taskObj)
+
+	dueDate := "无"
+	if taskObj.DueAt != nil {
+		dueDate = taskObj.DueAt.Format("2006-01-02 15:04")
+	}
+
+	msgText := fmt.Sprintf(
+		"📋 <b>任务分享</b>\n\n"+
+			"<b>%s</b>\n"+
+			"──────────────\n"+
+			"👤 负责人: %s\n"+
+			"📅 截止: %s\n"+
+			"──────────────\n"+
+			"👇 点击下方按钮认领或查看详情",
+		taskObj.Title, assigneeName, dueDate,
+	)
+
+	return msgText, markup
+}
+
+func getFirstAssigneeName(taskObj *repository.Task) string {
+	if len(taskObj.Assignees) > 0 {
+		return taskObj.Assignees[0].Name
+	}
+	return "待认领"
 }
