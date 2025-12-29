@@ -373,7 +373,7 @@ func (h *Handler) handleInlineQuery(ctx context.Context, iq *InlineQuery) {
 func (h *Handler) handleInlineAssignQuery(ctx context.Context, iq *InlineQuery, taskID string) {
 
 	// Fetch Task
-	t, err := h.taskService.GetTask(ctx, taskID)
+	taskObj, err := h.taskService.GetTask(ctx, taskID)
 	if err != nil {
 		h.logger.Error("handleInlineQuery: GetTask failed", zap.String("task_id", taskID), zap.Error(err))
 		// Return error article so user knows what happened
@@ -389,7 +389,7 @@ func (h *Handler) handleInlineAssignQuery(ctx context.Context, iq *InlineQuery, 
 		h.tgClient.AnswerInlineQuery(iq.ID, []telegram.InlineQueryResultArticle{errorArticle})
 		return
 	}
-	h.logger.Info("handleInlineQuery: Task found", zap.String("task_id", t.ID), zap.String("title", t.Title))
+	h.logger.Info("handleInlineQuery: Task found", zap.String("task_id", taskObj.ID), zap.String("title", taskObj.Title))
 
 	// Construct Result
 
@@ -400,14 +400,14 @@ func (h *Handler) handleInlineAssignQuery(ctx context.Context, iq *InlineQuery, 
 	rows = append(rows, []telegram.InlineKeyboardButton{
 		{
 			Text:         "🙋‍♂️ 我来认领 (Claim)",
-			CallbackData: fmt.Sprintf("accept_task:%s", t.ID),
+			CallbackData: fmt.Sprintf("accept_task:%s", taskObj.ID),
 		},
 	})
 
 	// Row 2: View Details (if WebApp URL available)
 	if h.botUsername != "" {
 		// Use "task" alias as configured by user
-		appLink := fmt.Sprintf("https://t.me/%s/task?startapp=task_%s", h.botUsername, t.ID)
+		appLink := fmt.Sprintf("https://t.me/%s/task?startapp=task_%s", h.botUsername, taskObj.ID)
 		rows = append(rows, []telegram.InlineKeyboardButton{
 			{
 				Text: "📋 查看详情",
@@ -421,13 +421,13 @@ func (h *Handler) handleInlineAssignQuery(ctx context.Context, iq *InlineQuery, 
 	}
 
 	assigneeName := "待认领"
-	if len(t.Assignees) > 0 {
-		assigneeName = t.Assignees[0].Name
+	if len(taskObj.Assignees) > 0 {
+		assigneeName = taskObj.Assignees[0].Name
 	}
 
 	dueDate := "无"
-	if t.DueAt != nil {
-		dueDate = t.DueAt.Format("2006-01-02 15:04")
+	if taskObj.DueAt != nil {
+		dueDate = taskObj.DueAt.Format("2006-01-02 15:04")
 	}
 
 	msgText := fmt.Sprintf(
@@ -438,13 +438,13 @@ func (h *Handler) handleInlineAssignQuery(ctx context.Context, iq *InlineQuery, 
 			"📅 截止: %s\n"+
 			"──────────────\n"+
 			"👇 点击下方按钮认领或查看详情",
-		t.Title, assigneeName, dueDate,
+		taskObj.Title, assigneeName, dueDate,
 	)
 
 	article := telegram.InlineQueryResultArticle{
 		Type:        "article",
 		ID:          taskID,
-		Title:       fmt.Sprintf("分享任务: %s", t.Title),
+		Title:       fmt.Sprintf("分享任务: %s", taskObj.Title),
 		Description: fmt.Sprintf("当前负责人: %s", assigneeName),
 		InputMessageContent: telegram.InputMessageContent{
 			MessageText: msgText,
