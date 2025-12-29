@@ -3,6 +3,7 @@ package notification
 import (
 	"context"
 	"fmt"
+	"strconv"
 
 	"github.com/layababa/tg_todo/server/internal/repository"
 	"github.com/layababa/tg_todo/server/internal/service/telegram"
@@ -12,6 +13,7 @@ import (
 type TelegramClient interface {
 	SendMessage(chatID int64, text string) error
 	SendMessageWithButtons(chatID int64, text string, markup telegram.InlineKeyboardMarkup) error
+	SendMessageToThread(chatID int64, text string, threadID int) error
 }
 
 type Service struct {
@@ -51,10 +53,18 @@ func (s *Service) Notify(ctx context.Context, event EventType, task *repository.
 		}
 	}
 
-	// Don't notify anyone if empty
-	if len(recipients) == 0 {
-		return
+	// Add Parent Comment Author (for replies)
+	if event == EventCommentAdded && comment != nil && comment.ParentID != nil {
+		parentComment, err := s.repo.GetCommentByID(ctx, *comment.ParentID)
+		if err == nil && parentComment != nil && parentComment.UserID != actorID {
+			recipients[parentComment.UserID] = true
+		}
 	}
+
+	// Don't notify anyone if empty (but continue to Group Sync)
+	// if len(recipients) == 0 {
+	// 	return
+	// }
 
 	// Prepare template data
 	data := TemplateData{
@@ -108,6 +118,48 @@ func (s *Service) Notify(ctx context.Context, event EventType, task *repository.
 		zap.String("event", string(event)),
 		zap.String("task_id", task.ID),
 		zap.Int("recipient_count", len(recipients)))
+
+	// 2. Send to Group Chat (Sync Comment)
+	if event == EventCommentAdded && task.GroupID != nil && *task.GroupID != "" {
+		groupID, err := strconv.ParseInt(*task.GroupID, 10, 64)
+		if err == nil {
+			threadID := 0
+			if task.Topic != "" {
+				tid, _ := strconv.ParseInt(task.Topic, 10, 64)
+				threadID = int(tid)
+			}
+
+			// Build Group Message
+			// We need Actor Name. If Actor is passed (even if ID is ""), we use it?
+			// The caller of Notify passes actorID. We fetch actor inside Notify for template data.
+			// Let's reuse 'data.Actor' if available.
+			actorName := "用户"
+			if data.Actor != nil {
+				actorName = data.Actor.Name
+			} else if actorID != "" {
+				// Try to fetch if not fetched yet
+				if act, err := s.userRepo.FindByID(ctx, actorID); err == nil {
+					actorName = act.Name
+				}
+			}
+
+			groupMsg := fmt.Sprintf("💬 <b>新评论</b> - %s\n\n%s: %s", task.Title, actorName, comment.Content)
+
+			// Optional: Add button to view task?
+			// markup := BuildTaskMarkup(task.ID, s.botName, s.appShortName)
+			// SendMessageToThread doesn't support markup in my interface yet?
+			// My interface: SendMessageToThread(chatID int64, text string, threadID int) error
+			// I should probably stick to simple text or update interface to support markup if needed.
+			// The requirement said "显示这条任务的评论 或者具体的跟评详情".
+			// Text is sufficient.
+
+			if err := s.tgClient.SendMessageToThread(groupID, groupMsg, threadID); err != nil {
+				s.logger.Error("failed to sync comment to group", zap.Error(err))
+			} else {
+				s.logger.Info("synced comment to group", zap.Int64("group_id", groupID), zap.Int("thread_id", threadID))
+			}
+		}
+	}
 }
 
 // NotifyReminder sends differentiated reminders to creator and assignees

@@ -121,6 +121,7 @@ type TaskRepository interface {
 	// Comment methods
 	CreateComment(ctx context.Context, comment *TaskComment) (*TaskComment, error)
 	ListComments(ctx context.Context, taskID string) ([]TaskComment, error)
+	GetCommentByID(ctx context.Context, id string) (*TaskComment, error)
 	GetByNotionPageID(ctx context.Context, pageID string) (*Task, error)
 	ListPendingByGroup(ctx context.Context, groupID string) ([]Task, error)
 	ListForReminders(ctx context.Context, now time.Time) ([]Task, error)
@@ -330,6 +331,21 @@ func (r *taskRepository) ListComments(ctx context.Context, taskID string) ([]Tas
 		return nil, err
 	}
 	return comments, nil
+}
+
+// GetCommentByID retrieves a comment by ID
+func (r *taskRepository) GetCommentByID(ctx context.Context, id string) (*TaskComment, error) {
+	var comment TaskComment
+	err := r.db.WithContext(ctx).
+		Preload("User").
+		First(&comment, "id = ?", id).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &comment, nil
 }
 
 // ListPendingByGroup lists tasks in a group that are pending sync

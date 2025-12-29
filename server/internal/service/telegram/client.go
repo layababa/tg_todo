@@ -106,6 +106,11 @@ func (c *Client) SendMessageWithReplyAndThread(chatID int64, text string, replyT
 	})
 }
 
+// SendMessageToThread sends a message to a specific thread
+func (c *Client) SendMessageToThread(chatID int64, text string, threadID int) error {
+	return c.SendMessageWithReplyAndThread(chatID, text, 0, int64(threadID))
+}
+
 // SendMessageWithButtons sends a message with inline keyboard buttons
 func (c *Client) SendMessageWithButtons(chatID int64, text string, markup InlineKeyboardMarkup) error {
 	return c.sendJSON("sendMessage", sendMessageReq{
