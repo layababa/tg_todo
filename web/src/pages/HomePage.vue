@@ -283,9 +283,8 @@ onUnmounted(() => {
   <div class="page-root relative w-full h-full overflow-hidden bg-base-100">
     <!-- Header -->
     <header
-      class="absolute top-0 left-0 right-0 z-30 transition-all duration-300 bg-base-100"
+      class="absolute top-0 left-0 right-0 z-30 transition-all duration-300 bg-base-100 safe-area-header"
       :class="{ 'shadow-lg shadow-black/10': isHeaderCollapsed }"
-      style="padding-top: max(32px, env(safe-area-inset-top));"
     >
       <!-- Top Bar -->
       <div
@@ -391,8 +390,8 @@ onUnmounted(() => {
 
     <!-- Content Area -->
     <div
-      class="absolute inset-0 overflow-y-auto overflow-x-hidden touch-pan-y"
-      :style="{ paddingTop: isHeaderCollapsed ? 'calc(120px + max(32px, env(safe-area-inset-top)))' : 'calc(220px + max(32px, env(safe-area-inset-top)))' }"
+      class="absolute inset-0 overflow-y-auto overflow-x-hidden touch-pan-y safe-area-content"
+      :class="isHeaderCollapsed ? 'content-collapsed' : 'content-expanded'"
       ref="pageRoot"
       @touchstart="onTouchStart"
       @touchmove="onTouchMove"
@@ -400,9 +399,8 @@ onUnmounted(() => {
     >
       <!-- Pull Indicator -->
       <div
-        class="absolute w-full flex justify-center pointer-events-none transition-transform duration-200"
+        class="absolute w-full flex justify-center pointer-events-none transition-transform duration-200 pull-indicator"
         :style="{
-          top: `calc(180px + max(32px, env(safe-area-inset-top)))`,
           transform: `translateY(${pullMoveY - 40}px)`,
           opacity: pullMoveY > 0 ? 1 : 0,
         }"
@@ -410,10 +408,7 @@ onUnmounted(() => {
         <div class="loading loading-spinner text-primary"></div>
       </div>
 
-      <div
-        class="app-container pb-24 min-h-[calc(100vh-220px)]"
-        style="padding-bottom: calc(6rem + max(32px, env(safe-area-inset-bottom)));"
-      >
+      <div class="app-container pb-24 min-h-[calc(100vh-220px)] safe-area-bottom">
         <!-- Filters -->
         <div
           v-show="filterOpen"
@@ -578,7 +573,6 @@ onUnmounted(() => {
     </div>
 
     <!-- FAB -->
-    <!-- FAB -->
     <button class="absolute right-6 bg-primary text-black rounded-none flex items-center justify-center text-2xl shadow-[0_0_20px_rgba(171,246,0,0.4)] transition-transform hover:scale-105 active:scale-95 z-40 fab-btn"
         @click="goToDetail('new')"
     >
@@ -588,18 +582,55 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+/* Safe Area Fallbacks - NO max() function for Android WebView compatibility */
+
+/* Header: Top safe area padding */
+.safe-area-header {
+  /* Fallback: Fixed 32px if env() not supported or returns 0 */
+  padding-top: 32px;
+  /* If env() is supported and returns non-zero, this will override */
+  padding-top: calc(32px + env(safe-area-inset-top, 0px));
+}
+
+/* Content Area: Dynamic padding based on header state */
+.safe-area-content.content-expanded {
+  /* Fallback */
+  padding-top: calc(220px + 32px);
+  /* env() override */
+  padding-top: calc(220px + 32px + env(safe-area-inset-top, 0px));
+}
+
+.safe-area-content.content-collapsed {
+  /* Fallback */
+  padding-top: calc(120px + 32px);
+  /* env() override */
+  padding-top: calc(120px + 32px + env(safe-area-inset-top, 0px));
+}
+
+/* Pull indicator position */
+.pull-indicator {
+  /* Fallback */
+  top: calc(180px + 32px);
+  /* env() override */
+  top: calc(180px + 32px + env(safe-area-inset-top, 0px));
+}
+
+/* Bottom safe area */
+.safe-area-bottom {
+  /* Fallback */
+  padding-bottom: calc(6rem + 32px);
+  /* env() override */
+  padding-bottom: calc(6rem + 32px + env(safe-area-inset-bottom, 0px));
+}
+
+/* FAB Button */
 .fab-btn {
-  width: 3.5rem; /* 14 */
-  height: 3.5rem; /* 14 */
+  width: 3.5rem;
+  height: 3.5rem;
   clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
-  /* Fallback for browsers not supporting safe-area-inset */
-  bottom: 2.5rem; 
-  /* iOS < 11.2 */
-  bottom: calc(1.5rem + constant(safe-area-inset-bottom));
-  /* iOS 11.2+ */
-  bottom: calc(1.5rem + env(safe-area-inset-bottom));
-  
-  /* Ensure fallback if 0 */
-  bottom: calc(1.5rem + max(32px, env(safe-area-inset-bottom)));
+  /* Fallback */
+  bottom: calc(1.5rem + 32px);
+  /* env() override */
+  bottom: calc(1.5rem + 32px + env(safe-area-inset-bottom, 0px));
 }
 </style>
