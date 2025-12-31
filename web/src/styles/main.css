@@ -256,8 +256,15 @@
 
 html,
 body {
+  width: 100%;
+  height: 100%;
   touch-action: pan-x pan-y;
   -webkit-text-size-adjust: 100%;
+}
+
+#app {
+  width: 100%;
+  height: 100%;
 }
 
 body {
@@ -294,7 +301,7 @@ body {
   .scan-line {
     display: none;
   }
-  
+
   @keyframes pageEntrance {
     0% {
       opacity: 0;
