@@ -582,45 +582,38 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-/* Safe Area Fallbacks - NO max() function for Android WebView compatibility */
+/* Safe Area using Telegram CSS Variables (Bot API 8.0+)
+ * --tg-safe-area-inset-*: Device physical safe area (notch, status bar)
+ * --tg-content-safe-area-inset-*: Telegram UI safe area (header bar)
+ * These are auto-injected by telegram-web-app.js and work in immersive mode
+ */
 
 /* Header: Top safe area padding */
 .safe-area-header {
-  /* Fallback: Fixed 32px if env() not supported or returns 0 */
-  padding-top: 32px;
-  /* If env() is supported and returns non-zero, this will override */
-  padding-top: calc(32px + env(safe-area-inset-top, 0px));
+  /* Combined: Device safe area + Telegram content safe area */
+  padding-top: calc(var(--tg-safe-area-inset-top, 0px) + var(--tg-content-safe-area-inset-top, 0px));
 }
 
 /* Content Area: Dynamic padding based on header state */
 .safe-area-content.content-expanded {
-  /* Fallback */
-  padding-top: calc(220px + 32px);
-  /* env() override */
-  padding-top: calc(220px + 32px + env(safe-area-inset-top, 0px));
+  /* Header height (220px) + safe areas */
+  padding-top: calc(220px + var(--tg-safe-area-inset-top, 0px) + var(--tg-content-safe-area-inset-top, 0px));
 }
 
 .safe-area-content.content-collapsed {
-  /* Fallback */
-  padding-top: calc(120px + 32px);
-  /* env() override */
-  padding-top: calc(120px + 32px + env(safe-area-inset-top, 0px));
+  /* Collapsed header height (120px) + safe areas */
+  padding-top: calc(120px + var(--tg-safe-area-inset-top, 0px) + var(--tg-content-safe-area-inset-top, 0px));
 }
 
 /* Pull indicator position */
 .pull-indicator {
-  /* Fallback */
-  top: calc(180px + 32px);
-  /* env() override */
-  top: calc(180px + 32px + env(safe-area-inset-top, 0px));
+  top: calc(180px + var(--tg-safe-area-inset-top, 0px) + var(--tg-content-safe-area-inset-top, 0px));
 }
 
 /* Bottom safe area */
 .safe-area-bottom {
-  /* Fallback */
-  padding-bottom: calc(6rem + 32px);
-  /* env() override */
-  padding-bottom: calc(6rem + 32px + env(safe-area-inset-bottom, 0px));
+  /* 6rem base padding + device safe area + Telegram bottom bar */
+  padding-bottom: calc(6rem + var(--tg-safe-area-inset-bottom, 0px) + var(--tg-content-safe-area-inset-bottom, 0px));
 }
 
 /* FAB Button */
@@ -628,9 +621,7 @@ onUnmounted(() => {
   width: 3.5rem;
   height: 3.5rem;
   clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
-  /* Fallback */
-  bottom: calc(1.5rem + 32px);
-  /* env() override */
-  bottom: calc(1.5rem + 32px + env(safe-area-inset-bottom, 0px));
+  /* 1.5rem base + safe areas */
+  bottom: calc(1.5rem + var(--tg-safe-area-inset-bottom, 0px) + var(--tg-content-safe-area-inset-bottom, 0px));
 }
 </style>
