@@ -285,7 +285,7 @@ onUnmounted(() => {
     <header
       class="absolute top-0 left-0 right-0 z-30 transition-all duration-300 bg-base-100"
       :class="{ 'shadow-lg shadow-black/10': isHeaderCollapsed }"
-      style="padding-top: max(12px, env(safe-area-inset-top)); padding-top: max(12px, constant(safe-area-inset-top));"
+      style="padding-top: max(32px, env(safe-area-inset-top));"
     >
       <!-- Top Bar -->
       <div
@@ -392,7 +392,7 @@ onUnmounted(() => {
     <!-- Content Area -->
     <div
       class="absolute inset-0 overflow-y-auto overflow-x-hidden touch-pan-y"
-      :style="{ paddingTop: isHeaderCollapsed ? 'calc(120px + max(12px, env(safe-area-inset-top)))' : 'calc(220px + max(12px, env(safe-area-inset-top)))' }"
+      :style="{ paddingTop: isHeaderCollapsed ? 'calc(120px + max(32px, env(safe-area-inset-top)))' : 'calc(220px + max(32px, env(safe-area-inset-top)))' }"
       ref="pageRoot"
       @touchstart="onTouchStart"
       @touchmove="onTouchMove"
@@ -402,7 +402,7 @@ onUnmounted(() => {
       <div
         class="absolute w-full flex justify-center pointer-events-none transition-transform duration-200"
         :style="{
-          top: `calc(180px + max(12px, env(safe-area-inset-top)))`,
+          top: `calc(180px + max(32px, env(safe-area-inset-top)))`,
           transform: `translateY(${pullMoveY - 40}px)`,
           opacity: pullMoveY > 0 ? 1 : 0,
         }"
@@ -412,7 +412,7 @@ onUnmounted(() => {
 
       <div
         class="app-container pb-24 min-h-[calc(100vh-220px)]"
-        style="padding-bottom: calc(6rem + max(20px, env(safe-area-inset-bottom)));"
+        style="padding-bottom: calc(6rem + max(32px, env(safe-area-inset-bottom)));"
       >
         <!-- Filters -->
         <div
@@ -600,6 +600,6 @@ onUnmounted(() => {
   bottom: calc(1.5rem + env(safe-area-inset-bottom));
   
   /* Ensure fallback if 0 */
-  bottom: calc(1.5rem + max(20px, env(safe-area-inset-bottom)));
+  bottom: calc(1.5rem + max(32px, env(safe-area-inset-bottom)));
 }
 </style>
