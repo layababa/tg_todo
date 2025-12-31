@@ -579,11 +579,27 @@ onUnmounted(() => {
 
     <!-- FAB -->
     <!-- FAB -->
-    <button class="absolute right-6 w-14 h-14 bg-primary text-black rounded-none flex items-center justify-center text-2xl shadow-[0_0_20px_rgba(171,246,0,0.4)] transition-transform hover:scale-105 active:scale-95 z-40"
-        style="clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); bottom: calc(1.5rem + max(20px, env(safe-area-inset-bottom))); bottom: calc(1.5rem + max(20px, constant(safe-area-inset-bottom)));"
+    <button class="absolute right-6 bg-primary text-black rounded-none flex items-center justify-center text-2xl shadow-[0_0_20px_rgba(171,246,0,0.4)] transition-transform hover:scale-105 active:scale-95 z-40 fab-btn"
         @click="goToDetail('new')"
     >
         <i class="ri-add-line"></i>
     </button>
   </div>
 </template>
+
+<style scoped>
+.fab-btn {
+  width: 3.5rem; /* 14 */
+  height: 3.5rem; /* 14 */
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+  /* Fallback for browsers not supporting safe-area-inset */
+  bottom: 2.5rem; 
+  /* iOS < 11.2 */
+  bottom: calc(1.5rem + constant(safe-area-inset-bottom));
+  /* iOS 11.2+ */
+  bottom: calc(1.5rem + env(safe-area-inset-bottom));
+  
+  /* Ensure fallback if 0 */
+  bottom: calc(1.5rem + max(20px, env(safe-area-inset-bottom)));
+}
+</style>
