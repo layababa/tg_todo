@@ -6,7 +6,7 @@ import { listDatabases } from "@/api/notion";
 import { useAuthStore } from "@/store/auth";
 import type { TaskDetail, Task } from "@/types/task";
 import type { DatabaseSummary } from "@/types/group";
-import WebApp from "@twa-dev/sdk";
+
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -48,50 +48,89 @@ const headerBaseHeight = computed(() => (isHeaderCollapsed.value ? 120 : 220));
 const safeAreaTop = ref(32); 
 const safeAreaBottom = ref(0);
 
+// Use native Telegram WebApp object instead of SDK wrapper for reliable updates
+const getTelegramWebApp = () => (window as any).Telegram?.WebApp;
+
 const updateSafeAreas = () => {
-  const safe = WebApp.safeAreaInset || { top: 0, bottom: 0 };
-  const content = WebApp.contentSafeAreaInset || { top: 0, bottom: 0 };
+  const WebApp = getTelegramWebApp();
+  if (!WebApp) {
+    console.warn('[HomePage] Telegram WebApp not available');
+    return;
+  }
+  
+  const safe = WebApp.safeAreaInset || { top: 0, bottom: 0, left: 0, right: 0 };
+  const content = WebApp.contentSafeAreaInset || { top: 0, bottom: 0, left: 0, right: 0 };
   
   const totalTop = safe.top + content.top;
-  // If Telegram returns 0 (not ready), use 32px fallback. 
-  // If ready (>0), use the real value.
-  safeAreaTop.value = totalTop > 0 ? totalTop : 32;
+  const totalBottom = safe.bottom + content.bottom;
   
-  safeAreaBottom.value = safe.bottom + content.bottom;
-  
-  console.log('[HomePage] Updated safe areas (JS):', { 
-    top: safeAreaTop.value, 
-    bottom: safeAreaBottom.value 
+  console.log('[HomePage] Reading safe areas from WebApp:', {
+    safeAreaInset: safe,
+    contentSafeAreaInset: content,
+    calculatedTop: totalTop,
+    calculatedBottom: totalBottom
   });
+  
+  // If Telegram returns 0 (not ready), keep 32px fallback. 
+  // If ready (>0), use the real value.
+  if (totalTop > 0) {
+    safeAreaTop.value = totalTop;
+  }
+  safeAreaBottom.value = totalBottom;
+};
+
+// Actively request safe area data from Telegram
+const requestSafeArea = () => {
+  const WebView = (window as any).Telegram?.WebView;
+  if (WebView?.postEvent) {
+    console.log('[HomePage] Requesting safe area data from Telegram...');
+    WebView.postEvent('web_app_request_safe_area');
+    WebView.postEvent('web_app_request_content_safe_area');
+  }
 };
 
 onMounted(() => {
+  const WebApp = getTelegramWebApp();
+  
   // Initial check
   updateSafeAreas();
-  // Listen for changes (triggered by Active Request in main.ts or system events)
-  // @ts-expect-error
-  WebApp.onEvent('safeAreaChanged', updateSafeAreas);
-  // @ts-expect-error
-  WebApp.onEvent('contentSafeAreaChanged', updateSafeAreas);
+  
+  // Listen for changes using native Telegram WebApp events
+  if (WebApp?.onEvent) {
+    WebApp.onEvent('safeAreaChanged', updateSafeAreas);
+    WebApp.onEvent('contentSafeAreaChanged', updateSafeAreas);
+  }
+  
+  // Actively request safe area (triggers event with current values)
+  requestSafeArea();
+  
+  // Also poll for a short period to catch delayed updates
+  let attempts = 0;
+  const pollInterval = setInterval(() => {
+    updateSafeAreas();
+    attempts++;
+    if (attempts >= 10 || safeAreaTop.value > 32) {
+      clearInterval(pollInterval);
+    }
+  }, 200);
 });
 
 onUnmounted(() => {
-   // @ts-expect-error
-   WebApp.offEvent('safeAreaChanged', updateSafeAreas);
-   // @ts-expect-error
-   WebApp.offEvent('contentSafeAreaChanged', updateSafeAreas);
+  const WebApp = getTelegramWebApp();
+  if (WebApp?.offEvent) {
+    WebApp.offEvent('safeAreaChanged', updateSafeAreas);
+    WebApp.offEvent('contentSafeAreaChanged', updateSafeAreas);
+  }
 });
 
 const scrollToGroup = (groupName: string) => {
   const el = document.getElementById(`group-${groupName}`);
-  if (el && pageRoot.value) {
   if (el && pageRoot.value) {
     // Scroll to element position minus header height + buffer
     // Dynamic height: base + safe area
     const currentHeaderHeight = headerBaseHeight.value + safeAreaTop.value;
     const top = el.offsetTop - currentHeaderHeight - 10;
     pageRoot.value.scrollTo({ top, behavior: "smooth" });
-  }
   }
 };
 
