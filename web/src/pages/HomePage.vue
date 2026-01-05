@@ -48,40 +48,93 @@ const headerBaseHeight = computed(() => (isHeaderCollapsed.value ? 120 : 220));
 const safeAreaTop = ref(32); 
 const safeAreaBottom = ref(0);
 
+
 // Use native Telegram WebApp object instead of SDK wrapper for reliable updates
 const getTelegramWebApp = () => (window as any).Telegram?.WebApp;
+const getTelegramWebView = () => (window as any).Telegram?.WebView;
 
-const updateSafeAreas = () => {
-  const WebApp = getTelegramWebApp();
-  if (!WebApp) {
-    console.warn('[HomePage] Telegram WebApp not available');
-    return;
-  }
+// Store raw event data since WebApp object properties may not sync
+const rawSafeAreaData = ref<{top: number; bottom: number; left: number; right: number}>({ top: 0, bottom: 0, left: 0, right: 0 });
+const rawContentSafeAreaData = ref<{top: number; bottom: number; left: number; right: number}>({ top: 0, bottom: 0, left: 0, right: 0 });
+
+// Update safe area values from raw event data
+const updateSafeAreasFromRawData = () => {
+  const totalTop = rawSafeAreaData.value.top + rawContentSafeAreaData.value.top;
+  const totalBottom = rawSafeAreaData.value.bottom + rawContentSafeAreaData.value.bottom;
   
-  const safe = WebApp.safeAreaInset || { top: 0, bottom: 0, left: 0, right: 0 };
-  const content = WebApp.contentSafeAreaInset || { top: 0, bottom: 0, left: 0, right: 0 };
-  
-  const totalTop = safe.top + content.top;
-  const totalBottom = safe.bottom + content.bottom;
-  
-  console.log('[HomePage] Reading safe areas from WebApp:', {
-    safeAreaInset: safe,
-    contentSafeAreaInset: content,
+  console.log('[HomePage] Updating from raw event data:', {
+    rawSafe: rawSafeAreaData.value,
+    rawContent: rawContentSafeAreaData.value,
     calculatedTop: totalTop,
     calculatedBottom: totalBottom
   });
   
-  // If Telegram returns 0 (not ready), keep 32px fallback. 
-  // If ready (>0), use the real value.
   if (totalTop > 0) {
     safeAreaTop.value = totalTop;
   }
   safeAreaBottom.value = totalBottom;
 };
 
+// Handler for safe_area_changed event data
+const handleSafeAreaChanged = (eventData: any) => {
+  if (eventData && typeof eventData.top === 'number') {
+    rawSafeAreaData.value = {
+      top: eventData.top || 0,
+      bottom: eventData.bottom || 0,
+      left: eventData.left || 0,
+      right: eventData.right || 0
+    };
+    console.log('[HomePage] Received safe_area_changed:', rawSafeAreaData.value);
+    updateSafeAreasFromRawData();
+  }
+};
+
+// Handler for content_safe_area_changed event data
+const handleContentSafeAreaChanged = (eventData: any) => {
+  if (eventData && typeof eventData.top === 'number') {
+    rawContentSafeAreaData.value = {
+      top: eventData.top || 0,
+      bottom: eventData.bottom || 0,
+      left: eventData.left || 0,
+      right: eventData.right || 0
+    };
+    console.log('[HomePage] Received content_safe_area_changed:', rawContentSafeAreaData.value);
+    updateSafeAreasFromRawData();
+  }
+};
+
+// Intercept WebView.receiveEvent to get raw event data
+let originalReceiveEvent: any = null;
+
+const setupEventInterceptor = () => {
+  const WebView = getTelegramWebView();
+  if (!WebView) return;
+  
+  // Only intercept once
+  if (originalReceiveEvent) return;
+  
+  originalReceiveEvent = WebView.receiveEvent;
+  
+  WebView.receiveEvent = function(eventType: string, eventData: any) {
+    // Handle our events first
+    if (eventType === 'safe_area_changed') {
+      handleSafeAreaChanged(eventData);
+    } else if (eventType === 'content_safe_area_changed') {
+      handleContentSafeAreaChanged(eventData);
+    }
+    
+    // Call original handler
+    if (originalReceiveEvent) {
+      return originalReceiveEvent.call(this, eventType, eventData);
+    }
+  };
+  
+  console.log('[HomePage] Event interceptor installed');
+};
+
 // Actively request safe area data from Telegram
 const requestSafeArea = () => {
-  const WebView = (window as any).Telegram?.WebView;
+  const WebView = getTelegramWebView();
   if (WebView?.postEvent) {
     console.log('[HomePage] Requesting safe area data from Telegram...');
     WebView.postEvent('web_app_request_safe_area');
@@ -90,36 +143,23 @@ const requestSafeArea = () => {
 };
 
 onMounted(() => {
-  const WebApp = getTelegramWebApp();
-  
-  // Initial check
-  updateSafeAreas();
-  
-  // Listen for changes using native Telegram WebApp events
-  if (WebApp?.onEvent) {
-    WebApp.onEvent('safeAreaChanged', updateSafeAreas);
-    WebApp.onEvent('contentSafeAreaChanged', updateSafeAreas);
-  }
+  // Install event interceptor first
+  setupEventInterceptor();
   
   // Actively request safe area (triggers event with current values)
   requestSafeArea();
   
-  // Also poll for a short period to catch delayed updates
-  let attempts = 0;
-  const pollInterval = setInterval(() => {
-    updateSafeAreas();
-    attempts++;
-    if (attempts >= 10 || safeAreaTop.value > 32) {
-      clearInterval(pollInterval);
-    }
-  }, 200);
+  // Also use a timeout to re-request in case first request was too early
+  setTimeout(requestSafeArea, 100);
+  setTimeout(requestSafeArea, 500);
 });
 
 onUnmounted(() => {
-  const WebApp = getTelegramWebApp();
-  if (WebApp?.offEvent) {
-    WebApp.offEvent('safeAreaChanged', updateSafeAreas);
-    WebApp.offEvent('contentSafeAreaChanged', updateSafeAreas);
+  // Restore original receiveEvent if we intercepted it
+  const WebView = getTelegramWebView();
+  if (WebView && originalReceiveEvent) {
+    WebView.receiveEvent = originalReceiveEvent;
+    originalReceiveEvent = null;
   }
 });
 
