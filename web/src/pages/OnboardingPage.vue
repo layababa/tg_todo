@@ -32,35 +32,16 @@ onMounted(async () => {
   // === Debug: Active Safe Area Request ===
   const debugSafeArea = () => {
     try {
-      const WebApp = (window as any).Telegram?.WebApp
       const WebView = (window as any).Telegram?.WebView
       
-      console.log('[Onboarding] Checking Safe Area...', {
-        currentInset: WebApp?.safeAreaInset,
-        currentContent: WebApp?.contentSafeAreaInset
-      })
-
-      // Listener for debug
-      const logChange = (event: string) => {
-        console.log(`[Onboarding] ${event} triggered!`, {
-          newInset: WebApp?.safeAreaInset,
-          newContent: WebApp?.contentSafeAreaInset
-        })
-      }
-
-      WebApp?.onEvent?.('safeAreaChanged', () => logChange('safeAreaChanged'))
-      WebApp?.onEvent?.('contentSafeAreaChanged', () => logChange('contentSafeAreaChanged'))
-
-      // Active Request
+      // Active Request: This triggers the client to send the latest safe area values
       if (WebView?.postEvent) {
         console.log('[Onboarding] Sending active request for safe area...')
         WebView.postEvent('web_app_request_safe_area', {})
         WebView.postEvent('web_app_request_content_safe_area', {})
-      } else {
-        console.warn('[Onboarding] WebView.postEvent not available')
       }
     } catch (e) {
-      console.error('[Onboarding] Failed to debug safe area', e)
+      console.error('[Onboarding] Failed to request safe area', e)
     }
   }
   
