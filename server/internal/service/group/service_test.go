@@ -87,6 +87,9 @@ func (m *MockUserRepo) GetByUsername(ctx context.Context, username string) (*mod
 func (m *MockUserRepo) ListAll(ctx context.Context) ([]models.User, error) {
 	return nil, nil
 }
+func (m *MockUserRepo) FindByCalendarToken(ctx context.Context, token string) (*models.User, error) {
+	return nil, nil
+}
 
 // Mock Notion Client
 type MockNotionClient struct {
