@@ -69,6 +69,10 @@ func (m *MockUserRepo) SaveNotionToken(ctx context.Context, token *models.UserNo
 func (m *MockUserRepo) ListAll(ctx context.Context) ([]models.User, error) {
 	return nil, nil
 }
+
+func (m *MockUserRepo) FindByCalendarToken(ctx context.Context, token string) (*models.User, error) {
+	return nil, nil
+}
 func (m *MockUserRepo) GetByUsername(ctx context.Context, username string) (*models.User, error) {
 	return nil, nil
 }

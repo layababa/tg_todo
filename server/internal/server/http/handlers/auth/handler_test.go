@@ -242,6 +242,10 @@ func (m *mockUserRepository) ListAll(ctx context.Context) ([]models.User, error)
 	return nil, nil
 }
 
+func (m *mockUserRepository) FindByCalendarToken(ctx context.Context, token string) (*models.User, error) {
+	return nil, gorm.ErrRecordNotFound
+}
+
 type stubOAuthService struct {
 	config       notion.OAuthConfig
 	lastState    string

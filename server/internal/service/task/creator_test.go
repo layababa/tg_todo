@@ -295,6 +295,10 @@ func (m *mockUserRepo) ListAll(context.Context) ([]models.User, error) {
 	return nil, nil
 }
 
+func (m *mockUserRepo) FindByCalendarToken(context.Context, string) (*models.User, error) {
+	return nil, gorm.ErrRecordNotFound
+}
+
 type mockUpdateRepo struct {
 	err error
 }
