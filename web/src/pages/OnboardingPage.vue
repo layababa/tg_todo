@@ -37,8 +37,8 @@ onMounted(async () => {
       // Active Request: This triggers the client to send the latest safe area values
       if (WebView?.postEvent) {
         console.log('[Onboarding] Sending active request for safe area...')
-        WebView.postEvent('web_app_request_safe_area', {})
-        WebView.postEvent('web_app_request_content_safe_area', {})
+        WebView.postEvent('web_app_request_safe_area')
+        WebView.postEvent('web_app_request_content_safe_area')
       }
     } catch (e) {
       console.error('[Onboarding] Failed to request safe area', e)
