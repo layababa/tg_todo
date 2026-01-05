@@ -6,13 +6,6 @@ import { listDatabases } from "@/api/notion";
 import { useAuthStore } from "@/store/auth";
 import type { TaskDetail, Task } from "@/types/task";
 import type { DatabaseSummary } from "@/types/group";
-
-import { useRouter } from "vue-router";
-import { listTasks, getTaskCounts, type TaskCounts } from "@/api/task";
-import { listDatabases } from "@/api/notion";
-import { useAuthStore } from "@/store/auth";
-import type { TaskDetail, Task } from "@/types/task";
-import type { DatabaseSummary } from "@/types/group";
 import WebApp from "@twa-dev/sdk";
 
 const router = useRouter();
