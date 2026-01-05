@@ -26,18 +26,30 @@ try {
   const handleSafeArea = () => {
     const safe = WebApp.safeAreaInset || { top: 0, bottom: 0 };
     const content = WebApp.contentSafeAreaInset || { top: 0, bottom: 0 };
-    const totalTop = safe.top + content.top;
+
+    // Also check CSS variables directly, as WebApp object might lag behind
+    const getCssVar = (name: string) => {
+      const val = getComputedStyle(document.documentElement)
+        .getPropertyValue(name)
+        .trim();
+      return val.endsWith("px") ? parseFloat(val) : 0;
+    };
+
+    const cssSafeTop = getCssVar("--tg-safe-area-inset-top");
+    const cssContentTop = getCssVar("--tg-content-safe-area-inset-top");
+
+    const jsTotal = safe.top + content.top;
+    const cssTotal = cssSafeTop + cssContentTop;
 
     console.log("[Main] handleSafeArea check:", {
-      safe,
-      content,
-      totalTop,
+      js: { safe, content, total: jsTotal },
+      css: { safe: cssSafeTop, content: cssContentTop, total: cssTotal },
       hasReadyClass:
         document.documentElement.classList.contains("safe-area-ready"),
     });
 
-    // We consider it "ready" if there's any top padding (physical or content)
-    if (totalTop > 0) {
+    // We consider it "ready" if we have valid values from EITHER JS or CSS
+    if (jsTotal > 0 || cssTotal > 0) {
       document.documentElement.classList.add("safe-area-ready");
     }
   };
