@@ -590,24 +590,37 @@ onUnmounted(() => {
 
 /* Header: Top safe area padding */
 .safe-area-header {
+  /* Default Fallback for first load (when Telegram variables are 0) */
+  padding-top: 32px;
+}
+:global(html.safe-area-ready) .safe-area-header {
   /* Combined: Device safe area + Telegram content safe area */
-  padding-top: calc(var(--tg-safe-area-inset-top, 0px) + var(--tg-content-safe-area-inset-top, 0px));
+  padding-top: calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top));
 }
 
 /* Content Area: Dynamic padding based on header state */
 .safe-area-content.content-expanded {
   /* Header height (220px) + safe areas */
-  padding-top: calc(220px + var(--tg-safe-area-inset-top, 0px) + var(--tg-content-safe-area-inset-top, 0px));
+  padding-top: calc(220px + 32px);
+}
+:global(html.safe-area-ready) .safe-area-content.content-expanded {
+  padding-top: calc(220px + var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top));
 }
 
 .safe-area-content.content-collapsed {
   /* Collapsed header height (120px) + safe areas */
-  padding-top: calc(120px + var(--tg-safe-area-inset-top, 0px) + var(--tg-content-safe-area-inset-top, 0px));
+  padding-top: calc(120px + 32px);
+}
+:global(html.safe-area-ready) .safe-area-content.content-collapsed {
+  padding-top: calc(120px + var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top));
 }
 
 /* Pull indicator position */
 .pull-indicator {
-  top: calc(180px + var(--tg-safe-area-inset-top, 0px) + var(--tg-content-safe-area-inset-top, 0px));
+  top: calc(180px + 32px);
+}
+:global(html.safe-area-ready) .pull-indicator {
+  top: calc(180px + var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top));
 }
 
 /* Bottom safe area */
