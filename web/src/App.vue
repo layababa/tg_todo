@@ -1,6 +1,9 @@
-<script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import { useBackButton } from '@/composables/useBackButton'
+
+// Initialize Global Back Button Handling (for Android hardware key support)
+useBackButton()
 
 const route = useRoute()
 const transitionName = ref('page-slide-right')
