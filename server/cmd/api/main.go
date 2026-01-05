@@ -351,6 +351,15 @@ BEGIN
 	) THEN
 		ALTER TABLE users RENAME CONSTRAINT users_tg_id_key TO uni_users_tg_id;
 	END IF;
+
+	-- Align calendar_token unique constraint name
+	IF EXISTS (
+		SELECT 1 FROM pg_constraint WHERE conname = 'users_calendar_token_key'
+	) AND NOT EXISTS (
+		SELECT 1 FROM pg_constraint WHERE conname = 'uni_users_calendar_token'
+	) THEN
+		ALTER TABLE users RENAME CONSTRAINT users_calendar_token_key TO uni_users_calendar_token;
+	END IF;
 END
 $$;
 `
