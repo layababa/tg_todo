@@ -203,6 +203,10 @@ const fetchData = async () => {
     const t = await getTask(id);
     task.value = t;
     loading.value = false; // Task renders, transition continues smoothly
+    nextTick(() => {
+      const el = document.querySelector(".detail-title-input") as HTMLTextAreaElement;
+      if (el) resizeTextarea(el);
+    });
   } catch (e) {
     errorMessage.value = "Failed to load task";
     loading.value = false;
@@ -345,8 +349,7 @@ onMounted(fetchData);
         class="header shrink-0 z-30 bg-base-100/95 backdrop-blur-md"
         :style="{ paddingTop: safeAreaTop + 'px' }"
       >
-        <div class="flex items-center justify-between">
-
+        <div class="flex items-center justify-end">
           <div class="flex items-center gap-2">
             <a
               v-if="task?.NotionURL"
@@ -382,21 +385,21 @@ onMounted(fetchData);
           </div>
         </div>
       </header>
-
       <main class="flex-1 overflow-y-auto px-4 pt-4 pb-4 scroll-smooth">
         <div v-if="loading" class="flex justify-center mt-20">
           <span class="loading loading-spinner text-primary"></span>
         </div>
         <div v-else-if="task">
-          <div class="flex items-center justify-between gap-4 mb-4">
+          <div class="flex items-start justify-between gap-4 mb-4">
             <textarea
               v-model="task.Title"
               @blur="updateTitle"
+              @input="(e) => resizeTextarea(e.target as HTMLTextAreaElement)"
               placeholder="Task Title..."
-              class="detail-title-input flex-1 bg-transparent border-b border-transparent focus:border-primary text-2xl font-bold outline-none resize-none overflow-hidden"
+              class="detail-title-input flex-1 bg-transparent border-b border-transparent focus:border-primary text-2xl font-bold outline-none resize-none overflow-hidden min-h-[32px]"
               rows="1"
             ></textarea>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 mt-1">
               <button
                 v-show="task.Title"
                 @click="saveTask"
