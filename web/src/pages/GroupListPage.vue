@@ -63,9 +63,7 @@ onMounted(fetchGroups)
         <!-- Header -->
         <header class="header sticky top-0 z-30" :style="{ paddingTop: safeAreaTop + 'px' }">
             <div class="flex items-center justify-between mb-6">
-                <button @click="goBack" class="icon-btn tech-btn !w-auto !px-2 !border-none text-sm gap-2">
-                    <i class="ri-arrow-left-line"></i> 返回设置
-                </button>
+
                 <div class="font-mono text-[10px] text-primary border border-primary px-1.5 py-0.5 tracking-widest">GROUPS</div>
             </div>
             <h1 class="text-2xl font-light mb-2">群组连接管理</h1>

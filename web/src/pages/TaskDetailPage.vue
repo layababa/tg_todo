@@ -346,12 +346,7 @@ onMounted(fetchData);
         :style="{ paddingTop: safeAreaTop + 'px' }"
       >
         <div class="flex items-center justify-between">
-          <button
-            @click="goBack"
-            class="icon-btn tech-btn !w-auto !px-2 !border-none text-sm gap-2"
-          >
-            <i class="ri-arrow-left-line"></i> 返回
-          </button>
+
           <div class="flex items-center gap-2">
             <a
               v-if="task?.NotionURL"
