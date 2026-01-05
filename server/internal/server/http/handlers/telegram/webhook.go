@@ -86,6 +86,7 @@ type Message struct {
 		Title string `json:"title"`
 	} `json:"chat"`
 	Text            string `json:"text"`
+	Caption         string `json:"caption"` // Added Caption support
 	MessageThreadID int64  `json:"message_thread_id"`
 	ReplyToMessage  *struct {
 		MessageID int64  `json:"message_id"`
@@ -290,7 +291,9 @@ func (h *Handler) HandleWebhook(c *gin.Context) {
 		h.ensureUser(ctx, msg)
 
 		// Check for forward first
-		if msg.ForwardDate > 0 || msg.ForwardFrom != nil || msg.ForwardFromChat != nil {
+		// Only handle forwards automatically in Private Chats.
+		// In Group Chats, we treat forwards as normal messages (must be mentioned/replied to).
+		if (msg.ForwardDate > 0 || msg.ForwardFrom != nil || msg.ForwardFromChat != nil) && msg.Chat.Type == "private" {
 			h.handleForwardedMessage(ctx, msg)
 			c.Status(http.StatusOK)
 			return
@@ -1009,6 +1012,10 @@ func (h *Handler) handleForwardedMessage(ctx context.Context, msg *Message) {
 	meta["source"] = sourceName
 
 	text := msg.Text
+	if text == "" {
+		text = msg.Caption // Fallback to caption
+	}
+
 	if text == "" {
 		h.sendMessage(msg.Chat.ID, "⚠️ 暂不支持转发非文本消息。", nil, msg.MessageID, msg.MessageThreadID)
 		return
