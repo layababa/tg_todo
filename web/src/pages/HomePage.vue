@@ -283,8 +283,8 @@ onUnmounted(() => {
   <div class="page-root relative w-full h-full overflow-hidden bg-base-100">
     <!-- Header -->
     <header
-      class="absolute top-0 left-0 right-0 z-30 transition-all duration-300 bg-base-100 safe-area-header"
-      :class="{ 'shadow-lg shadow-black/10': isHeaderCollapsed }"
+      class="fixed top-0 left-0 right-0 z-50 bg-black transition-all duration-300 overflow-hidden safe-area-header"
+      :class="isHeaderCollapsed ? 'header-collapsed' : 'header-expanded'"
     >
       <!-- Top Bar -->
       <div
@@ -596,6 +596,21 @@ onUnmounted(() => {
 :global(html.safe-area-ready) .safe-area-header {
   /* Combined: Device safe area + Telegram content safe area */
   padding-top: calc(var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top));
+}
+
+/* Header Height: Must match Content Padding to avoid gaps */
+.header-expanded {
+  height: calc(220px + 32px);
+}
+:global(html.safe-area-ready) .header-expanded {
+  height: calc(220px + var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top));
+}
+
+.header-collapsed {
+  height: calc(120px + 32px);
+}
+:global(html.safe-area-ready) .header-collapsed {
+  height: calc(120px + var(--tg-safe-area-inset-top) + var(--tg-content-safe-area-inset-top));
 }
 
 /* Content Area: Dynamic padding based on header state */
