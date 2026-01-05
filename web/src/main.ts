@@ -20,12 +20,24 @@ try {
   // === Safe Area Handling ===
   // Add 'safe-area-ready' class ONLY when Telegram provides valid values (>0).
   // This allows CSS to use a hardcoded fallback (e.g. 32px) by default.
+  // === Safe Area Handling ===
+  // Add 'safe-area-ready' class ONLY when Telegram provides valid values (>0).
+  // This allows CSS to use a hardcoded fallback (e.g. 32px) by default.
   const handleSafeArea = () => {
     const safe = WebApp.safeAreaInset || { top: 0, bottom: 0 };
     const content = WebApp.contentSafeAreaInset || { top: 0, bottom: 0 };
+    const totalTop = safe.top + content.top;
+
+    console.log("[Main] handleSafeArea check:", {
+      safe,
+      content,
+      totalTop,
+      hasReadyClass:
+        document.documentElement.classList.contains("safe-area-ready"),
+    });
 
     // We consider it "ready" if there's any top padding (physical or content)
-    if (safe.top + content.top > 0) {
+    if (totalTop > 0) {
       document.documentElement.classList.add("safe-area-ready");
     }
   };
@@ -36,15 +48,22 @@ try {
   WebApp.onEvent("safeAreaChanged", handleSafeArea);
   // @ts-expect-error event types not yet in sdk
   WebApp.onEvent("contentSafeAreaChanged", handleSafeArea);
-  // Re-check shortly after to catch async initialization
-  setTimeout(handleSafeArea, 100);
-  setTimeout(handleSafeArea, 500);
+
+  // Polling fallback: check every 100ms for 3 seconds
+  // This ensures we catch the value update even if the event listener fails
+  let checks = 0;
+  const interval = setInterval(() => {
+    handleSafeArea();
+    checks++;
+    if (checks >= 30) clearInterval(interval);
+  }, 100);
 
   // === Active Request ===
   // Explicitly request safe area data from Telegram Client
   // This triggers a 'safeAreaChanged' event, ensuring we get data ASAP
   const WebView = (window as any).Telegram?.WebView;
   if (WebView?.postEvent) {
+    console.log("[Main] Sending active request for safe area...");
     WebView.postEvent("web_app_request_safe_area");
     WebView.postEvent("web_app_request_content_safe_area");
   }
