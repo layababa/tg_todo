@@ -40,8 +40,14 @@ const isPulling = computed(() => pullMoveY.value > 0);
 const pullThreshold = 80; // px
 
 // Sticky Header Logic
-// Header Height is dynamic now (base + safe area)
-const headerBaseHeight = computed(() => (isHeaderCollapsed.value ? 120 : 220));
+// Header Height is dynamic now (base + safe area + anchor chips)
+const hasAnchorChips = computed(() => nonEmptyGroups.value.length > 1);
+const headerBaseHeight = computed(() => {
+  // Base heights: Collapsed (120) / Expanded (220)
+  // Add ~50px if Anchor Chips are visible
+  const base = isHeaderCollapsed.value ? 120 : 220;
+  return base + (hasAnchorChips.value ? 48 : 0);
+});
 
 // Safe Area State (from global composable)
 import { useSafeArea } from '@/composables/useSafeArea'
