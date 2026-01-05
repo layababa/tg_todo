@@ -17,6 +17,7 @@ type User struct {
 	Timezone          string         `gorm:"type:text;not null;default:'UTC+0'" json:"timezone"`
 	DefaultDatabaseID *string        `gorm:"type:text" json:"default_database_id,omitempty"`
 	NotionConnected   bool           `gorm:"not null;default:false" json:"notion_connected"`
+	CalendarToken     *string        `gorm:"type:text" json:"calendar_token,omitempty"`
 	CreatedAt         time.Time      `json:"created_at"`
 	UpdatedAt         time.Time      `json:"updated_at"`
 	DeletedAt         gorm.DeletedAt `gorm:"index" json:"deleted_at,omitempty"`

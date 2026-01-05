@@ -29,6 +29,8 @@ const slides = [
 ]
 
 onMounted(async () => {
+  // Safe area is now handled globally by main.ts via useSafeArea composable
+  
   // Start initializing
   const startTime = Date.now()
   

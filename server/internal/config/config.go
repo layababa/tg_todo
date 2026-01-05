@@ -10,7 +10,8 @@ import (
 type Config struct {
 	AppEnv string `mapstructure:"app_env"`
 	HTTP   struct {
-		Addr string `mapstructure:"addr"`
+		Addr    string `mapstructure:"addr"`
+		BaseURL string `mapstructure:"base_url"`
 	} `mapstructure:"http"`
 	Postgres struct {
 		DSN string `mapstructure:"dsn"`
@@ -53,6 +54,7 @@ func Load(path string) (*Config, error) {
 	// Explicit bindings for test compatibility
 	_ = v.BindEnv("app_env", "APP_ENV")
 	_ = v.BindEnv("http.addr", "HTTP_ADDR")
+	_ = v.BindEnv("http.base_url", "HTTP_BASE_URL")
 	_ = v.BindEnv("postgres.dsn", "DATABASE_DSN")
 	_ = v.BindEnv("postgres.dsn", "POSTGRES_URL")
 	_ = v.BindEnv("redis.addr", "REDIS_ADDR")

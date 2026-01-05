@@ -20,6 +20,7 @@ import (
 	"github.com/layababa/tg_todo/server/internal/models"
 	"github.com/layababa/tg_todo/server/internal/repository"
 	authhandler "github.com/layababa/tg_todo/server/internal/server/http/handlers/auth"
+	calendarhandler "github.com/layababa/tg_todo/server/internal/server/http/handlers/calendar"
 	grouphandler "github.com/layababa/tg_todo/server/internal/server/http/handlers/group"
 	"github.com/layababa/tg_todo/server/internal/server/http/handlers/healthz"
 	notionhandler "github.com/layababa/tg_todo/server/internal/server/http/handlers/notion"
@@ -263,6 +264,18 @@ func main() {
 	meGroup.Use(middleware.TelegramAuth(cfg.Telegram.BotToken, userRepo))
 	meGroup.GET("", userHandler.GetMe)
 	meGroup.PATCH("/settings", userHandler.UpdateSettings)
+
+	// Calendar Handler
+	calHandler := calendarhandler.NewHandler(calendarhandler.Config{
+		Logger:   logger,
+		UserRepo: userRepo,
+		TaskRepo: taskRepo,
+		BaseURL:  cfg.HTTP.BaseURL,
+	})
+	meGroup.POST("/calendar-token", calHandler.GenerateCalendarToken)
+
+	// Calendar Feed (Public, no auth - token is the auth)
+	r.GET("/cal/:token/todo.ics", calHandler.GetCalendarFeed)
 
 	// Telegram Webhook (Keeping at root or moving to /api/webhook)
 	// Let's keep it at /webhook/telegram for now as it's typically configured once in BotFather

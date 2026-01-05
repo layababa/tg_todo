@@ -3,9 +3,13 @@ import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { listGroups, unbindGroup } from '@/api/group'
 import { useSwipeBack } from '@/composables/useSwipeBack'
+import { useSafeArea } from '@/composables/useSafeArea'
 import type { Group } from '@/types/group'
 
 const router = useRouter()
+
+// Safe Area
+const { safeAreaTop } = useSafeArea()
 
 // Add swipe back support
 useSwipeBack()
@@ -57,7 +61,7 @@ onMounted(fetchGroups)
 
     <div class="app-container">
         <!-- Header -->
-        <header class="header sticky top-0 z-30">
+        <header class="header sticky top-0 z-30" :style="{ paddingTop: safeAreaTop + 'px' }">
             <div class="flex items-center justify-between mb-6">
                 <button @click="goBack" class="icon-btn tech-btn !w-auto !px-2 !border-none text-sm gap-2">
                     <i class="ri-arrow-left-line"></i> 返回设置

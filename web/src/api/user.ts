@@ -22,3 +22,21 @@ export const updateSettings = async (
   const res = await apiClient.patch<GetMeResponse>("/me/settings", data);
   return res.data.data;
 };
+
+export interface CalendarTokenResponse {
+  token: string;
+  webcal_url: string;
+  https_url: string;
+}
+
+interface CalendarTokenApiResponse {
+  success: boolean;
+  data: CalendarTokenResponse;
+}
+
+export const generateCalendarToken =
+  async (): Promise<CalendarTokenResponse> => {
+    const res =
+      await apiClient.post<CalendarTokenApiResponse>("/me/calendar-token");
+    return res.data.data;
+  };

@@ -7,6 +7,7 @@ import { useAuthStore } from "@/store/auth";
 import type { TaskDetail, Task } from "@/types/task";
 import type { DatabaseSummary } from "@/types/group";
 
+
 const router = useRouter();
 const authStore = useAuthStore();
 
@@ -39,15 +40,21 @@ const isPulling = computed(() => pullMoveY.value > 0);
 const pullThreshold = 80; // px
 
 // Sticky Header Logic
-// Expanded: TopBar(60) + Greeting(80) + Tabs(40) + Chips(40) ~ 220px
-// Collapsed: TopBar(40) + Tabs(40) + Chips(40) ~ 120px
-const headerHeight = computed(() => (isHeaderCollapsed.value ? 120 : 220));
+// Header Height is dynamic now (base + safe area)
+const headerBaseHeight = computed(() => (isHeaderCollapsed.value ? 120 : 220));
+
+// Safe Area State (from global composable)
+import { useSafeArea } from '@/composables/useSafeArea'
+const { safeAreaTop, safeAreaBottom } = useSafeArea()
+
 
 const scrollToGroup = (groupName: string) => {
   const el = document.getElementById(`group-${groupName}`);
   if (el && pageRoot.value) {
     // Scroll to element position minus header height + buffer
-    const top = el.offsetTop - headerHeight.value - 10;
+    // Dynamic height: base + safe area
+    const currentHeaderHeight = headerBaseHeight.value + safeAreaTop.value;
+    const top = el.offsetTop - currentHeaderHeight - 10;
     pageRoot.value.scrollTo({ top, behavior: "smooth" });
   }
 };
@@ -283,8 +290,12 @@ onUnmounted(() => {
   <div class="page-root relative w-full h-full overflow-hidden bg-base-100">
     <!-- Header -->
     <header
-      class="absolute top-0 left-0 right-0 z-30 transition-all duration-300 bg-base-100 safe-area-header"
-      :class="{ 'shadow-lg shadow-black/10': isHeaderCollapsed }"
+      class="fixed top-0 left-0 right-0 z-50 bg-black transition-all duration-300 overflow-hidden"
+      :class="isHeaderCollapsed ? 'header-collapsed' : 'header-expanded'"
+      :style="{ 
+        paddingTop: safeAreaTop + 'px',
+        height: (headerBaseHeight + safeAreaTop) + 'px'
+      }"
     >
       <!-- Top Bar -->
       <div
@@ -397,18 +408,25 @@ onUnmounted(() => {
       @touchmove="onTouchMove"
       @touchend="onTouchEnd"
     >
-      <!-- Pull Indicator -->
+      <!-- Pull to refresh indicator -->
       <div
-        class="absolute w-full flex justify-center pointer-events-none transition-transform duration-200 pull-indicator"
-        :style="{
-          transform: `translateY(${pullMoveY - 40}px)`,
-          opacity: pullMoveY > 0 ? 1 : 0,
+        class="absolute left-0 right-0 flex justify-center items-center pointer-events-none transition-all duration-200 z-40"
+        :style="{ 
+          top: (180 + safeAreaTop) + 'px', 
+          opacity: isPulling ? Math.min(pullMoveY / pullThreshold, 1) : 0, 
+          transform: `translateY(${Math.min(pullMoveY / 2, 20)}px) rotate(${pullMoveY * 2}deg)` 
         }"
       >
         <div class="loading loading-spinner text-primary"></div>
       </div>
 
-      <div class="app-container pb-24 min-h-[calc(100vh-220px)] safe-area-bottom">
+      <div 
+        class="app-container pb-24 min-h-[calc(100vh-220px)]"
+        :style="{ 
+           paddingTop: (headerBaseHeight + safeAreaTop) + 'px',
+           paddingBottom: (96 + safeAreaBottom) + 'px' 
+        }"
+      >
         <!-- Filters -->
         <div
           v-show="filterOpen"
@@ -582,46 +600,15 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-/* Safe Area using Telegram CSS Variables (Bot API 8.0+)
- * --tg-safe-area-inset-*: Device physical safe area (notch, status bar)
- * --tg-content-safe-area-inset-*: Telegram UI safe area (header bar)
- * These are auto-injected by telegram-web-app.js and work in immersive mode
- */
+<style scoped>
+/* Safe Area Logic is now handled via JS (safeAreaTop/Bottom refs) 
+   and applied as inline styles. Old CSS classes removed.
+*/
 
-/* Header: Top safe area padding */
-.safe-area-header {
-  /* Combined: Device safe area + Telegram content safe area */
-  padding-top: calc(var(--tg-safe-area-inset-top, 0px) + var(--tg-content-safe-area-inset-top, 0px));
-}
-
-/* Content Area: Dynamic padding based on header state */
-.safe-area-content.content-expanded {
-  /* Header height (220px) + safe areas */
-  padding-top: calc(220px + var(--tg-safe-area-inset-top, 0px) + var(--tg-content-safe-area-inset-top, 0px));
-}
-
-.safe-area-content.content-collapsed {
-  /* Collapsed header height (120px) + safe areas */
-  padding-top: calc(120px + var(--tg-safe-area-inset-top, 0px) + var(--tg-content-safe-area-inset-top, 0px));
-}
-
-/* Pull indicator position */
-.pull-indicator {
-  top: calc(180px + var(--tg-safe-area-inset-top, 0px) + var(--tg-content-safe-area-inset-top, 0px));
-}
-
-/* Bottom safe area */
-.safe-area-bottom {
-  /* 6rem base padding + device safe area + Telegram bottom bar */
-  padding-bottom: calc(6rem + var(--tg-safe-area-inset-bottom, 0px) + var(--tg-content-safe-area-inset-bottom, 0px));
-}
-
-/* FAB Button */
+/* FAB Button Shape */
 .fab-btn {
   width: 3.5rem;
   height: 3.5rem;
   clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
-  /* 1.5rem base + safe areas */
-  bottom: calc(1.5rem + var(--tg-safe-area-inset-bottom, 0px) + var(--tg-content-safe-area-inset-bottom, 0px));
 }
 </style>
