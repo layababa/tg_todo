@@ -108,4 +108,23 @@ router.beforeEach((to, from, next) => {
   next();
 });
 
+// Chunk Load Error Handler
+router.onError((error) => {
+  const pattern =
+    /Loading chunk (\d)+ failed|Loading CSS chunk (\d)+ failed|Failed to fetch dynamically imported module/;
+  const isChunkLoadFailed = error.message.match(pattern);
+  const targetPath = router.currentRoute.value.fullPath;
+
+  if (isChunkLoadFailed) {
+    console.log("[Router] Chunk load failed, reloading...", error);
+    if (!targetPath.includes("reload=true")) {
+      // Prevent infinite reload loop if server is down
+      // Simple strategy: reload once.
+      // For Mini App, simple location.reload() is usually safe enough
+      // as state is mostly in URL or server.
+      window.location.reload();
+    }
+  }
+});
+
 export default router;
