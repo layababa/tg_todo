@@ -7,11 +7,15 @@ import { listComments, createComment, type Comment } from "@/api/comment";
 import CommentItem from "@/components/CommentItem.vue";
 import { useAuthStore } from "@/store/auth";
 import { useSwipeBack } from "@/composables/useSwipeBack";
+import { useSafeArea } from "@/composables/useSafeArea";
 import type { Task } from "@/types/task";
 
 const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
+
+// Safe Area
+const { safeAreaTop, safeAreaBottom } = useSafeArea();
 
 // Add swipe back support
 useSwipeBack();
@@ -337,7 +341,10 @@ onMounted(fetchData);
     <div
       class="app-container flex flex-col h-full w-full relative !min-h-0 !pb-0"
     >
-      <header class="header shrink-0 z-30 bg-base-100/95 backdrop-blur-md">
+      <header 
+        class="header shrink-0 z-30 bg-base-100/95 backdrop-blur-md"
+        :style="{ paddingTop: safeAreaTop + 'px' }"
+      >
         <div class="flex items-center justify-between">
           <button
             @click="goBack"

@@ -42,6 +42,7 @@
 ### 3. `docs/server/api-by-page.md`
 
 - 依页面列出入口接口，涵盖 Onboarding、Task List、Task Detail、组/数据库绑定、设置页等。
+- 新增 `docs/server/api-calendar.md`，定义 Webcal 协议的日历同步接口。
 - 对每个 API 提供 Method、路径、典型入参/出参及枚举定义，便于前后端联调。
 - 包含通用模型（User/Database/Group/Task/Comment）与鉴权说明。
 

@@ -3,14 +3,18 @@ import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/store/auth'
 import { useSwipeBack } from '@/composables/useSwipeBack'
+import { useSafeArea } from '@/composables/useSafeArea'
 import { listGroups } from '@/api/group'
 import { listDatabases } from '@/api/notion'
-import { getMe, updateSettings } from '@/api/user'
+import { getMe, updateSettings, generateCalendarToken } from '@/api/user'
 import type { Group, DatabaseSummary } from '@/types/group'
 import type { UserProfile } from '@/types/auth'
 
 const router = useRouter()
 const authStore = useAuthStore()
+
+// Safe Area
+const { safeAreaTop } = useSafeArea()
 
 // Add swipe back support
 useSwipeBack()
@@ -35,6 +39,26 @@ const defaultDbName = computed(() => {
 })
 
 const timezone = computed(() => user.value?.timezone || 'UTC+0')
+
+// Calendar Sync
+const calendarUrl = ref('')
+const calendarLoading = ref(false)
+
+const enableCalendarSync = async () => {
+    calendarLoading.value = true
+    try {
+        const result = await generateCalendarToken()
+        if (result?.webcal_url) {
+            calendarUrl.value = result.webcal_url
+            // Try to open webcal URL directly (will prompt calendar app)
+            window.location.href = result.webcal_url
+        }
+    } catch (e) {
+        console.error('Failed to generate calendar token', e)
+    } finally {
+        calendarLoading.value = false
+    }
+}
 
 // Methods
 const initData = async () => {
@@ -104,7 +128,7 @@ onMounted(() => {
 
     <div class="app-container">
         <!-- Header -->
-        <header class="header">
+        <header class="header" :style="{ paddingTop: safeAreaTop + 'px' }">
             <div class="flex justify-between items-center mb-10">
                 <a @click.prevent="goBack" href="#" class="flex items-center gap-2 text-white no-underline font-mono text-xs cursor-pointer hover:text-primary transition-colors">
                     <i class="ri-arrow-left-line"></i> 返回首页
@@ -179,6 +203,31 @@ onMounted(() => {
                     <div class="flex items-center gap-2">
                         <i class="ri-arrow-right-s-line text-base-content/40"></i>
                     </div>
+                </div>
+            </div>
+
+            <!-- Calendar Sync -->
+            <div class="mb-8">
+                <div class="text-[10px] text-primary mb-4 uppercase font-mono tracking-widest">日历同步</div>
+
+                <div v-if="!calendarUrl" @click="enableCalendarSync" class="flex justify-between items-center p-4 bg-base-200/50 border border-base-content/10 mb-2 cursor-pointer hover:border-primary transition-colors">
+                    <div class="flex items-center gap-2 text-base-content/60 font-mono text-xs">
+                        <i class="ri-calendar-line"></i> 添加日历订阅
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span v-if="calendarLoading" class="loading loading-spinner loading-xs"></span>
+                        <i v-else class="ri-add-line text-primary"></i>
+                    </div>
+                </div>
+                
+                <div v-else class="p-4 bg-base-200/50 border border-primary/30 mb-2">
+                    <div class="flex items-center gap-2 text-primary font-mono text-xs mb-2">
+                        <i class="ri-check-line"></i> 日历订阅已启用
+                    </div>
+                    <a :href="calendarUrl" class="text-xs text-base-content/60 break-all hover:text-primary">
+                        {{ calendarUrl }}
+                    </a>
+                    <p class="text-[10px] text-base-content/40 mt-2">点击上方链接可重新订阅。日历刷新频率由系统决定。</p>
                 </div>
             </div>
 

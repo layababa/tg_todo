@@ -12,6 +12,7 @@ import (
 type UserRepository interface {
 	FindByTgID(ctx context.Context, tgID int64) (*models.User, error)
 	FindByID(ctx context.Context, id string) (*models.User, error)
+	FindByCalendarToken(ctx context.Context, token string) (*models.User, error)
 	Create(ctx context.Context, user *models.User) error
 	Update(ctx context.Context, user *models.User) error
 	GetByUsername(ctx context.Context, username string) (*models.User, error)
@@ -44,6 +45,15 @@ func (r *userRepository) FindByTgID(ctx context.Context, tgID int64) (*models.Us
 func (r *userRepository) FindByID(ctx context.Context, id string) (*models.User, error) {
 	var user models.User
 	if err := r.db.WithContext(ctx).Where("id = ?", id).First(&user).Error; err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
+// FindByCalendarToken finds a user by their calendar subscription token
+func (r *userRepository) FindByCalendarToken(ctx context.Context, token string) (*models.User, error) {
+	var user models.User
+	if err := r.db.WithContext(ctx).Where("calendar_token = ?", token).First(&user).Error; err != nil {
 		return nil, err
 	}
 	return &user, nil
